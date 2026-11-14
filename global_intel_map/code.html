@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;700&amp;family=Inter:wght@400;500;700&amp;family=Jetbrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Geist:wght@600;700;800&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        .scanline {
+            background: linear-gradient(to bottom, transparent 50%, rgba(0, 242, 255, 0.05) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+        }
+
+        @keyframes pulse-ring {
+            0% { transform: scale(0.33); opacity: 1; }
+            80%, 100% { transform: scale(1.5); opacity: 0; }
+        }
+
+        .radar-pulse {
+            position: relative;
+        }
+        .radar-pulse::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 2px solid #00f2ff;
+            border-radius: 50%;
+            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+
+        .holographic-card {
+            background: rgba(11, 15, 16, 0.6);
+            backdrop-filter: blur(20px);
+            border: 0.5px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .targeting-bracket::before {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; width: 8px; height: 8px;
+            border-top: 2px solid #00f2ff; border-left: 2px solid #00f2ff;
+        }
+        .targeting-bracket::after {
+            content: '';
+            position: absolute;
+            bottom: -2px; right: -2px; width: 8px; height: 8px;
+            border-bottom: 2px solid #00f2ff; border-right: 2px solid #00f2ff;
+        }
+
+        .map-container {
+            mask-image: radial-gradient(circle at center, black 60%, transparent 100%);
+        }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #3a494b; border-radius: 2px; }
+        ::-webkit-scrollbar-thumb:hover { background: #00f2ff; }
+    </style>
+<script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {"on-tertiary-container": "#346f00", "inverse-primary": "#006d37", "on-tertiary": "#173800", "on-secondary-fixed-variant": "#004e5d", error: "#ffb4ab", "on-surface-variant": "#b9cbb9", "on-secondary-fixed": "#001f26", "secondary-container": "#00d9ff", "inverse-surface": "#e0e2e9", "tertiary-container": "#7dfb00", "error-container": "#93000a", "primary-fixed": "#60ff99", "surface-container-low": "#181c20", "on-primary-container": "#007139", "on-tertiary-fixed": "#0b2000", "on-error": "#690005", "outline-variant": "#3b4b3d", "on-primary-fixed-variant": "#005228", "on-secondary-container": "#005b6c", "on-surface": "#e0e2e9", outline: "#849585", "on-tertiary-fixed-variant": "#245100", "tertiary-fixed-dim": "#6fe000", primary: "#f1ffef", "surface-variant": "#31353a", "secondary-fixed": "#aeecff", "surface-container": "#1c2024", "on-primary-fixed": "#00210c", "on-background": "#e0e2e9", "inverse-on-surface": "#2d3136", "surface-container-highest": "#31353a", tertiary: "#f4ffe5", "on-primary": "#003919", surface: "#101418", "surface-bright": "#36393e", "tertiary-fixed": "#82ff14", "on-error-container": "#ffdad6", secondary: "#aeecff", "surface-container-high": "#272a2f", "on-secondary": "#003641", "secondary-fixed-dim": "#00d9ff", "primary-container": "#00ff88", "surface-container-lowest": "#0b0f13", background: "#101418", "surface-tint": "#00e479", "surface-dim": "#101418", "primary-fixed-dim": "#00e479"}, fontFamily: {"headline-lg": ["Sora"], "body-lg": ["Inter"], "body-md": ["Inter"], "headline-md": ["Geist"], "spec-code": ["JetBrains Mono"], "label-caps": ["JetBrains Mono"], "display-lg": ["Sora"], "label-mono": ["JetBrains Mono"], "headline-lg-mobile": ["Sora"]}, fontSize: {"display-lg": ["84px", {lineHeight: "1.1", letterSpacing: "-0.04em", fontWeight: "800"}], "label-mono": ["12px", {lineHeight: "1.2", letterSpacing: "0.1em", fontWeight: "500"}], "body-lg": ["18px", {lineHeight: "1.6", fontWeight: "400"}], "body-md": ["16px", {lineHeight: "1.6", fontWeight: "400"}], "headline-lg": ["48px", {lineHeight: "1.2", letterSpacing: "-0.02em", fontWeight: "700"}], "headline-lg-mobile": ["32px", {lineHeight: "1.2", fontWeight: "700"}]}, spacing: {"margin-mobile": "24px", gutter: "32px", unit: "4px", "margin-desktop": "80px", "section-gap": "120px"}, borderRadius: {DEFAULT: "0.125rem", lg: "0.25rem", xl: "0.5rem", full: "0.75rem"}}}};</script>
+</head>
+<body class="bg-background text-on-surface font-body-md selection:bg-primary-container selection:text-on-primary-container overflow-hidden">
+<!-- Global Scanline Layer -->
+<div class="fixed inset-0 scanline z-50 pointer-events-none opacity-20"></div>
+<!-- Background WebGL Shader (Atmospheric) -->
+<!-- Header / TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-gutter py-4 bg-surface/60 backdrop-blur-xl border-b border-white/10 shadow-[0_0_15px_rgba(0,242,255,0.1)]">
+<div class="flex items-center gap-6">
+<h1 class="font-headline-md text-headline-md font-bold tracking-tighter text-primary-container uppercase">AEGIS COMMAND</h1>
+<nav class="hidden md:flex items-center gap-8">
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors" href="#">STRATEGY</a>
+<a class="font-label-caps text-label-caps text-primary-container border-b-2 border-primary-container pb-1" href="#">DATABASE</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors" href="#">LOGISTICS</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors" href="#">INTELLIGENCE</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden lg:flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/10 rounded">
+<span class="material-symbols-outlined text-primary-container text-sm">location_searching</span>
+<span class="font-spec-code text-spec-code text-primary-fixed-dim" id="coords">LAT: 38.89 N | LON: 77.03 W</span>
+</div>
+<button class="p-2 text-on-surface-variant hover:text-primary-container transition-all">
+<span class="material-symbols-outlined">settings_input_antenna</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-primary-container transition-all">
+<span class="material-symbols-outlined">notifications_active</span>
+</button>
+</div>
+</header>
+<!-- Tactical HUD Side Panel -->
+<aside class="fixed left-0 top-0 h-full z-40 flex flex-col bg-surface-container-low/40 backdrop-blur-2xl border-r border-white/10 w-20 hover:w-80 transition-all duration-500 group overflow-hidden pt-24">
+<div class="px-6 mb-8 whitespace-nowrap overflow-hidden">
+<h2 class="font-headline-md text-headline-md text-primary-fixed block opacity-0 group-hover:opacity-100 transition-opacity">TACTICAL HUD</h2>
+<p class="font-label-caps text-label-caps text-primary-fixed-dim opacity-0 group-hover:opacity-100 transition-opacity">SYS_READY_V2.4</p>
+</div>
+<nav class="flex-1">
+<ul class="space-y-2">
+<li class="flex items-center gap-4 bg-primary-container/20 text-primary-container border-l-4 border-primary-container p-4 cursor-pointer">
+<span class="material-symbols-outlined shrink-0" data-weight="fill">radar</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">RADAR SCAN</span>
+</li>
+<li class="flex items-center gap-4 text-on-surface-variant hover:bg-primary/10 hover:text-primary p-4 cursor-pointer transition-all">
+<span class="material-symbols-outlined shrink-0">satellite_alt</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">SATELLITE LINK</span>
+</li>
+<li class="flex items-center gap-4 text-on-surface-variant hover:bg-primary/10 hover:text-primary p-4 cursor-pointer transition-all">
+<span class="material-symbols-outlined shrink-0">directions_boat</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">FLEET OPS</span>
+</li>
+<li class="flex items-center gap-4 text-on-surface-variant hover:bg-primary/10 hover:text-primary p-4 cursor-pointer transition-all">
+<span class="material-symbols-outlined shrink-0">target</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">TARGETING</span>
+</li>
+<li class="flex items-center gap-4 text-on-surface-variant hover:bg-primary/10 hover:text-primary p-4 cursor-pointer transition-all">
+<span class="material-symbols-outlined shrink-0">database</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">ARCHIVE</span>
+</li>
+</ul>
+</nav>
+<div class="p-4 border-t border-white/5 space-y-4">
+<button class="w-full bg-primary-container text-on-primary-container font-label-caps text-label-caps py-3 border border-transparent hover:bg-transparent hover:border-primary-container hover:text-primary-container transition-all whitespace-nowrap overflow-hidden">
+<span class="group-hover:inline hidden">INITIATE SCAN</span>
+<span class="material-symbols-outlined group-hover:hidden">search</span>
+</button>
+<div class="flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<div class="flex justify-between font-label-caps text-[10px] text-primary-fixed-dim">
+<span>SIGNAL STRENGTH</span>
+<span>98%</span>
+</div>
+<div class="w-full h-1 bg-white/10 overflow-hidden">
+<div class="h-full bg-primary-container w-[98%] shadow-[0_0_10px_#00f2ff]"></div>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Canvas Area -->
+<main class="ml-20 pt-20 h-screen relative flex">
+<!-- Interactive Map Container -->
+<div class="flex-1 relative overflow-hidden flex items-center justify-center map-container">
+<!-- Actual Map Placeholder (Visual Element) -->
+<div class="absolute inset-0 opacity-40 bg-[url('https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&amp;fit=crop&amp;q=80&amp;w=2000')] bg-cover bg-center grayscale contrast-200" data-alt="A dark, stylized tactical world map illustration in deep blues and blacks, with glowing grid lines and high-contrast landmasses. The aesthetic is clean and military-grade, resembling a command center HUD. Neon cyan highlights trace the coastlines, giving it a futuristic, digital appearance."></div>
+<!-- Map Grid -->
+<div class="absolute inset-0 border border-white/5" style="background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 80px 80px;"></div>
+<!-- Intel Hubs (Absolute positioned points) -->
+<!-- USA -->
+<div class="absolute top-[35%] left-[20%] group">
+<div class="w-4 h-4 bg-primary-container rounded-full radar-pulse cursor-pointer"></div>
+<div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-64 holographic-card p-4 rounded opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all transform translate-y-2 group-hover:translate-y-0 targeting-bracket">
+<div class="flex justify-between items-center mb-2">
+<span class="font-label-caps text-primary-container">HUB_USA_01</span>
+<span class="font-spec-code text-[10px] text-green-400">ONLINE</span>
+</div>
+<ul class="space-y-2 font-spec-code text-[12px] text-on-surface-variant">
+<li class="flex justify-between"><span>&gt; F-35 ADVANCED</span> <span class="text-primary-container">QTY: 142</span></li>
+<li class="flex justify-between"><span>&gt; AEGIS DESTROYER</span> <span class="text-primary-container">QTY: 018</span></li>
+<li class="flex justify-between"><span>&gt; CYBER_SHIELD_V4</span> <span class="text-primary-container">ACTIVE</span></li>
+</ul>
+</div>
+</div>
+<!-- China -->
+<div class="absolute top-[40%] left-[75%] group">
+<div class="w-4 h-4 bg-primary-container rounded-full radar-pulse cursor-pointer"></div>
+<div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-64 holographic-card p-4 rounded opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all transform translate-y-2 group-hover:translate-y-0 targeting-bracket">
+<div class="flex justify-between items-center mb-2">
+<span class="font-label-caps text-primary-container">HUB_CHN_09</span>
+<span class="font-spec-code text-[10px] text-green-400">ONLINE</span>
+</div>
+<ul class="space-y-2 font-spec-code text-[12px] text-on-surface-variant">
+<li class="flex justify-between"><span>&gt; TYPE 055 DDG</span> <span class="text-primary-container">QTY: 008</span></li>
+<li class="flex justify-between"><span>&gt; J-20 STEALTH</span> <span class="text-primary-container">QTY: 092</span></li>
+<li class="flex justify-between"><span>&gt; HYPERSONIC_01</span> <span class="text-primary-container">TESTING</span></li>
+</ul>
+</div>
+</div>
+<!-- Russia -->
+<div class="absolute top-[25%] left-[60%] group">
+<div class="w-4 h-4 bg-primary-container rounded-full radar-pulse cursor-pointer"></div>
+<div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-64 holographic-card p-4 rounded opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all transform translate-y-2 group-hover:translate-y-0 targeting-bracket">
+<div class="flex justify-between items-center mb-2">
+<span class="font-label-caps text-primary-container">HUB_RUS_04</span>
+<span class="font-spec-code text-[10px] text-green-400">ONLINE</span>
+</div>
+<ul class="space-y-2 font-spec-code text-[12px] text-on-surface-variant">
+<li class="flex justify-between"><span>&gt; SU-57 FELON</span> <span class="text-primary-container">QTY: 012</span></li>
+<li class="flex justify-between"><span>&gt; S-400 SYSTEM</span> <span class="text-primary-container">QTY: 045</span></li>
+<li class="flex justify-between"><span>&gt; BOREI CLASS</span> <span class="text-primary-container">QTY: 004</span></li>
+</ul>
+</div>
+</div>
+<!-- UK -->
+<div class="absolute top-[30%] left-[45%] group">
+<div class="w-4 h-4 bg-primary-container rounded-full radar-pulse cursor-pointer"></div>
+<div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-64 holographic-card p-4 rounded opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all transform translate-y-2 group-hover:translate-y-0 targeting-bracket">
+<div class="flex justify-between items-center mb-2">
+<span class="font-label-caps text-primary-container">HUB_GBR_02</span>
+<span class="font-spec-code text-[10px] text-green-400">ONLINE</span>
+</div>
+<ul class="space-y-2 font-spec-code text-[12px] text-on-surface-variant">
+<li class="flex justify-between"><span>&gt; HMS QUEEN ELIZ</span> <span class="text-primary-container">QTY: 002</span></li>
+<li class="flex justify-between"><span>&gt; EUROFIGHTER</span> <span class="text-primary-container">QTY: 088</span></li>
+<li class="flex justify-between"><span>&gt; ASTUTE CLASS</span> <span class="text-primary-container">QTY: 007</span></li>
+</ul>
+</div>
+</div>
+<!-- Scanning Crosshair -->
+<div class="absolute w-full h-[1px] bg-primary-container/20 top-1/2 pointer-events-none" id="crosshair-h"></div>
+<div class="absolute h-full w-[1px] bg-primary-container/20 left-1/2 pointer-events-none" id="crosshair-v"></div>
+</div>
+<!-- Right Side Panel: Global Statistics -->
+<div class="w-96 h-full bg-surface-container-highest/20 backdrop-blur-xl border-l border-white/10 p-6 flex flex-col gap-8">
+<section>
+<div class="flex items-center justify-between mb-4">
+<h3 class="font-label-caps text-label-caps text-primary-container">GLOBAL R&amp;D INVESTMENT</h3>
+<span class="material-symbols-outlined text-primary-container text-sm">trending_up</span>
+</div>
+<div class="space-y-6">
+<!-- Stat 1 -->
+<div class="space-y-2">
+<div class="flex justify-between font-spec-code text-[12px]">
+<span class="text-on-surface-variant uppercase">United States</span>
+<span class="text-primary-fixed-dim">$824B</span>
+</div>
+<div class="w-full h-3 bg-white/5 border border-white/10 relative">
+<div class="absolute top-0 left-0 h-full bg-gradient-to-r from-primary-container/40 to-primary-container w-[92%] transition-all duration-1000 ease-out" style="box-shadow: 0 0 10px rgba(0, 242, 255, 0.3);"></div>
+</div>
+</div>
+<!-- Stat 2 -->
+<div class="space-y-2">
+<div class="flex justify-between font-spec-code text-[12px]">
+<span class="text-on-surface-variant uppercase">China</span>
+<span class="text-primary-fixed-dim">$292B</span>
+</div>
+<div class="w-full h-3 bg-white/5 border border-white/10 relative">
+<div class="absolute top-0 left-0 h-full bg-gradient-to-r from-primary-container/40 to-primary-container w-[65%] transition-all duration-1000 ease-out delay-100" style="box-shadow: 0 0 10px rgba(0, 242, 255, 0.3);"></div>
+</div>
+</div>
+<!-- Stat 3 -->
+<div class="space-y-2">
+<div class="flex justify-between font-spec-code text-[12px]">
+<span class="text-on-surface-variant uppercase">Russia</span>
+<span class="text-primary-fixed-dim">$86B</span>
+</div>
+<div class="w-full h-3 bg-white/5 border border-white/10 relative">
+<div class="absolute top-0 left-0 h-full bg-gradient-to-r from-primary-container/40 to-primary-container w-[45%] transition-all duration-1000 ease-out delay-200" style="box-shadow: 0 0 10px rgba(0, 242, 255, 0.3);"></div>
+</div>
+</div>
+<!-- Stat 4 -->
+<div class="space-y-2">
+<div class="flex justify-between font-spec-code text-[12px]">
+<span class="text-on-surface-variant uppercase">United Kingdom</span>
+<span class="text-primary-fixed-dim">$68B</span>
+</div>
+<div class="w-full h-3 bg-white/5 border border-white/10 relative">
+<div class="absolute top-0 left-0 h-full bg-gradient-to-r from-primary-container/40 to-primary-container w-[38%] transition-all duration-1000 ease-out delay-300" style="box-shadow: 0 0 10px rgba(0, 242, 255, 0.3);"></div>
+</div>
+</div>
+</div>
+</section>
+<section class="holographic-card p-4 rounded relative overflow-hidden flex-1 flex flex-col justify-between targeting-bracket">
+<div>
+<h3 class="font-label-caps text-label-caps text-primary-container mb-4">NETWORK STATUS</h3>
+<div class="flex items-center gap-4 mb-4">
+<div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+<span class="font-spec-code text-spec-code text-on-surface">ALL SYSTEMS NOMINAL</span>
+</div>
+<div class="space-y-4">
+<div class="flex items-center justify-between text-[11px] font-spec-code">
+<span class="text-on-surface-variant uppercase">Uplink Encryption</span>
+<span class="text-green-400">AES-256</span>
+</div>
+<div class="flex items-center justify-between text-[11px] font-spec-code">
+<span class="text-on-surface-variant uppercase">Latency</span>
+<span class="text-primary-container">12ms</span>
+</div>
+<div class="flex items-center justify-between text-[11px] font-spec-code">
+<span class="text-on-surface-variant uppercase">Data Throughput</span>
+<span class="text-primary-container">4.2 TB/s</span>
+</div>
+</div>
+</div>
+<div class="mt-4 pt-4 border-t border-white/10">
+<p class="font-spec-code text-[10px] text-on-surface-variant leading-relaxed">
+                        ALERT: NO SIGNIFICANT THREATS DETECTED IN LAST 24H SCAN CYCLE. GLOBAL READINESS LEVEL AT DEFCON 5.
+                    </p>
+</div>
+</section>
+</div>
+</main>
+<!-- Footer -->
+<footer class="fixed bottom-0 w-full z-30 py-4 px-margin-desktop bg-gradient-to-t from-black to-transparent flex justify-between items-center">
+<p class="font-body-md text-body-md text-secondary/60">
+            © 2024 DEFENSE INTELLIGENCE NETWORK. ALL RIGHTS RESERVED. CLASSIFIED MATERIAL.
+        </p>
+<div class="flex gap-6">
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">SITEMAP</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">API_DOCS</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">SECURITY_PROTOCOL</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">CONTACT_COMMAND</a>
+</div>
+</footer>
+<script>
+        // Interactive Mouse Follower / Crosshair Logic
+        const crosshairH = document.getElementById('crosshair-h');
+        const crosshairV = document.getElementById('crosshair-v');
+        const coordsDisplay = document.getElementById('coords');
+
+        document.addEventListener('mousemove', (e) => {
+            const x = e.clientX;
+            const y = e.clientY;
+
+            // Update crosshair positions (only if over the main map area roughly)
+            if (x > 80 && x < window.innerWidth - 384 && y > 64) {
+                crosshairH.style.top = `${y}px`;
+                crosshairV.style.left = `${x}px`;
+
+                // Calculate fake tactical coordinates
+                const lat = (90 - (y / window.innerHeight) * 180).toFixed(2);
+                const lon = ((x / window.innerWidth) * 360 - 180).toFixed(2);
+                coordsDisplay.innerText = `LAT: ${Math.abs(lat)} ${lat >= 0 ? 'N' : 'S'} | LON: ${Math.abs(lon)} ${lon >= 0 ? 'E' : 'W'}`;
+            }
+        });
+
+        // Atmospheric Pulsing for Hubs
+        setInterval(() => {
+            const statusIndicator = document.querySelector('.animate-pulse');
+            if(statusIndicator) {
+                statusIndicator.classList.toggle('opacity-50');
+            }
+        }, 1000);
+    </script>
+</body></html>

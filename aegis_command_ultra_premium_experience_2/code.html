@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AEGIS COMMAND | Ultra Premium Command Center</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&amp;family=JetBrains+Mono:wght@500;700&amp;family=Geist:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100vh); }
+        }
+        @keyframes ticker-fade {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; text-shadow: 0 0 10px rgba(0, 242, 255, 0.5); }
+        }
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        @keyframes pulse-hologram {
+            0%, 100% { transform: scale(1); opacity: 0.6; box-shadow: 0 0 0px rgba(0, 242, 255, 0); }
+            50% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 20px rgba(0, 242, 255, 0.4); }
+        }
+        .scanline-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(to right, transparent, rgba(0, 242, 255, 0.3), transparent);
+            animation: scanline 6s linear infinite;
+            z-index: 60;
+            pointer-events: none;
+        }
+        .liquid-glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        .liquid-glass:hover {
+            border-color: rgba(0, 242, 255, 0.4);
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.15);
+        }
+        .motion-entrance {
+            opacity: 0;
+            transform: translateY(20px) scale(0.98);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .motion-entrance.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+        .parallax-hero {
+            transition: transform 0.1s ease-out;
+        }
+        .magnetic-btn {
+            transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.3s ease;
+        }
+        .magnetic-btn:hover {
+            box-shadow: 0 0 25px rgba(0, 242, 255, 0.5);
+        }
+        .ticker-wrap {
+            mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+        }
+        #threejs-container-hangar {
+            pointer-events: none;
+            z-index: 0;
+        }
+        .assistant-pulse {
+            animation: pulse-hologram 3s ease-in-out infinite;
+        }
+        .holographic-border::before {
+            content: '';
+            position: absolute;
+            top: -1px; left: -1px; width: 15px; height: 15px;
+            border-top: 2px solid #00f2ff; border-left: 2px solid #00f2ff;
+        }
+        .holographic-border::after {
+            content: '';
+            position: absolute;
+            bottom: -1px; right: -1px; width: 15px; height: 15px;
+            border-bottom: 2px solid #00f2ff; border-right: 2px solid #00f2ff;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-container": "#5e6063",
+                        "inverse-primary": "#00696f",
+                        "on-tertiary": "#2f3034",
+                        "on-secondary-fixed-variant": "#434b18",
+                        "error": "#ffb4ab",
+                        "on-surface-variant": "#b9cacb",
+                        "on-secondary-fixed": "#191e00",
+                        "secondary-container": "#434b18",
+                        "inverse-surface": "#e0e3e5",
+                        "tertiary-container": "#dbdbdf",
+                        "error-container": "#93000a",
+                        "primary-fixed": "#74f5ff",
+                        "surface-container-low": "#191c1e",
+                        "on-primary-container": "#006a71",
+                        "on-tertiary-fixed": "#1a1c1f",
+                        "on-error": "#690005",
+                        "outline-variant": "#3a494b",
+                        "on-primary-fixed-variant": "#004f54",
+                        "on-secondary-container": "#b1bb7c",
+                        "on-surface": "#e0e3e5",
+                        "outline": "#849495",
+                        "on-tertiary-fixed-variant": "#45474a",
+                        "tertiary-fixed-dim": "#c6c6ca",
+                        "primary": "#e1fdff",
+                        "surface-variant": "#323537",
+                        "secondary-fixed": "#dfe8a6",
+                        "surface-container": "#1d2022",
+                        "on-primary-fixed": "#002022",
+                        "on-background": "#e0e3e5",
+                        "inverse-on-surface": "#2d3133",
+                        "surface-container-highest": "#323537",
+                        "tertiary": "#f7f7fb",
+                        "on-primary": "#00363a",
+                        "surface": "#101415",
+                        "surface-bright": "#363a3b",
+                        "tertiary-fixed": "#e2e2e6",
+                        "on-error-container": "#ffdad6",
+                        "secondary": "#c3cc8c",
+                        "surface-container-high": "#272a2c",
+                        "on-secondary": "#2d3404",
+                        "secondary-fixed-dim": "#c3cc8c",
+                        "primary-container": "#00f2ff",
+                        "surface-container-lowest": "#0b0f10",
+                        "background": "#101415",
+                        "surface-tint": "#00dbe7",
+                        "surface-dim": "#101415",
+                        "primary-fixed-dim": "#00dbe7"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Geist"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-md": ["Geist"],
+                        "spec-code": ["JetBrains Mono"],
+                        "headline-lg-mobile": ["Geist"],
+                        "display-lg": ["Geist"],
+                        "label-caps": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-md": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                        "spec-code": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "headline-lg-mobile": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                        "display-lg": ["72px", {"lineHeight": "80px", "letterSpacing": "-0.04em", "fontWeight": "800"}],
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700"}]
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "margin-mobile": "20px",
+                        "unit": "4px",
+                        "margin-desktop": "64px",
+                        "container-max": "1440px"
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface text-on-surface font-body-md selection:bg-primary-container selection:text-on-primary-container overflow-x-hidden">
+<!-- Atmospheric Background Layer -->
+<div class="fixed inset-0 z-0 pointer-events-none opacity-40">
+<!-- STITCH_SHADER_START:ANIMATION_9 class="w-full h-full" -->
+<div class="w-full h-full" style="display:block;">
+<canvas id="shader-canvas-ANIMATION_9" style="display:block;width:100%;height:100%"></canvas>
+<script>
+(function() {
+  const canvas = document.getElementById('shader-canvas-ANIMATION_9');
+
+  // Sync the WebGL drawing-buffer size with the CSS-driven layout size.
+  // This fires on initial layout and whenever the element is resized.
+  function syncSize() {
+    const w = canvas.clientWidth  || 1280;
+    const h = canvas.clientHeight || 720;
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width  = w;
+      canvas.height = h;
+    }
+  }
+  if (typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(syncSize).observe(canvas);
+  }
+  syncSize();
+
+  const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+  if (!gl) return;
+  const vs = `attribute vec2 a_position;
+varying vec2 v_texCoord;
+void main() {
+  v_texCoord = a_position * 0.5 + 0.5;
+  gl_Position = vec4(a_position, 0.0, 1.0);
+}`;
+  const fs = `precision highp float;
+uniform float u_time;
+uniform vec2 u_resolution;
+varying vec2 v_texCoord;
+
+float hash(vec2 p) {
+    return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+}
+
+float noise(vec2 p) {
+    vec2 i = floor(p);
+    vec2 f = fract(p);
+    vec2 u = f * f * (3.0 - 2.0 * f);
+    return mix(mix(hash(i + vec2(0.0, 0.0)), hash(i + vec2(1.0, 0.0)), u.x),
+               mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x), u.y);
+}
+
+void main() {
+    vec2 uv = v_texCoord;
+    vec2 p = (uv - 0.5) * 2.0;
+    p.x *= u_resolution.x / u_resolution.y;
+
+    // Volumetric Nebula / Smoke
+    float n = 0.0;
+    float amp = 0.5;
+    vec2 shift = vec2(u_time * 0.05);
+    for(int i = 0; i < 4; i++) {
+        n += amp * noise(uv * 4.0 + shift);
+        amp *= 0.5;
+        uv *= 2.0;
+    }
+
+    // Energy Wave
+    float wave = sin(p.x * 2.0 + u_time) * 0.1;
+    float waveDist = abs(p.y - wave);
+    float energy = smoothstep(0.1, 0.0, waveDist) * 0.5;
+
+    // Scanlines
+    float scanline = sin(v_texCoord.y * 800.0) * 0.04;
+
+    vec3 color1 = vec3(0.0, 0.05, 0.1); // Deep Space
+    vec3 color2 = vec3(0.0, 0.95, 1.0); // Cyan Pulse
+    
+    vec3 finalColor = mix(color1, color2 * 0.2, n);
+    finalColor += color2 * energy;
+    finalColor -= scanline;
+
+    // Vignette
+    float vig = smoothstep(1.5, 0.5, length(p));
+    finalColor *= vig;
+
+    gl_FragColor = vec4(finalColor, 1.0);
+}`;
+  function cs(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    return s;
+  }
+  const prog = gl.createProgram();
+  gl.attachShader(prog, cs(gl.VERTEX_SHADER, vs));
+  gl.attachShader(prog, cs(gl.FRAGMENT_SHADER, fs));
+  gl.linkProgram(prog);
+  gl.useProgram(prog);
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+  const pos = gl.getAttribLocation(prog, 'a_position');
+  gl.enableVertexAttribArray(pos);
+  gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
+  const uTime = gl.getUniformLocation(prog, 'u_time');
+  const uRes = gl.getUniformLocation(prog, 'u_resolution');
+  const uMouse = gl.getUniformLocation(prog, 'u_mouse');
+
+  // u_mouse is in pixel coordinates matching u_resolution (ShaderToy convention).
+  // Shaders that need normalized coords should use: u_mouse / u_resolution.
+  let mouse = { x: canvas.width / 2, y: canvas.height / 2 };
+  window.addEventListener('mousemove', (event) => {
+    const rect = canvas.getBoundingClientRect();
+    if (rect.width && rect.height) {
+      const nx = (event.clientX - rect.left) / rect.width;
+      const ny = 1.0 - (event.clientY - rect.top) / rect.height;
+      mouse.x = nx * canvas.width;
+      mouse.y = ny * canvas.height;
+    }
+  });
+
+  function render(t) {
+    if (typeof ResizeObserver === 'undefined') syncSize();
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    if (uTime) gl.uniform1f(uTime, t * 0.001);
+    if (uRes) gl.uniform2f(uRes, canvas.width, canvas.height);
+    if (uMouse) gl.uniform2f(uMouse, mouse.x, mouse.y);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    requestAnimationFrame(render);
+  }
+  render(0);
+})();
+</script>
+</div>
+<!-- STITCH_SHADER_END:ANIMATION_9 -->
+</div>
+<!-- Scanline Global Overlay -->
+<div class="scanline-overlay"></div>
+<!-- Navigation Shell -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-gutter py-4 bg-surface/40 backdrop-blur-2xl border-b border-white/5 transition-all duration-500">
+<div class="flex items-center gap-8">
+<h1 class="font-headline-md text-headline-md font-bold tracking-tighter text-primary-container">AEGIS COMMAND</h1>
+<nav class="hidden md:flex gap-8">
+<a class="font-label-caps text-label-caps text-primary-container border-b-2 border-primary-container pb-1 transition-all duration-300" href="#">STRATEGY</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors px-2" href="#">DATABASE</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors px-2" href="#">LOGISTICS</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors px-2" href="#">INTELLIGENCE</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-on-surface-variant hover:text-primary-container transition-all magnetic-btn">
+<span class="material-symbols-outlined" data-icon="settings_input_antenna">settings_input_antenna</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-primary-container transition-all relative magnetic-btn">
+<span class="material-symbols-outlined" data-icon="notifications_active">notifications_active</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-primary-container rounded-full animate-pulse"></span>
+</button>
+</div>
+</header>
+<!-- Side Tactical HUD Navigation -->
+<aside class="fixed left-0 top-0 h-full z-40 flex flex-col bg-surface-container-low/20 backdrop-blur-3xl border-r border-white/5 w-20 hover:w-64 transition-all duration-700 group overflow-hidden">
+<div class="flex flex-col pt-24 px-4 gap-8">
+<div class="flex items-center gap-4 py-4 border-b border-white/5">
+<div class="min-w-[48px] flex justify-center">
+<span class="material-symbols-outlined text-primary-fixed" data-icon="radar">radar</span>
+</div>
+<div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+<p class="font-headline-md text-headline-md text-primary-fixed leading-none">TACTICAL HUD</p>
+<p class="font-label-caps text-label-caps text-primary-fixed-dim">SYS_READY_V2.4</p>
+</div>
+</div>
+<nav class="flex flex-col gap-2">
+<div class="flex items-center gap-4 bg-primary-container/10 text-primary-container border-l-4 border-primary-container p-4">
+<span class="material-symbols-outlined min-w-[24px]" data-icon="radar">radar</span>
+<span class="opacity-0 group-hover:opacity-100 font-label-caps text-label-caps tracking-widest">RADAR</span>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant p-4 hover:bg-white/5 hover:text-primary transition-colors">
+<span class="material-symbols-outlined min-w-[24px]" data-icon="satellite_alt">satellite_alt</span>
+<span class="opacity-0 group-hover:opacity-100 font-label-caps text-label-caps tracking-widest">SATELLITE</span>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant p-4 hover:bg-white/5 hover:text-primary transition-colors">
+<span class="material-symbols-outlined min-w-[24px]" data-icon="directions_boat">directions_boat</span>
+<span class="opacity-0 group-hover:opacity-100 font-label-caps text-label-caps tracking-widest">FLEET</span>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant p-4 hover:bg-white/5 hover:text-primary transition-colors">
+<span class="material-symbols-outlined min-w-[24px]" data-icon="target">target</span>
+<span class="opacity-0 group-hover:opacity-100 font-label-caps text-label-caps tracking-widest">TARGETING</span>
+</div>
+</nav>
+</div>
+</aside>
+<main class="ml-20 min-h-screen relative z-10">
+<!-- Fullscreen Hero -->
+<section class="relative h-screen flex items-center justify-center overflow-hidden parallax-hero" id="hero-section">
+<!-- 3D Hangar Centerpiece -->
+<div class="absolute inset-0 w-full h-full opacity-60" id="threejs-container-hangar">
+<!-- Three.js will be injected here -->
+</div>
+<div class="relative z-10 w-full max-w-7xl px-margin-desktop flex flex-col md:flex-row items-center gap-12">
+<!-- Left Content -->
+<div class="flex-1 text-center md:text-left space-y-10 motion-entrance" id="hero-text">
+<div class="space-y-6">
+<span class="inline-block px-4 py-1.5 bg-primary-container/5 border border-primary-container/20 text-primary-container font-label-caps text-[10px] tracking-[0.2em] rounded-full backdrop-blur-sm">ENCRYPTED CONNECTION ESTABLISHED</span>
+<h2 class="font-display-lg text-display-lg text-primary tracking-tighter leading-[1.1]">
+                        AEGIS <span class="text-primary-container">COMMAND</span>
+</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl leading-relaxed">
+                        The Global Intelligence &amp; Defense Systems Encyclopedia. Real-time tactical monitoring across all operational theaters.
+                    </p>
+</div>
+<div class="flex flex-col sm:flex-row gap-6 justify-center md:justify-start">
+<button class="group flex items-center justify-center gap-4 px-10 py-5 bg-primary-container text-on-primary-container font-label-caps text-label-caps tracking-[0.15em] rounded-sm border border-cyan-300/30 shadow-[0_0_30px_rgba(0,242,255,0.2)] hover:scale-105 transition-all magnetic-btn">
+                        INITIATE SYSTEM ACCESS
+                        <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform" data-icon="login">login</span>
+</button>
+<button class="flex items-center justify-center gap-4 px-10 py-5 bg-white/5 backdrop-blur-xl text-primary-container border border-white/10 font-label-caps text-label-caps tracking-[0.15em] rounded-sm hover:bg-primary-container/10 transition-all magnetic-btn">
+                        EXPLORE DATABASE
+                        <span class="material-symbols-outlined text-[18px]" data-icon="account_tree">account_tree</span>
+</button>
+</div>
+</div>
+<!-- Floating Decorative HUD -->
+<div class="flex-1 relative hidden lg:flex items-center justify-center motion-entrance" style="transition-delay: 200ms;">
+<div class="holographic-border w-96 h-96 liquid-glass flex flex-col items-center justify-center p-8 animate-[floating_6s_ease-in-out_infinite]">
+<div class="font-spec-code text-[12px] text-primary-container/80 mb-4 self-start">[ STATUS: ONLINE ]</div>
+<div class="w-full h-px bg-gradient-to-r from-transparent via-primary-container/30 to-transparent my-4"></div>
+<div class="flex flex-col gap-4 w-full">
+<div class="flex justify-between font-spec-code text-[10px] text-on-surface-variant">
+<span>SATELLITE_LINK</span>
+<span class="text-primary-container">ACTIVE</span>
+</div>
+<div class="flex justify-between font-spec-code text-[10px] text-on-surface-variant">
+<span>ENCRYPTION</span>
+<span class="text-primary-container">AES-256-V2</span>
+</div>
+<div class="flex justify-between font-spec-code text-[10px] text-on-surface-variant">
+<span>SIGNAL_STRENGTH</span>
+<span class="text-primary-container">99.8%</span>
+</div>
+</div>
+<div class="mt-auto font-label-caps text-[10px] text-primary-container/40 tracking-[0.5em]">SYSTEMS_DIAGNOSTIC</div>
+</div>
+</div>
+</div>
+<!-- Cinematic Intelligence Ticker -->
+<div class="absolute bottom-0 w-full h-16 bg-surface-container-lowest/40 backdrop-blur-3xl border-t border-white/5 flex items-center overflow-hidden z-20 ticker-wrap">
+<div class="flex items-center gap-4 px-8 bg-error/10 border-r border-error/20 h-full">
+<span class="material-symbols-outlined text-error animate-pulse" data-icon="warning">warning</span>
+<span class="font-label-caps text-label-caps text-error whitespace-nowrap tracking-widest">LIVE INTEL FEED</span>
+</div>
+<div class="flex whitespace-nowrap animate-[ticker_40s_linear_infinite] px-8 gap-20 font-spec-code text-spec-code text-on-surface-variant uppercase tracking-widest animate-[ticker-fade_4s_ease-in-out_infinite]">
+<span>[FLASH] UNIDENTIFIED DRONE SWARM DETECTED IN SECTOR 7G</span>
+<span>[UPDATE] AEGIS CORE SHIELDING UPGRADED TO V2.4.9</span>
+<span>[INTEL] NEW STEALTH SIGNATURE CATALOGED: 'RAVEN-X'</span>
+<span>[LOGS] CARRIER STRIKE GROUP 5 REACHES POSITION OMEGA</span>
+<span>[FLASH] CYBER DEFENSE PROTOCOL ALPHA-6 ENGAGED</span>
+<span>[UPDATE] ORBITAL KINETIC PLATFORM 4 READY FOR DEPLOYMENT</span>
+</div>
+</div>
+</section>
+<!-- Stats Dashboard Section -->
+<section class="py-32 bg-surface-container-lowest relative overflow-hidden">
+<div class="max-w-7xl mx-auto px-margin-desktop relative z-10">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+<div class="flex flex-col items-center text-center space-y-4 p-10 liquid-glass group motion-entrance hover:-translate-y-2 transition-all">
+<span class="material-symbols-outlined text-primary-container text-5xl mb-2 group-hover:scale-110 transition-transform" data-icon="deployed_code">deployed_code</span>
+<h3 class="font-display-lg text-headline-lg text-primary-container tabular-nums">45,000+</h3>
+<p class="font-label-caps text-label-caps tracking-[0.2em] text-on-surface-variant">ASSETS CATALOGED</p>
+</div>
+<div class="flex flex-col items-center text-center space-y-4 p-10 liquid-glass group motion-entrance hover:-translate-y-2 transition-all" style="transition-delay: 100ms;">
+<span class="material-symbols-outlined text-primary-container text-5xl mb-2 group-hover:scale-110 transition-transform" data-icon="hub">hub</span>
+<h3 class="font-display-lg text-headline-lg text-primary-container tabular-nums">128</h3>
+<p class="font-label-caps text-label-caps tracking-[0.2em] text-on-surface-variant">GLOBAL HUBS</p>
+</div>
+<div class="flex flex-col items-center text-center space-y-4 p-10 liquid-glass group motion-entrance hover:-translate-y-2 transition-all" style="transition-delay: 200ms;">
+<span class="material-symbols-outlined text-primary-container text-5xl mb-2 group-hover:scale-110 transition-transform" data-icon="security">security</span>
+<h3 class="font-display-lg text-headline-lg text-primary-container tabular-nums">ALPHA</h3>
+<p class="font-label-caps text-label-caps tracking-[0.2em] text-on-surface-variant">SECURITY LEVEL</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Featured Technologies Section -->
+<section class="py-32 px-margin-desktop max-w-7xl mx-auto space-y-16">
+<div class="flex justify-between items-end border-b border-white/5 pb-8 motion-entrance">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-primary">FEATURED <span class="text-primary-container">SYSTEMS</span></h2>
+<p class="text-on-surface-variant mt-3 text-lg">Active intelligence profiles on cutting-edge military hardware.</p>
+</div>
+<button class="flex items-center gap-3 font-label-caps text-label-caps text-primary-container hover:text-primary transition-colors group">
+                VIEW FULL ARCHIVE
+                <span class="material-symbols-outlined text-sm transition-transform group-hover:translate-x-2" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+<!-- Card 1 -->
+<div class="group relative liquid-glass transition-all duration-700 overflow-hidden motion-entrance hover:-translate-y-2">
+<div class="aspect-[16/10] overflow-hidden relative">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 opacity-70 grayscale group-hover:grayscale-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjtrzoPGId9DdAsdevqoy_9U-B7mOIliR_ZFav3lhV-YX2F6fd5yiAvhyAGpTgpU1UUwzo6G9emsjblMmUrNcBqrXpeMEq1UvZh0AxssFRkLi5o4Sw5Fh44NX9aYZ91lT8v0UEZ-YZyedC-kPLmSRXwWKqlpWLxSsmkAvhZowv-HxVPrKIBSAYqfU2fvPRsruxH_9k2kNlwou4f65O0dxixacpJ4kGz3cWBsCWF9GflpjlPIYeQPZdYOwuo0rzDH2MeEGWR_jq7cIT"/>
+<div class="absolute inset-0 bg-gradient-to-t from-[#101415] via-[#101415]/20 to-transparent"></div>
+<div class="absolute top-4 right-4">
+<span class="px-3 py-1 bg-black/60 backdrop-blur border border-white/10 font-spec-code text-[10px] text-primary-container tracking-widest uppercase">CLASSIFIED</span>
+</div>
+</div>
+<div class="p-8 space-y-6">
+<h3 class="font-headline-md text-headline-md text-primary group-hover:text-primary-container transition-colors">Next-Gen Stealth Fighters</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed line-clamp-3">Hyper-maneuverable air superiority platforms featuring 6th-gen adaptive camouflage and neural link piloting systems.</p>
+<div class="grid grid-cols-3 gap-4 border-t border-white/5 pt-6">
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant opacity-60">SPEED</p>
+<p class="font-spec-code text-primary-container">MACH 3.2</p>
+</div>
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant opacity-60">RANGE</p>
+<p class="font-spec-code text-primary-container">4,500KM</p>
+</div>
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant opacity-60">LEVEL</p>
+<p class="font-spec-code text-primary-container">OMEGA</p>
+</div>
+</div>
+</div>
+<div class="absolute bottom-0 left-0 w-0 h-1 bg-primary-container group-hover:w-full transition-all duration-700"></div>
+</div>
+<!-- Card 2 -->
+<div class="group relative liquid-glass transition-all duration-700 overflow-hidden motion-entrance hover:-translate-y-2" style="transition-delay: 100ms;">
+<div class="aspect-[16/10] overflow-hidden relative">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 opacity-70 grayscale group-hover:grayscale-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCiLVivYcbHMf4vu0XtKIxcExMmA8vGqwli3S77m1Z3chJUngDiPSrbT9IZnSJZAkOHXYHxUyW75VV66QkaDPVUN26h36CbJIQ4wmB43dxImMvg79KXxWApKTMxIuwc6IK8lcOMBFy7jmN38lXTZssYI-F-nNf1pdPUfeIDjigB7k2SUvT2TvOw6VQk_jeNEZ_mGRARx4k85tm43OKB22aePoQEncZ1QNJ-eVYsnKbjMONqtkrahFZlwCxNEL2SMM33SAKTZuUiI4zj"/>
+<div class="absolute inset-0 bg-gradient-to-t from-[#101415] via-[#101415]/20 to-transparent"></div>
+<div class="absolute top-4 right-4">
+<span class="px-3 py-1 bg-black/60 backdrop-blur border border-white/10 font-spec-code text-[10px] text-primary-container tracking-widest uppercase">AUTONOMOUS</span>
+</div>
+</div>
+<div class="p-8 space-y-6">
+<h3 class="font-headline-md text-headline-md text-primary group-hover:text-primary-container transition-colors">Autonomous Drone Fleets</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed line-clamp-3">AI-driven swarm intelligence systems capable of coordinated multi-domain strikes and perimeter surveillance.</p>
+<div class="grid grid-cols-3 gap-4 border-t border-white/5 pt-6">
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant opacity-60">UNITS</p>
+<p class="font-spec-code text-primary-container">12,000+</p>
+</div>
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant opacity-60">COMMS</p>
+<p class="font-spec-code text-primary-container">QUANTUM</p>
+</div>
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant opacity-60">LEVEL</p>
+<p class="font-spec-code text-primary-container">SIGMA</p>
+</div>
+</div>
+</div>
+<div class="absolute bottom-0 left-0 w-0 h-1 bg-primary-container group-hover:w-full transition-all duration-700"></div>
+</div>
+<!-- Card 3 -->
+<div class="group relative liquid-glass transition-all duration-700 overflow-hidden motion-entrance hover:-translate-y-2" style="transition-delay: 200ms;">
+<div class="aspect-[16/10] overflow-hidden relative">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 opacity-70 grayscale group-hover:grayscale-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAO9FNMaWMGu-jOhDi-RRlbe__kfulPmNJFFXbb9hagBl68OACa5ZuJ7YnDuFjGxfMK418ijf0zqjCHh2QJSJiNzhg8-FF8R_yr03rt0lTQYPu7N2m_PXx4_riqGgTYHCQTdfgRVAOIJi8GFmTNY_jZvzZHoUV84aYpSvwswXAhlLx1Q-0O3fyoiX44pt0fEYwaGsBLq714K90L0soyWG_sDCrTl13zIEGmmJy15vSob5S6W6cSSjhnCSVbkL4yE53bbsYoTOaZBRvx"/>
+<div class="absolute inset-0 bg-gradient-to-t from-[#101415] via-[#101415]/20 to-transparent"></div>
+<div class="absolute top-4 right-4">
+<span class="px-3 py-1 bg-black/60 backdrop-blur border border-white/10 font-spec-code text-[10px] text-primary-container tracking-widest uppercase">VIRTUAL</span>
+</div>
+</div>
+<div class="p-8 space-y-6">
+<h3 class="font-headline-md text-headline-md text-primary group-hover:text-primary-container transition-colors">Cyber Warfare Arrays</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed line-clamp-3">Offensive and defensive digital assets designed for infrastructure protection and high-fidelity encryption.</p>
+<div class="grid grid-cols-3 gap-4 border-t border-white/5 pt-6">
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant opacity-60">BAND</p>
+<p class="font-spec-code text-primary-container">800TB/S</p>
+</div>
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant opacity-60">ENCR</p>
+<p class="font-spec-code text-primary-container">AES-X</p>
+</div>
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant opacity-60">LEVEL</p>
+<p class="font-spec-code text-primary-container">ALPHA</p>
+</div>
+</div>
+</div>
+<div class="absolute bottom-0 left-0 w-0 h-1 bg-primary-container group-hover:w-full transition-all duration-700"></div>
+</div>
+</div>
+</section>
+</main>
+<!-- Command Assistant Widget -->
+<div class="fixed bottom-8 right-8 z-[100] flex flex-col items-end gap-4">
+<div class="p-4 liquid-glass max-w-xs motion-entrance opacity-0 group" id="assistant-bubble">
+<p class="font-spec-code text-[12px] text-on-surface">Command Assistant ready. Systems nominal. Monitoring active sectors...</p>
+</div>
+<button class="w-16 h-16 rounded-full liquid-glass border-primary-container/40 flex items-center justify-center assistant-pulse group magnetic-btn" onclick="document.getElementById('assistant-bubble').classList.toggle('opacity-0')">
+<span class="material-symbols-outlined text-primary-container text-3xl group-hover:scale-110 transition-transform" data-icon="hub">hub</span>
+</button>
+</div>
+<footer class="w-full py-20 px-margin-desktop bg-surface-container-lowest border-t border-white/5 relative z-10">
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-16">
+<div class="space-y-6 max-w-sm">
+<h2 class="font-headline-md text-headline-md text-on-surface font-bold tracking-tighter">AEGIS COMMAND</h2>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                Providing real-time technical intelligence for the next generation of defense strategic planning.
+            </p>
+<p class="font-label-caps text-[10px] text-secondary tracking-widest pt-8 opacity-50">
+                © 2024 DEFENSE INTELLIGENCE NETWORK. ALL RIGHTS RESERVED. CLASSIFIED MATERIAL.
+            </p>
+</div>
+<div class="grid grid-cols-2 gap-24">
+<div class="space-y-6">
+<p class="font-label-caps text-label-caps text-primary-container tracking-widest">RESOURCES</p>
+<ul class="space-y-4 font-body-md">
+<li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">SITEMAP</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">API_DOCS</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">SECURITY_PROTOCOL</a></li>
+</ul>
+</div>
+<div class="space-y-6">
+<p class="font-label-caps text-label-caps text-primary-container tracking-widest">COMMAND</p>
+<ul class="space-y-4 font-body-md">
+<li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">CONTACT_COMMAND</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">INTEL_SUBMIT</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-colors underline decoration-primary-container/30 underline-offset-4" href="#">ACCESS_LOGIN</a></li>
+</ul>
+</div>
+</div>
+</div>
+</footer>
+<script>
+    // Three.js Hangar Injection
+    (function() {
+        const container = document.getElementById('threejs-container-hangar');
+        const width = container.clientWidth || window.innerWidth;
+        const height = container.clientHeight || window.innerHeight;
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setSize(width, height);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        container.appendChild(renderer.domElement);
+
+        const ambientLight = new THREE.AmbientLight(0x404040, 1.5);
+        scene.add(ambientLight);
+        const spotLight = new THREE.SpotLight(0x00f2ff, 4);
+        spotLight.position.set(15, 15, 15);
+        scene.add(spotLight);
+
+        const fighterGroup = new THREE.Group();
+        const bodyGeom = new THREE.ConeGeometry(1, 4.5, 4);
+        const bodyMat = new THREE.MeshPhongMaterial({ color: 0x111111, shininess: 120 });
+        const body = new THREE.Mesh(bodyGeom, bodyMat);
+        body.rotation.x = Math.PI / 2;
+        fighterGroup.add(body);
+
+        const wingGeom = new THREE.BoxGeometry(5, 0.1, 1.8);
+        const wing = new THREE.Mesh(wingGeom, bodyMat);
+        wing.position.z = -0.6;
+        fighterGroup.add(wing);
+
+        scene.add(fighterGroup);
+        camera.position.set(0, 3, 10);
+        camera.lookAt(0, 0, 0);
+
+        const partGeom = new THREE.BufferGeometry();
+        const partCount = 800;
+        const posArray = new Float32Array(partCount * 3);
+        for(let i = 0; i < partCount * 3; i++) {
+            posArray[i] = (Math.random() - 0.5) * 30;
+        }
+        partGeom.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        const partMat = new THREE.PointsMaterial({ size: 0.04, color: 0x00f2ff, transparent: true, opacity: 0.3 });
+        const particles = new THREE.Points(partGeom, partMat);
+        scene.add(particles);
+
+        function animate() {
+            requestAnimationFrame(animate);
+            fighterGroup.rotation.y += 0.003;
+            fighterGroup.position.y = Math.sin(Date.now() * 0.001) * 0.15;
+            particles.rotation.y += 0.0005;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            const w = container.clientWidth || window.innerWidth;
+            const h = container.clientHeight || window.innerHeight;
+            camera.aspect = w / h;
+            camera.updateProjectionMatrix();
+            renderer.setSize(w, h);
+        });
+    })();
+
+    // Scroll-triggered animations (Entrance)
+    const observerOptions = { threshold: 0.1 };
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.motion-entrance').forEach(el => observer.observe(el));
+
+    // Parallax and Magnetic interactions
+    document.addEventListener('mousemove', (e) => {
+        const { clientX, clientY } = e;
+        const xPercent = (clientX / window.innerWidth - 0.5) * 2;
+        const yPercent = (clientY / window.innerHeight - 0.5) * 2;
+
+        // Hero Parallax
+        const hero = document.getElementById('hero-section');
+        if (hero) {
+            hero.style.transform = `translate(${xPercent * 10}px, ${yPercent * 10}px)`;
+        }
+
+        // Magnetic Buttons
+        document.querySelectorAll('.magnetic-btn').forEach(btn => {
+            const rect = btn.getBoundingClientRect();
+            const btnX = rect.left + rect.width / 2;
+            const btnY = rect.top + rect.height / 2;
+            const dist = Math.sqrt(Math.pow(clientX - btnX, 2) + Math.pow(clientY - btnY, 2));
+
+            if (dist < 100) {
+                const moveX = (clientX - btnX) * 0.4;
+                const moveY = (clientY - btnY) * 0.4;
+                btn.style.transform = `translate(${moveX}px, ${moveY}px)`;
+            } else {
+                btn.style.transform = `translate(0, 0)`;
+            }
+        });
+    });
+</script>
+</body></html>

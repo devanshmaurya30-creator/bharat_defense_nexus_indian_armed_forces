@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AEGIS COMMAND | SPECTRAL HUD</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;700&amp;family=Inter:wght@400;500;700&amp;family=Jetbrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        :root {
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glow-cyan: rgba(0, 242, 255, 0.15);
+        }
+
+        body {
+            background-color: #0b0f10;
+            overflow-x: hidden;
+            color: #e0e3e5;
+        }
+
+        .spatial-glass {
+            background: rgba(25, 28, 30, 0.4);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            border: 0.5px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+        }
+
+        .scanline {
+            background: linear-gradient(
+                to bottom,
+                transparent 50%,
+                rgba(255, 255, 255, 0.02) 50%
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+        }
+
+        .ethereal-glow {
+            filter: drop-shadow(0 0 15px rgba(0, 242, 255, 0.3));
+        }
+
+        .floating {
+            animation: floating 6s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .holographic-btn {
+            background: linear-gradient(135deg, #00f2ff 0%, #006a71 100%);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .holographic-btn:hover {
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.4);
+            transform: scale(1.05) translateY(-2px);
+        }
+
+        .crosshair-corner::before, .crosshair-corner::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-color: #00f2ff;
+            opacity: 0.5;
+        }
+        
+        .corner-tl::before { top: 0; left: 0; border-top: 1px solid; border-left: 1px solid; }
+        .corner-tr::before { top: 0; right: 0; border-top: 1px solid; border-right: 1px solid; }
+        .corner-bl::before { bottom: 0; left: 0; border-bottom: 1px solid; border-left: 1px solid; }
+        .corner-br::before { bottom: 0; right: 0; border-bottom: 1px solid; border-right: 1px solid; }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {"inverse-surface": "#e0e2e9", "secondary-fixed-dim": "#00d9ff", "primary-fixed": "#60ff99", "on-secondary-container": "#005b6c", "surface-container-lowest": "#0b0f13", surface: "#101418", "outline-variant": "#3b4b3d", "on-secondary-fixed": "#001f26", "inverse-on-surface": "#2d3136", secondary: "#aeecff", "on-surface": "#e0e2e9", "inverse-primary": "#006d37", "tertiary-fixed": "#82ff14", "surface-container": "#1c2024", "surface-container-high": "#272a2f", "surface-bright": "#36393e", "error-container": "#93000a", "on-error": "#690005", tertiary: "#f4ffe5", "on-tertiary-container": "#346f00", "on-primary-container": "#007139", "surface-container-highest": "#31353a", "tertiary-container": "#7dfb00", "secondary-fixed": "#aeecff", "primary-container": "#00ff88", error: "#ffb4ab", "on-primary": "#003919", "on-background": "#e0e2e9", primary: "#f1ffef", "on-tertiary": "#173800", "on-surface-variant": "#b9cbb9", "on-secondary": "#003641", "on-tertiary-fixed-variant": "#245100", "on-secondary-fixed-variant": "#004e5d", background: "#101418", "on-error-container": "#ffdad6", "surface-container-low": "#181c20", "on-tertiary-fixed": "#0b2000", "surface-variant": "#31353a", "tertiary-fixed-dim": "#6fe000", "primary-fixed-dim": "#00e479", "on-primary-fixed": "#00210c", "surface-tint": "#00e479", "surface-dim": "#101418", "secondary-container": "#00d9ff", outline: "#849585", "on-primary-fixed-variant": "#005228"}, borderRadius: {DEFAULT: "0.125rem", lg: "0.25rem", xl: "0.5rem", full: "0.75rem"}, spacing: {gutter: "32px", "margin-desktop": "80px", unit: "4px", "margin-mobile": "24px", "container-max": "1440px", "section-gap": "120px"}, fontFamily: {"display-lg": ["Sora"], "body-lg": ["Inter"], "headline-lg-mobile": ["Sora"], "label-caps": ["JetBrains Mono"], "headline-md": ["Geist"], "spec-code": ["JetBrains Mono"], "headline-lg": ["Sora"], "body-md": ["Inter"], "label-mono": ["JetBrains Mono"]}, fontSize: {"display-lg": ["84px", {lineHeight: "1.1", letterSpacing: "-0.04em", fontWeight: "800"}], "body-lg": ["18px", {lineHeight: "1.6", fontWeight: "400"}], "headline-lg-mobile": ["32px", {lineHeight: "1.2", fontWeight: "700"}], "label-caps": ["12px", {lineHeight: "16px", letterSpacing: "0.1em", fontWeight: "700"}], "headline-md": ["32px", {lineHeight: "40px", fontWeight: "600"}], "spec-code": ["14px", {lineHeight: "20px", letterSpacing: "0.05em", fontWeight: "500"}], "headline-lg": ["48px", {lineHeight: "1.2", letterSpacing: "-0.02em", fontWeight: "700"}], "body-md": ["16px", {lineHeight: "1.6", fontWeight: "400"}], "label-mono": ["12px", {lineHeight: "1.2", letterSpacing: "0.1em", fontWeight: "500"}]}}}};</script>
+</head>
+<body class="bg-background selection:bg-primary-container selection:text-on-primary">
+<!-- Scanline Overlay -->
+<div class="fixed inset-0 scanline z-[100] opacity-10 pointer-events-none"></div>
+<!-- Background Atmospheric Elements -->
+<div class="fixed inset-0 overflow-hidden -z-10">
+<div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary-container/10 rounded-full blur-[120px]"></div>
+<div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-secondary-container/10 rounded-full blur-[150px]"></div>
+<div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
+</div>
+<!-- Navigation Shells -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-gutter py-4 bg-surface/60 backdrop-blur-xl border-b border-white/10 shadow-[0_0_15px_rgba(0,242,255,0.1)]">
+<div class="font-headline-md text-headline-md font-bold tracking-tighter text-primary-container">AEGIS COMMAND</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="font-label-caps text-label-caps text-primary-container border-b-2 border-primary-container pb-1" href="#">STRATEGY</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors" href="#">DATABASE</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors" href="#">LOGISTICS</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors" href="#">INTELLIGENCE</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-primary transition-all duration-300 ease-out hover:scale-[1.02]">
+<span class="material-symbols-outlined">settings_input_antenna</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-all duration-300 ease-out hover:scale-[1.02]">
+<span class="material-symbols-outlined">notifications_active</span>
+</button>
+</div>
+</header>
+<aside class="fixed left-0 top-0 h-full z-40 flex flex-col bg-surface-container-low/40 backdrop-blur-2xl border-r border-white/10 w-20 hover:w-64 transition-all duration-500 group overflow-hidden">
+<div class="mt-24 px-6 mb-12">
+<div class="font-headline-md text-headline-md text-primary-fixed opacity-0 group-hover:opacity-100 transition-opacity duration-300">TACTICAL HUD</div>
+<div class="font-label-caps text-label-caps text-on-surface-variant text-[10px] opacity-0 group-hover:opacity-100 transition-opacity duration-300">SYS_READY_V2.4</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-4 bg-primary-container/20 text-primary-container border-l-4 border-primary-container p-4">
+<span class="material-symbols-outlined" data-icon="radar">radar</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity">RADAR</span>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant p-4 hover:bg-primary/10 hover:text-primary transition-all duration-300">
+<span class="material-symbols-outlined" data-icon="satellite_alt">satellite_alt</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity">SATELLITE</span>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant p-4 hover:bg-primary/10 hover:text-primary transition-all duration-300">
+<span class="material-symbols-outlined" data-icon="directions_boat">directions_boat</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity">FLEET</span>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant p-4 hover:bg-primary/10 hover:text-primary transition-all duration-300">
+<span class="material-symbols-outlined" data-icon="target">target</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity">TARGETING</span>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant p-4 hover:bg-primary/10 hover:text-primary transition-all duration-300">
+<span class="material-symbols-outlined" data-icon="database">database</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity">ARCHIVE</span>
+</div>
+</div>
+<div class="mt-auto p-4 flex flex-col gap-2 border-t border-white/5">
+<div class="flex items-center gap-4 text-on-surface-variant p-2 hover:text-primary">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100">SETTINGS</span>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant p-2 hover:text-primary">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100">LOGOUT</span>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="ml-20 pt-24 min-h-screen relative flex flex-col">
+<!-- Hero Spectral Scene -->
+<section class="flex-grow flex flex-col items-center justify-center px-margin-desktop relative">
+<div class="absolute inset-0 z-0 flex items-center justify-center">
+<!-- STITCH_THREEJS_START:ANIMATION_13 class="w-[80vw] h-[819px] opacity-40" -->
+<div class="w-[80vw] h-[819px] opacity-40" style="display:block;">
+<script src="https://ajax.googleapis.com/ajax/libs/threejs/r125/three.min.js"></script>
+<div id="threejs-container-ANIMATION_13" style="width:100%;height:100%"></div>
+<script>
+(function() {
+  const container = document.getElementById('threejs-container-ANIMATION_13');
+  const devicePixelRatio = window.devicePixelRatio || 1;
+  (function() {
+  const container = document.getElementById('threejs-container-NEXUS_ORB') || document.getElementById('threejs-container-ANIMATION_13');
+  const width = container.clientWidth || window.innerWidth;
+  const height = container.clientHeight || window.innerHeight;
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+  renderer.setSize(width, height);
+  renderer.setPixelRatio(window.devicePixelRatio);
+  container.appendChild(renderer.domElement);
+
+  // Lighting
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+  scene.add(ambientLight);
+  const pointLight = new THREE.PointLight(0x00f2ff, 2, 50);
+  pointLight.position.set(5, 5, 5);
+  scene.add(pointLight);
+
+  // Core Sphere (Hologram)
+  const geometry = new THREE.IcosahedronGeometry(2, 1);
+  const material = new THREE.MeshPhongMaterial({ 
+    color: 0x00f2ff, 
+    wireframe: true, 
+    transparent: true, 
+    opacity: 0.3 
+  });
+  const sphere = new THREE.Mesh(geometry, material);
+  scene.add(sphere);
+
+  // Floating Rings
+  const ringGeom = new THREE.TorusGeometry(2.5, 0.02, 16, 100);
+  const ringMat = new THREE.MeshBasicMaterial({ color: 0x00f2ff, transparent: true, opacity: 0.5 });
+  const ring1 = new THREE.Mesh(ringGeom, ringMat);
+  const ring2 = new THREE.Mesh(ringGeom, ringMat);
+  ring2.rotation.x = Math.PI / 2;
+  scene.add(ring1);
+  scene.add(ring2);
+
+  // Particles
+  const partGeom = new THREE.BufferGeometry();
+  const posArray = new Float32Array(1000 * 3);
+  for(let i = 0; i < 3000; i++) posArray[i] = (Math.random() - 0.5) * 15;
+  partGeom.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+  const partMat = new THREE.PointsMaterial({ size: 0.03, color: 0x00f2ff });
+  const particles = new THREE.Points(partGeom, partMat);
+  scene.add(particles);
+
+  camera.position.z = 10;
+
+  function animate() {
+    requestAnimationFrame(animate);
+    sphere.rotation.y += 0.005;
+    ring1.rotation.z += 0.01;
+    ring2.rotation.y += 0.01;
+    particles.rotation.y += 0.001;
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  window.addEventListener('resize', () => {
+    const w = container.clientWidth || window.innerWidth;
+    const h = container.clientHeight || window.innerHeight;
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+  });
+})();
+})();
+</script>
+</div>
+<!-- STITCH_THREEJS_END:ANIMATION_13 -->
+</div>
+<div class="z-10 text-center max-w-4xl space-y-8">
+<div class="inline-block px-4 py-1.5 spatial-glass border border-primary-container/30 rounded-full mb-6">
+<span class="font-label-caps text-label-caps text-primary-fixed tracking-[0.2em] flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+                        SYNAPTIC OVERLINK ACTIVE
+                    </span>
+</div>
+<h1 class="font-display-lg text-display-lg text-white leading-[1.1] ethereal-glow">
+                    QUANTUM<br/>INTELLIGENCE<br/><span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-container to-secondary">ORCHESTRATION</span>
+</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant/80 max-w-2xl mx-auto mt-6">
+                    Harnessing the spectral frequencies of sub-orbital data streams. Predict. Prevent. Prevail with Aegis Command's next-generation tactical engine.
+                </p>
+<div class="pt-12">
+<button class="holographic-btn group relative px-10 py-5 rounded-none font-label-caps text-label-caps text-on-primary-fixed tracking-widest flex items-center gap-4 overflow-hidden">
+<span class="relative z-10">INITIATE SCAN LINK</span>
+<span class="material-symbols-outlined relative z-10 transition-transform group-hover:translate-x-1">bolt</span>
+</button>
+</div>
+</div>
+<!-- Spatial Floating HUD Elements -->
+<div class="absolute left-10 top-[20%] w-64 spatial-glass p-6 floating" style="animation-delay: -1s;">
+<div class="crosshair-corner corner-tl"></div>
+<div class="crosshair-corner corner-br"></div>
+<h3 class="font-label-caps text-label-caps text-primary-container mb-4">FLEET VELOCITY</h3>
+<div class="space-y-4">
+<div class="flex justify-between items-end border-b border-white/10 pb-2">
+<span class="font-spec-code text-spec-code text-on-surface-variant">USS APEX</span>
+<span class="font-spec-code text-spec-code text-primary-fixed">MACH 4.2</span>
+</div>
+<div class="flex justify-between items-end border-b border-white/10 pb-2">
+<span class="font-spec-code text-spec-code text-on-surface-variant">V-WING 09</span>
+<span class="font-spec-code text-spec-code text-primary-fixed">MACH 2.8</span>
+</div>
+</div>
+</div>
+<div class="absolute right-10 bottom-[20%] w-72 spatial-glass p-6 floating" style="animation-delay: -3.5s;">
+<div class="crosshair-corner corner-tr"></div>
+<div class="crosshair-corner corner-bl"></div>
+<h3 class="font-label-caps text-label-caps text-secondary mb-4">THREAT ASSESSMENT</h3>
+<div class="relative h-24 flex items-center justify-center">
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="w-16 h-16 rounded-full border border-secondary/20 animate-ping"></div>
+<div class="w-12 h-12 rounded-full border border-secondary/40 animate-[ping_2s_linear_infinite]"></div>
+</div>
+<div class="text-secondary font-display-lg text-[32px] font-bold">0.04%</div>
+</div>
+<p class="font-label-caps text-[10px] text-on-surface-variant text-center mt-2">SECTOR_DELTA_RELIABILITY</p>
+</div>
+</section>
+<!-- Bento Grid Analysis Section -->
+<section class="px-margin-desktop py-24 bg-surface-container-lowest/50">
+<div class="max-w-container-max mx-auto">
+<div class="flex items-end justify-between mb-12">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-white">TACTICAL OVERVIEW</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Live telemetry from the Aegis constellation network.</p>
+</div>
+<div class="font-label-caps text-label-caps text-primary border-l border-primary/30 pl-4 py-2">
+                        GLOBAL_SYSTEM_STATUS: <span class="text-primary-container">OPTIMAL</span>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-6">
+<!-- Data Card 1 -->
+<div class="col-span-12 md:col-span-8 spatial-glass p-8 relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 font-spec-code text-[10px] text-white/20">MODULE_0X44</div>
+<h4 class="font-label-caps text-label-caps text-primary-container mb-6">ATMOSPHERIC RECONNAISSANCE</h4>
+<div class="grid grid-cols-3 gap-8">
+<div class="space-y-2">
+<span class="font-label-caps text-[10px] text-on-surface-variant block">HUMIDITY</span>
+<div class="h-1 bg-white/5 w-full relative">
+<div class="absolute top-0 left-0 h-full bg-primary-container w-[45%]"></div>
+</div>
+<span class="font-spec-code text-spec-code text-white">45.2%</span>
+</div>
+<div class="space-y-2">
+<span class="font-label-caps text-[10px] text-on-surface-variant block">THERMAL</span>
+<div class="h-1 bg-white/5 w-full relative">
+<div class="absolute top-0 left-0 h-full bg-secondary w-[78%]"></div>
+</div>
+<span class="font-spec-code text-spec-code text-white">12.5°C</span>
+</div>
+<div class="space-y-2">
+<span class="font-label-caps text-[10px] text-on-surface-variant block">WIND_VEC</span>
+<div class="h-1 bg-white/5 w-full relative">
+<div class="absolute top-0 left-0 h-full bg-primary-container w-[12%]"></div>
+</div>
+<span class="font-spec-code text-spec-code text-white">4.2 KM/H</span>
+</div>
+</div>
+<div class="mt-8 relative h-48 rounded overflow-hidden">
+<img class="w-full h-full object-cover grayscale opacity-40 group-hover:scale-105 transition-transform duration-1000" data-alt="A high-altitude satellite photograph of the Earth's atmosphere showing swirling white clouds and the dark blue of the ocean. The image is rendered in a desaturated, high-contrast tactical style with glowing cyan data overlays and grid markers. The mood is scientific and clinical, with sharp geometric framing that mimics a high-precision military display." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLra8B8rEFce3jMmt5BhJPcmi1pD5XjbxafjtOuJOMyxynz58sGMDqxFy7V1qvQKANV-oBG78YATERdfKwXdTDw5i5G92gYpjmIRGOnabKaZ5UsI_zoiJVmjpX8Z3oSWeeugwrQ3KAPtu1KfcFPWaAs7N-llvZDEUNxM1jWdJql_6fG92sNOnYV657wD-Yfr4xPe-ifyNZp-D2kJpgamY7TKGKtJQXECj-45yhXSmtKeHXSY4jrm1rONqUISEJU4UTdJ0D5DFrPBe1"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface to-transparent"></div>
+</div>
+</div>
+<!-- Side Card -->
+<div class="col-span-12 md:col-span-4 spatial-glass p-8 flex flex-col justify-between border-primary-container/20">
+<div>
+<span class="material-symbols-outlined text-primary-container text-4xl mb-6">shield</span>
+<h4 class="font-headline-md text-headline-md text-white">DEEP SECURITY</h4>
+<p class="font-body-md text-body-md text-on-surface-variant mt-4">
+                                AES-256 military-grade encryption wrapping every packet of information sent through our neural links.
+                            </p>
+</div>
+<div class="mt-8 space-y-4">
+<div class="flex items-center gap-3">
+<div class="w-1.5 h-1.5 rounded-full bg-primary-container"></div>
+<span class="font-label-caps text-[10px] text-on-surface">PROTOCOL_S01</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-1.5 h-1.5 rounded-full bg-primary-container/40"></div>
+<span class="font-label-caps text-[10px] text-on-surface">FIREWALL_ENABLED</span>
+</div>
+</div>
+</div>
+<!-- Bottom Grid -->
+<div class="col-span-12 md:col-span-4 spatial-glass p-6">
+<div class="flex justify-between items-start mb-6">
+<h5 class="font-label-caps text-label-caps text-on-surface">GLOBAL NODES</h5>
+<span class="font-spec-code text-spec-code text-primary-container">1,402</span>
+</div>
+<div class="w-full aspect-video bg-white/5 rounded relative">
+<!-- Map placeholder -->
+<div class="absolute inset-0 flex items-center justify-center opacity-20">
+<span class="material-symbols-outlined text-6xl">public</span>
+</div>
+</div>
+</div>
+<div class="col-span-12 md:col-span-4 spatial-glass p-6 group hover:border-primary-container/50 transition-colors">
+<h5 class="font-label-caps text-label-caps text-on-surface mb-4">SATELLITE_UPLINK</h5>
+<div class="flex items-center gap-6">
+<div class="relative w-16 h-16 shrink-0">
+<div class="absolute inset-0 rounded-full border-2 border-primary-container/20"></div>
+<div class="absolute inset-0 rounded-full border-t-2 border-primary-container animate-spin"></div>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="font-spec-code text-xs">88%</span>
+</div>
+</div>
+<div>
+<p class="font-spec-code text-xs text-on-surface-variant">LATENCY: 12ms</p>
+<p class="font-spec-code text-xs text-on-surface-variant">JITTER: 2.1ms</p>
+</div>
+</div>
+</div>
+<div class="col-span-12 md:col-span-4 bg-primary-container p-8 flex flex-col justify-center items-center text-center">
+<h5 class="font-label-caps text-label-caps text-on-primary font-black mb-2">UPGRADE HUD</h5>
+<p class="font-body-md text-on-primary/70 text-sm mb-6">Unlock full spectrum analysis and multi-target tracking.</p>
+<button class="bg-on-primary text-primary px-6 py-2 font-label-caps text-xs tracking-tighter hover:scale-105 transition-transform">
+                            ACCESS_PRO_TIER
+                        </button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<footer class="w-full py-12 px-margin-desktop bg-gradient-to-t from-black to-transparent border-t border-white/5">
+<div class="max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+<div class="flex flex-col gap-2">
+<div class="font-headline-md text-headline-md text-on-surface">AEGIS COMMAND</div>
+<p class="font-body-md text-body-md text-secondary max-w-sm">
+                    © 2024 DEFENSE INTELLIGENCE NETWORK. ALL RIGHTS RESERVED. CLASSIFIED MATERIAL.
+                </p>
+</div>
+<div class="flex flex-wrap gap-x-8 gap-y-4">
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">SITEMAP</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">API_DOCS</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">SECURITY_PROTOCOL</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">CONTACT_COMMAND</a>
+</div>
+</div>
+<div class="mt-12 text-center">
+<span class="font-label-caps text-[10px] text-white/10 tracking-[0.5em]">DECRYPTING_SIGNAL_0XFF2A9... STANDBY</span>
+</div>
+</footer>
+<script>
+        // Simple micro-interaction for mouse follow glow effect
+        document.addEventListener('mousemove', (e) => {
+            const glow = document.querySelector('.ethereal-glow');
+            if(glow) {
+                const moveX = (e.clientX - window.innerWidth / 2) * 0.01;
+                const moveY = (e.clientY - window.innerHeight / 2) * 0.01;
+                glow.style.transform = `translate(${moveX}px, ${moveY}px)`;
+            }
+        });
+
+        // Initialize status pulses
+        setInterval(() => {
+            console.log("System Status: Synchronized");
+        }, 10000);
+    </script>
+</body></html>

@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AEGIS COMMAND | Military Technology Encyclopedia</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+        darkMode: "class",
+        theme: {
+            extend: {
+                colors: {
+                    "surface": "#0a0e12",
+                    "background": "#080b0f",
+                    "surface-container-lowest": "#05070a",
+                    "surface-container-low": "#0d1117",
+                    "surface-container": "#131820",
+                    "surface-container-high": "#1a212b",
+                    "surface-container-highest": "#222a36",
+                    "primary": "#f1ffef",
+                    "primary-container": "#00ff88",
+                    "on-primary-container": "#003919",
+                    "primary-fixed-dim": "#00e479",
+                    "secondary": "#00f2ff",
+                    "secondary-container": "#003641",
+                    "on-surface": "#e0e4eb",
+                    "on-surface-variant": "#8b98a5",
+                    "outline": "#2b3846",
+                    "error": "#ff5555"
+                },
+                fontFamily: {
+                    "display-lg": ["Sora", "sans-serif"],
+                    "headline-lg": ["Sora", "sans-serif"],
+                    "headline-md": ["Sora", "sans-serif"],
+                    "body-lg": ["Inter", "sans-serif"],
+                    "body-md": ["Inter", "sans-serif"],
+                    "label-caps": ["JetBrains Mono", "monospace"],
+                    "spec-code": ["JetBrains Mono", "monospace"]
+                }
+            }
+        }
+    };
+    </script>
+<style>
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100vh); }
+        }
+        @keyframes radar-sweep {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes ping-slow {
+            0% { transform: scale(0.6); opacity: 0.8; }
+            80%, 100% { transform: scale(2.4); opacity: 0; }
+        }
+        @keyframes ticker {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(-50%); }
+        }
+        .scanline-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(to right, transparent, rgba(0, 255, 136, 0.7), rgba(0, 242, 255, 0.7), transparent);
+            animation: scanline 5s linear infinite;
+            z-index: 60;
+            pointer-events: none;
+            opacity: 0.75;
+        }
+        .grid-background {
+            background-image: 
+                radial-gradient(rgba(0, 255, 136, 0.08) 1px, transparent 1px),
+                linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 36px 36px, 72px 72px, 72px 72px;
+        }
+        .holographic-card {
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            position: relative;
+        }
+        .holographic-card::before {
+            content: '';
+            position: absolute;
+            top: -1px; left: -1px; width: 10px; height: 10px;
+            border-top: 2px solid #00ff88; border-left: 2px solid #00ff88;
+        }
+        .holographic-card::after {
+            content: '';
+            position: absolute;
+            bottom: -1px; right: -1px; width: 10px; height: 10px;
+            border-bottom: 2px solid #00ff88; border-right: 2px solid #00ff88;
+        }
+        .radar-spinner {
+            animation: radar-sweep 6s linear infinite;
+            transform-origin: center center;
+        }
+        .radar-blip {
+            animation: ping-slow 3s cubic-bezier(0, 0, 0.2, 1) infinite;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md selection:bg-primary-container selection:text-on-primary-container overflow-x-hidden min-h-screen">
+<!-- Global Tactical Scanline Effect -->
+<div class="scanline-overlay"></div>
+<!-- Navigation Header -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 lg:px-12 py-3.5 bg-surface/85 backdrop-blur-xl border-b border-primary-container/20 shadow-[0_4px_30px_rgba(0,0,0,0.8)]">
+<div class="flex items-center gap-10">
+<div class="flex items-center gap-3">
+<span class="w-2.5 h-2.5 bg-primary-container rounded-full shadow-[0_0_10px_#00ff88] animate-pulse"></span>
+<h1 class="font-display-lg text-xl md:text-2xl font-extrabold tracking-tighter text-primary-container drop-shadow-[0_0_12px_rgba(0,255,136,0.3)]">AEGIS COMMAND</h1>
+</div>
+<nav class="hidden md:flex gap-8">
+<a class="font-label-caps text-xs tracking-widest text-primary-container border-b-2 border-primary-container pb-1 font-semibold" href="#">STRATEGY</a>
+<a class="font-label-caps text-xs tracking-widest text-on-surface-variant hover:text-primary transition-colors pb-1 hover:border-b-2 hover:border-primary/40" href="#">DATABASE</a>
+<a class="font-label-caps text-xs tracking-widest text-on-surface-variant hover:text-primary transition-colors pb-1 hover:border-b-2 hover:border-primary/40" href="#">LOGISTICS</a>
+<a class="font-label-caps text-xs tracking-widest text-on-surface-variant hover:text-primary transition-colors pb-1 hover:border-b-2 hover:border-primary/40" href="#">INTELLIGENCE</a>
+</nav>
+</div>
+<div class="flex items-center gap-3">
+<div class="hidden sm:flex items-center gap-2 px-3 py-1 bg-surface-container-high/80 border border-primary-container/30 rounded font-spec-code text-[11px] text-primary-container mr-2">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container animate-ping"></span>
+            NET: SECURE // SIG: 99.8%
+        </div>
+<button aria-label="Antenna System" class="p-2 text-on-surface-variant hover:text-primary-container hover:bg-surface-container-high rounded transition-all">
+<span class="material-symbols-outlined text-xl" data-icon="settings_input_antenna">settings_input_antenna</span>
+</button>
+<button aria-label="Notifications" class="p-2 text-on-surface-variant hover:text-primary-container hover:bg-surface-container-high rounded transition-all relative">
+<span class="material-symbols-outlined text-xl" data-icon="notifications_active">notifications_active</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-primary-container rounded-full ring-2 ring-surface shadow-[0_0_6px_#00ff88]"></span>
+</button>
+</div>
+</header>
+<!-- Side Tactical HUD Navigation -->
+<aside class="fixed left-0 top-0 h-full z-40 flex flex-col bg-surface-container-lowest/90 backdrop-blur-2xl border-r border-white/10 w-16 lg:w-20 hover:w-64 transition-all duration-300 group overflow-hidden shadow-2xl">
+<div class="flex flex-col pt-24 px-3 gap-6">
+<div class="flex items-center gap-4 py-3 px-2 border-b border-white/10">
+<div class="min-w-[32px] flex justify-center">
+<span class="material-symbols-outlined text-primary-container" data-icon="radar">radar</span>
+</div>
+<div class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap overflow-hidden">
+<p class="font-headline-md text-xs font-bold text-primary tracking-wider">TACTICAL HUD</p>
+<p class="font-spec-code text-[10px] text-primary-container/80">SYS_V2.4_READY</p>
+</div>
+</div>
+<nav class="flex flex-col gap-1.5">
+<a class="flex items-center gap-4 bg-primary-container/15 text-primary-container border-l-2 border-primary-container p-3 rounded-r hover:bg-primary-container/25 transition-all" href="#">
+<span class="material-symbols-outlined min-w-[24px] text-primary-container" data-icon="radar">radar</span>
+<span class="opacity-0 group-hover:opacity-100 font-label-caps text-xs tracking-widest font-semibold">RADAR</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant p-3 hover:bg-white/5 hover:text-primary rounded-r transition-all" href="#">
+<span class="material-symbols-outlined min-w-[24px]" data-icon="satellite_alt">satellite_alt</span>
+<span class="opacity-0 group-hover:opacity-100 font-label-caps text-xs tracking-widest font-semibold">SATELLITE</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant p-3 hover:bg-white/5 hover:text-primary rounded-r transition-all" href="#">
+<span class="material-symbols-outlined min-w-[24px]" data-icon="directions_boat">directions_boat</span>
+<span class="opacity-0 group-hover:opacity-100 font-label-caps text-xs tracking-widest font-semibold">FLEET</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant p-3 hover:bg-white/5 hover:text-primary rounded-r transition-all" href="#">
+<span class="material-symbols-outlined min-w-[24px]" data-icon="target">target</span>
+<span class="opacity-0 group-hover:opacity-100 font-label-caps text-xs tracking-widest font-semibold">TARGETING</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant p-3 hover:bg-white/5 hover:text-primary rounded-r transition-all" href="#">
+<span class="material-symbols-outlined min-w-[24px]" data-icon="database">database</span>
+<span class="opacity-0 group-hover:opacity-100 font-label-caps text-xs tracking-widest font-semibold">ARCHIVE</span>
+</a>
+</nav>
+<button class="mt-4 mx-2 hidden group-hover:block bg-primary-container text-on-primary-container font-label-caps text-[11px] font-bold py-2.5 px-3 rounded shadow-[0_0_15px_rgba(0,255,136,0.3)] hover:brightness-110 transition-all uppercase tracking-wider">
+            Initiate Scan
+        </button>
+</div>
+<div class="mt-auto mb-6 px-3 flex flex-col gap-1.5 border-t border-white/5 pt-4">
+<a class="flex items-center gap-4 text-on-surface-variant p-3 hover:text-primary hover:bg-white/5 rounded transition-colors" href="#">
+<span class="material-symbols-outlined min-w-[24px]" data-icon="settings">settings</span>
+<span class="opacity-0 group-hover:opacity-100 font-label-caps text-xs tracking-widest font-semibold">SETTINGS</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant p-3 hover:text-error hover:bg-error/10 rounded transition-colors" href="#">
+<span class="material-symbols-outlined min-w-[24px]" data-icon="logout">logout</span>
+<span class="opacity-0 group-hover:opacity-100 font-label-caps text-xs tracking-widest font-semibold">LOGOUT</span>
+</a>
+</div>
+</aside>
+<!-- Main Shell -->
+<main class="ml-16 lg:ml-20 min-h-screen">
+<!-- Hero Section -->
+<section class="relative min-h-[92vh] flex items-center justify-center overflow-hidden grid-background pt-24 pb-16">
+<!-- Radial Glow Gradients -->
+<div class="absolute w-[600px] h-[600px] bg-primary-container/10 rounded-full blur-[140px] pointer-events-none top-1/4 left-1/4 -translate-x-1/2"></div>
+<div class="absolute w-[500px] h-[500px] bg-secondary/10 rounded-full blur-[120px] pointer-events-none top-1/3 right-10"></div>
+<div class="relative z-10 w-full max-w-7xl px-6 lg:px-12 flex flex-col lg:flex-row items-center justify-between gap-12">
+<!-- Left Info Panel -->
+<div class="flex-1 space-y-6 text-left">
+<div class="inline-flex items-center gap-2.5 px-3.5 py-1.5 bg-primary-container/10 border border-primary-container/30 text-primary-container font-label-caps text-xs tracking-wider rounded">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-pulse shadow-[0_0_8px_#00ff88]"></span>
+                    ENCRYPTED CONNECTION ESTABLISHED
+                </div>
+<h2 class="font-display-lg text-5xl sm:text-6xl xl:text-7xl text-primary font-extrabold tracking-tight leading-[1.05]">
+                    AEGIS <span class="text-primary-container block sm:inline drop-shadow-[0_0_24px_rgba(0,255,136,0.35)]">COMMAND</span>
+</h2>
+<p class="font-body-lg text-base sm:text-lg text-on-surface-variant max-w-xl leading-relaxed">
+                    The Global Intelligence &amp; Defense Systems Encyclopedia. Real-time tactical data monitoring, cataloging 45,000+ defense assets across all operational theaters.
+                </p>
+<div class="flex flex-wrap gap-4 pt-2">
+<a class="group flex items-center justify-center gap-3 px-7 py-3.5 bg-primary-container text-on-primary-container font-label-caps text-xs tracking-widest font-bold rounded shadow-[0_0_25px_rgba(0,255,136,0.4)] hover:brightness-110 hover:shadow-[0_0_35px_rgba(0,255,136,0.6)] transition-all" href="#featured-systems">
+<span>INITIATE SYSTEM ACCESS</span>
+<span class="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform" data-icon="login">login</span>
+</a>
+<a class="flex items-center justify-center gap-3 px-7 py-3.5 bg-surface-container/60 backdrop-blur-md text-primary-container border border-primary-container/40 font-label-caps text-xs tracking-widest font-semibold rounded hover:bg-primary-container/15 hover:border-primary-container transition-all" href="#stats-section">
+<span>EXPLORE DATABASE</span>
+<span class="material-symbols-outlined text-lg" data-icon="account_tree">account_tree</span>
+</a>
+</div>
+<!-- Hardware telemetry pills -->
+<div class="grid grid-cols-3 gap-3 pt-6 border-t border-white/10 max-w-lg">
+<div class="p-2.5 rounded bg-surface-container-low/80 border border-white/5">
+<span class="block font-label-caps text-[10px] text-on-surface-variant tracking-wider">SATELLITE SYNC</span>
+<span class="font-spec-code text-xs font-semibold text-primary-container">12 / 12 LOCK</span>
+</div>
+<div class="p-2.5 rounded bg-surface-container-low/80 border border-white/5">
+<span class="block font-label-caps text-[10px] text-on-surface-variant tracking-wider">DEFCON STATE</span>
+<span class="font-spec-code text-xs font-semibold text-primary-container">LEVEL 4 [STABLE]</span>
+</div>
+<div class="p-2.5 rounded bg-surface-container-low/80 border border-white/5">
+<span class="block font-label-caps text-[10px] text-on-surface-variant tracking-wider">LATENCY</span>
+<span class="font-spec-code text-xs font-semibold text-primary-container">1.4ms QUANTUM</span>
+</div>
+</div>
+</div>
+<!-- Right Visual Centerpiece: Interactive Tactical HUD & Radar -->
+<div class="flex-1 w-full max-w-lg flex items-center justify-center">
+<div class="holographic-card w-full aspect-square max-w-[460px] bg-surface-container-low/60 backdrop-blur-xl rounded-lg p-6 flex flex-col justify-between relative shadow-[0_0_40px_rgba(0,0,0,0.8)] overflow-hidden">
+<!-- Top HUD Status -->
+<div class="flex justify-between items-start font-spec-code text-xs z-20">
+<div>
+<span class="text-primary-container font-semibold tracking-wider">DRONE_ID: RX-900</span>
+<span class="block text-[10px] text-on-surface-variant">SECTOR: 07-G // GRID-A</span>
+</div>
+<div class="text-right">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-primary-container/10 border border-primary-container/30 text-primary-container text-[11px] font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container animate-pulse"></span>
+                                SCAN_STATUS: LIVE
+                            </span>
+</div>
+</div>
+<!-- Center Radar Screen with SVG Vectors -->
+<div class="relative w-full h-[280px] my-auto flex items-center justify-center">
+<!-- Radar Concentric Circles -->
+<div class="absolute inset-2 border border-primary-container/15 rounded-full"></div>
+<div class="absolute inset-12 border border-primary-container/20 rounded-full"></div>
+<div class="absolute inset-24 border border-primary-container/30 border-dashed rounded-full"></div>
+<div class="absolute inset-36 border border-primary-container/40 rounded-full"></div>
+<!-- Crosshairs -->
+<div class="absolute w-full h-px bg-primary-container/20"></div>
+<div class="absolute h-full w-px bg-primary-container/20"></div>
+<!-- Sweeping Radar Beam -->
+<div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+<div class="w-full h-full radar-spinner">
+<svg class="w-full h-full" viewbox="0 0 300 300">
+<defs>
+<radialgradient cx="50%" cy="50%" fx="50%" fy="50%" id="sweep-gradient" r="50%">
+<stop offset="0%" stop-color="#00ff88" stop-opacity="0.35"></stop>
+<stop offset="100%" stop-color="#00ff88" stop-opacity="0"></stop>
+</radialgradient>
+</defs>
+<path d="M 150 150 L 300 150 A 150 150 0 0 0 256 44 Z" fill="url(#sweep-gradient)"></path>
+<line stroke="#00ff88" stroke-opacity="0.9" stroke-width="1.5" x1="150" x2="300" y1="150" y2="150"></line>
+</svg>
+</div>
+</div>
+<!-- Tactical Target Blips -->
+<div class="absolute top-[28%] right-[32%] flex items-center justify-center pointer-events-none">
+<span class="absolute w-6 h-6 rounded-full bg-primary-container/30 radar-blip"></span>
+<span class="w-2.5 h-2.5 rounded-full bg-primary-container shadow-[0_0_8px_#00ff88]"></span>
+<span class="absolute -top-4 -right-12 font-spec-code text-[10px] text-primary-container bg-surface/90 px-1 border border-primary-container/30">TGT_01</span>
+</div>
+<div class="absolute bottom-[35%] left-[26%] flex items-center justify-center pointer-events-none">
+<span class="absolute w-6 h-6 rounded-full bg-secondary/30 radar-blip" style="animation-delay: 1.5s;"></span>
+<span class="w-2 h-2 rounded-full bg-secondary shadow-[0_0_8px_#00f2ff]"></span>
+<span class="absolute -bottom-4 -left-10 font-spec-code text-[10px] text-secondary bg-surface/90 px-1 border border-secondary/30">FRND_04</span>
+</div>
+<!-- Central Reticle -->
+<div class="relative z-10 w-12 h-12 rounded-full border border-primary-container/80 flex items-center justify-center bg-surface/60 backdrop-blur">
+<div class="w-2 h-2 rounded-full bg-primary-container shadow-[0_0_10px_#00ff88]"></div>
+</div>
+</div>
+<!-- HUD Bottom Metadata -->
+<div class="flex justify-between items-end border-t border-white/10 pt-3 font-spec-code text-[11px] z-20 text-on-surface-variant">
+<div>
+<span class="text-white/60">SYS_DIAGNOSTIC:</span>
+<span class="text-primary-container font-medium"> OPTIMAL</span>
+</div>
+<div class="text-right">
+<span class="text-white/60">THREAT_LVL:</span>
+<span class="text-error font-medium"> GUARDED [02]</span>
+</div>
+</div>
+<!-- Holographic Corner Accents -->
+<div class="absolute left-2 top-1/2 -rotate-90 origin-left font-label-caps text-[9px] text-white/30 tracking-[0.4em] pointer-events-none select-none">
+                        SYSTEMS_ACTIVE
+                    </div>
+</div>
+</div>
+</div>
+<!-- News & Intelligence Ticker -->
+<div class="absolute bottom-0 w-full h-11 bg-surface-container-lowest/95 backdrop-blur-xl border-t border-primary-container/20 flex items-center overflow-hidden z-20">
+<div class="flex items-center gap-2 px-5 bg-error/15 border-r border-error/30 h-full flex-shrink-0 z-10">
+<span class="material-symbols-outlined text-error text-sm animate-pulse" data-icon="warning">warning</span>
+<span class="font-label-caps text-xs text-error font-bold whitespace-nowrap tracking-wider">LIVE INTEL FEED</span>
+</div>
+<div class="flex whitespace-nowrap overflow-hidden flex-1">
+<div class="flex whitespace-nowrap gap-12 font-spec-code text-xs text-on-surface-variant animate-[ticker_25s_linear_infinite]">
+<span class="text-primary"><strong class="text-primary-container">[FLASH]</strong> UNIDENTIFIED DRONE SWARM DETECTED IN SECTOR 7G</span>
+<span><strong class="text-secondary">[UPDATE]</strong> AEGIS CORE SHIELDING UPGRADED TO V2.4.9</span>
+<span><strong class="text-primary-container">[INTEL]</strong> NEW STEALTH SIGNATURE CATALOGED: 'RAVEN-X'</span>
+<span><strong class="text-white">[LOGS]</strong> CARRIER STRIKE GROUP 5 REACHES POSITION OMEGA</span>
+<span class="text-error"><strong class="text-error">[ALERT]</strong> CYBER DEFENSE PROTOCOL ALPHA-6 ENGAGED</span>
+<!-- Duplicate items for seamless continuous ticker loop -->
+<span class="text-primary"><strong class="text-primary-container">[FLASH]</strong> UNIDENTIFIED DRONE SWARM DETECTED IN SECTOR 7G</span>
+<span><strong class="text-secondary">[UPDATE]</strong> AEGIS CORE SHIELDING UPGRADED TO V2.4.9</span>
+<span><strong class="text-primary-container">[INTEL]</strong> NEW STEALTH SIGNATURE CATALOGED: 'RAVEN-X'</span>
+<span><strong class="text-white">[LOGS]</strong> CARRIER STRIKE GROUP 5 REACHES POSITION OMEGA</span>
+<span class="text-error"><strong class="text-error">[ALERT]</strong> CYBER DEFENSE PROTOCOL ALPHA-6 ENGAGED</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Stats Dashboard Section -->
+<section class="py-20 bg-surface-container-lowest relative border-y border-white/5" id="stats-section">
+<div class="max-w-7xl mx-auto px-6 lg:px-12">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Stat 1 -->
+<div class="flex flex-col items-center text-center p-8 rounded-lg border border-white/10 bg-surface-container-low/40 hover:border-primary-container/40 hover:bg-surface-container-low/80 hover:shadow-[0_0_30px_rgba(0,255,136,0.1)] transition-all group">
+<div class="w-14 h-14 rounded-full bg-primary-container/10 border border-primary-container/30 flex items-center justify-center text-primary-container mb-4 group-hover:scale-110 group-hover:bg-primary-container/20 transition-all">
+<span class="material-symbols-outlined text-3xl" data-icon="deployed_code">deployed_code</span>
+</div>
+<h3 class="font-display-lg text-4xl lg:text-5xl font-extrabold text-primary-container tabular-nums drop-shadow-[0_0_12px_rgba(0,255,136,0.25)]">45k+</h3>
+<p class="font-label-caps text-xs tracking-widest text-on-surface-variant font-semibold mt-2">ASSETS CATALOGED</p>
+<span class="font-spec-code text-[11px] text-white/40 mt-1">REAL-TIME GLOBAL TELEMETRY</span>
+</div>
+<!-- Stat 2 -->
+<div class="flex flex-col items-center text-center p-8 rounded-lg border border-white/10 bg-surface-container-low/40 hover:border-primary-container/40 hover:bg-surface-container-low/80 hover:shadow-[0_0_30px_rgba(0,255,136,0.1)] transition-all group">
+<div class="w-14 h-14 rounded-full bg-primary-container/10 border border-primary-container/30 flex items-center justify-center text-primary-container mb-4 group-hover:scale-110 group-hover:bg-primary-container/20 transition-all">
+<span class="material-symbols-outlined text-3xl" data-icon="hub">hub</span>
+</div>
+<h3 class="font-display-lg text-4xl lg:text-5xl font-extrabold text-primary-container tabular-nums drop-shadow-[0_0_12px_rgba(0,255,136,0.25)]">128</h3>
+<p class="font-label-caps text-xs tracking-widest text-on-surface-variant font-semibold mt-2">GLOBAL HUBS</p>
+<span class="font-spec-code text-[11px] text-white/40 mt-1">ACROSS 6 CONTINENTS</span>
+</div>
+<!-- Stat 3 -->
+<div class="flex flex-col items-center text-center p-8 rounded-lg border border-white/10 bg-surface-container-low/40 hover:border-primary-container/40 hover:bg-surface-container-low/80 hover:shadow-[0_0_30px_rgba(0,255,136,0.1)] transition-all group">
+<div class="w-14 h-14 rounded-full bg-primary-container/10 border border-primary-container/30 flex items-center justify-center text-primary-container mb-4 group-hover:scale-110 group-hover:bg-primary-container/20 transition-all">
+<span class="material-symbols-outlined text-3xl" data-icon="security">security</span>
+</div>
+<h3 class="font-display-lg text-4xl lg:text-5xl font-extrabold text-primary-container tabular-nums drop-shadow-[0_0_12px_rgba(0,255,136,0.25)]">ALPHA</h3>
+<p class="font-label-caps text-xs tracking-widest text-on-surface-variant font-semibold mt-2">SECURITY LEVEL</p>
+<span class="font-spec-code text-[11px] text-white/40 mt-1">RESTRICTED ACCESS ONLY</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Featured Technologies Section -->
+<section class="py-24 px-6 lg:px-12 max-w-7xl mx-auto space-y-12" id="featured-systems">
+<div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-white/10 pb-6">
+<div>
+<h2 class="font-headline-lg text-3xl sm:text-4xl font-extrabold text-primary tracking-tight">
+                    FEATURED <span class="text-primary-container">SYSTEMS</span>
+</h2>
+<p class="text-on-surface-variant mt-2 text-sm sm:text-base">Active intelligence profiles on cutting-edge military hardware.</p>
+</div>
+<a class="inline-flex items-center gap-2 font-label-caps text-xs tracking-wider text-primary-container hover:underline group font-bold" href="#">
+<span>VIEW FULL ARCHIVE</span>
+<span class="material-symbols-outlined text-base transition-transform group-hover:translate-x-1" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- Card 1: Stealth Jet -->
+<div class="group relative bg-surface-container-high/60 backdrop-blur-xl border border-white/10 rounded-lg hover:border-primary-container/50 transition-all duration-300 overflow-hidden flex flex-col shadow-lg">
+<div class="aspect-[16/10] overflow-hidden relative bg-surface-container-highest">
+<img alt="Next-Gen Stealth Fighter Jet" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjtrzoPGId9DdAsdevqoy_9U-B7mOIliR_ZFav3lhV-YX2F6fd5yiAvhyAGpTgpU1UUwzo6G9emsjblMmUrNcBqrXpeMEq1UvZh0AxssFRkLi5o4Sw5Fh44NX9aYZ91lT8v0UEZ-YZyedC-kPLmSRXwWKqlpWLxSsmkAvhZowv-HxVPrKIBSAYqfU2fvPRsruxH_9k2kNlwou4f65O0dxixacpJ4kGz3cWBsCWF9GflpjlPIYeQPZdYOwuo0rzDH2MeEGWR_jq7cIT"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-high via-transparent to-transparent"></div>
+<div class="absolute top-3 right-3">
+<span class="px-2.5 py-1 bg-surface-container-lowest/90 backdrop-blur border border-primary-container/40 rounded font-spec-code text-[11px] font-bold text-primary-container tracking-wider">CLASSIFIED</span>
+</div>
+</div>
+<div class="p-6 flex-1 flex flex-col justify-between space-y-4">
+<div>
+<h3 class="font-headline-md text-xl font-bold text-primary tracking-tight group-hover:text-primary-container transition-colors">Next-Gen Stealth Fighters</h3>
+<p class="text-on-surface-variant text-sm line-clamp-2 mt-2 leading-relaxed">Hyper-maneuverable air superiority platforms featuring 6th-gen adaptive camouflage and neural link piloting systems.</p>
+</div>
+<div class="grid grid-cols-3 gap-2 border-t border-white/10 pt-4">
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant font-medium">SPEED</p>
+<p class="font-spec-code text-sm font-bold text-primary-container">MACH 3.2</p>
+</div>
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant font-medium">RANGE</p>
+<p class="font-spec-code text-sm font-bold text-primary-container">4,500KM</p>
+</div>
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant font-medium">LEVEL</p>
+<p class="font-spec-code text-sm font-bold text-primary-container">OMEGA</p>
+</div>
+</div>
+</div>
+<div class="h-1 w-full bg-white/5">
+<div class="h-full bg-primary-container w-0 group-hover:w-full transition-all duration-500 ease-out"></div>
+</div>
+</div>
+<!-- Card 2: Autonomous Drone Fleets -->
+<div class="group relative bg-surface-container-high/60 backdrop-blur-xl border border-white/10 rounded-lg hover:border-primary-container/50 transition-all duration-300 overflow-hidden flex flex-col shadow-lg">
+<div class="aspect-[16/10] overflow-hidden relative bg-surface-container-highest">
+<img alt="Autonomous Drone Swarm" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCiLVivYcbHMf4vu0XtKIxcExMmA8vGqwli3S77m1Z3chJUngDiPSrbT9IZnSJZAkOHXYHxUyW75VV66QkaDPVUN26h36CbJIQ4wmB43dxImMvg79KXxWApKTMxIuwc6IK8lcOMBFy7jmN38lXTZssYI-F-nNf1pdPUfeIDjigB7k2SUvT2TvOw6VQk_jeNEZ_mGRARx4k85tm43OKB22aePoQEncZ1QNJ-eVYsnKbjMONqtkrahFZlwCxNEL2SMM33SAKTZuUiI4zj"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-high via-transparent to-transparent"></div>
+<div class="absolute top-3 right-3">
+<span class="px-2.5 py-1 bg-surface-container-lowest/90 backdrop-blur border border-secondary/40 rounded font-spec-code text-[11px] font-bold text-secondary tracking-wider">AUTONOMOUS</span>
+</div>
+</div>
+<div class="p-6 flex-1 flex flex-col justify-between space-y-4">
+<div>
+<h3 class="font-headline-md text-xl font-bold text-primary tracking-tight group-hover:text-primary-container transition-colors">Autonomous Drone Fleets</h3>
+<p class="text-on-surface-variant text-sm line-clamp-2 mt-2 leading-relaxed">AI-driven swarm intelligence systems capable of coordinated multi-domain strikes and perimeter surveillance.</p>
+</div>
+<div class="grid grid-cols-3 gap-2 border-t border-white/10 pt-4">
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant font-medium">UNITS</p>
+<p class="font-spec-code text-sm font-bold text-primary-container">12,000+</p>
+</div>
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant font-medium">COMMS</p>
+<p class="font-spec-code text-sm font-bold text-primary-container">QUANTUM</p>
+</div>
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant font-medium">LEVEL</p>
+<p class="font-spec-code text-sm font-bold text-primary-container">SIGMA</p>
+</div>
+</div>
+</div>
+<div class="h-1 w-full bg-white/5">
+<div class="h-full bg-primary-container w-0 group-hover:w-full transition-all duration-500 ease-out"></div>
+</div>
+</div>
+<!-- Card 3: Cyber Warfare Arrays -->
+<div class="group relative bg-surface-container-high/60 backdrop-blur-xl border border-white/10 rounded-lg hover:border-primary-container/50 transition-all duration-300 overflow-hidden flex flex-col shadow-lg">
+<div class="aspect-[16/10] overflow-hidden relative bg-surface-container-highest">
+<img alt="Cyber Warfare Server Infrastructure" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAO9FNMaWMGu-jOhDi-RRlbe__kfulPmNJFFXbb9hagBl68OACa5ZuJ7YnDuFjGxfMK418ijf0zqjCHh2QJSJiNzhg8-FF8R_yr03rt0lTQYPu7N2m_PXx4_riqGgTYHCQTdfgRVAOIJi8GFmTNY_jZvzZHoUV84aYpSvwswXAhlLx1Q-0O3fyoiX44pt0fEYwaGsBLq714K90L0soyWG_sDCrTl13zIEGmmJy15vSob5S6W6cSSjhnCSVbkL4yE53bbsYoTOaZBRvx"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-high via-transparent to-transparent"></div>
+<div class="absolute top-3 right-3">
+<span class="px-2.5 py-1 bg-surface-container-lowest/90 backdrop-blur border border-primary-container/40 rounded font-spec-code text-[11px] font-bold text-primary-container tracking-wider">VIRTUAL</span>
+</div>
+</div>
+<div class="p-6 flex-1 flex flex-col justify-between space-y-4">
+<div>
+<h3 class="font-headline-md text-xl font-bold text-primary tracking-tight group-hover:text-primary-container transition-colors">Cyber Warfare Arrays</h3>
+<p class="text-on-surface-variant text-sm line-clamp-2 mt-2 leading-relaxed">Offensive and defensive digital assets designed for infrastructure protection and high-fidelity encryption.</p>
+</div>
+<div class="grid grid-cols-3 gap-2 border-t border-white/10 pt-4">
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant font-medium">BAND</p>
+<p class="font-spec-code text-sm font-bold text-primary-container">800TB/S</p>
+</div>
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant font-medium">ENCR</p>
+<p class="font-spec-code text-sm font-bold text-primary-container">AES-X</p>
+</div>
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant font-medium">LEVEL</p>
+<p class="font-spec-code text-sm font-bold text-primary-container">ALPHA</p>
+</div>
+</div>
+</div>
+<div class="h-1 w-full bg-white/5">
+<div class="h-full bg-primary-container w-0 group-hover:w-full transition-all duration-500 ease-out"></div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer Section -->
+<footer class="w-full py-14 px-6 lg:px-16 bg-surface-container-lowest border-t border-white/10 ml-0 lg:pl-28">
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-12">
+<div class="space-y-4 max-w-sm">
+<div class="flex items-center gap-3">
+<span class="w-2.5 h-2.5 bg-primary-container rounded-full"></span>
+<h3 class="font-display-lg text-xl font-extrabold tracking-tight text-white">AEGIS COMMAND</h3>
+</div>
+<p class="font-body-md text-sm text-on-surface-variant leading-relaxed">
+                Providing real-time technical intelligence for the next generation of defense strategic planning and autonomous threat cataloging.
+            </p>
+<p class="font-spec-code text-[11px] text-secondary/70 tracking-widest pt-2">
+                © 2024 DEFENSE INTELLIGENCE NETWORK. ALL RIGHTS RESERVED. CLASSIFIED MATERIAL.
+            </p>
+</div>
+<div class="grid grid-cols-2 gap-12 sm:gap-20">
+<div class="space-y-3">
+<p class="font-label-caps text-xs tracking-wider text-primary-container font-bold mb-4">RESOURCES</p>
+<ul class="space-y-2.5 font-spec-code text-xs">
+<li><a class="text-on-surface-variant hover:text-primary-container transition-colors" href="#">SITEMAP</a></li>
+<li><a class="text-on-surface-variant hover:text-primary-container transition-colors" href="#">API_DOCS</a></li>
+<li><a class="text-on-surface-variant hover:text-primary-container transition-colors" href="#">SECURITY_PROTOCOL</a></li>
+</ul>
+</div>
+<div class="space-y-3">
+<p class="font-label-caps text-xs tracking-wider text-primary-container font-bold mb-4">COMMAND</p>
+<ul class="space-y-2.5 font-spec-code text-xs">
+<li><a class="text-on-surface-variant hover:text-primary-container transition-colors" href="#">CONTACT_COMMAND</a></li>
+<li><a class="text-on-surface-variant hover:text-primary-container transition-colors" href="#">INTEL_SUBMIT</a></li>
+<li><a class="text-primary-container hover:underline transition-colors font-semibold" href="#">ACCESS_LOGIN</a></li>
+</ul>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;700&amp;family=Inter:wght@400;500;700&amp;family=Jetbrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;family=Inter:wght@100..900&amp;family=JetBrains+Mono:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<style>
+        @keyframes pulse-cyan {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.05); }
+        }
+        .radar-pulse {
+            animation: radar-beam 4s linear infinite;
+        }
+        @keyframes radar-beam {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .scanline {
+            background: linear-gradient(to bottom, transparent 50%, rgba(0, 242, 255, 0.05) 50%);
+            background-size: 100% 4px;
+        }
+        .glass-panel {
+            backdrop-filter: blur(20px);
+            background: rgba(16, 20, 21, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glass-panel:hover {
+            border-color: rgba(0, 242, 255, 0.5);
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.1);
+        }
+        .targeting-bracket::before, .targeting-bracket::after {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-color: rgba(0, 242, 255, 0.6);
+        }
+        .bracket-tl::before { top: 0; left: 0; border-top: 1px solid; border-left: 1px solid; }
+        .bracket-tr::after { top: 0; right: 0; border-top: 1px solid; border-right: 1px solid; }
+        .bracket-bl::before { bottom: 0; left: 0; border-bottom: 1px solid; border-left: 1px solid; }
+        .bracket-br::after { bottom: 0; right: 0; border-bottom: 1px solid; border-right: 1px solid; }
+    </style>
+<script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {"on-tertiary-container": "#346f00", "inverse-primary": "#006d37", "on-tertiary": "#173800", "on-secondary-fixed-variant": "#004e5d", error: "#ffb4ab", "on-surface-variant": "#b9cbb9", "on-secondary-fixed": "#001f26", "secondary-container": "#00d9ff", "inverse-surface": "#e0e2e9", "tertiary-container": "#7dfb00", "error-container": "#93000a", "primary-fixed": "#60ff99", "surface-container-low": "#181c20", "on-primary-container": "#007139", "on-tertiary-fixed": "#0b2000", "on-error": "#690005", "outline-variant": "#3b4b3d", "on-primary-fixed-variant": "#005228", "on-secondary-container": "#005b6c", "on-surface": "#e0e2e9", outline: "#849585", "on-tertiary-fixed-variant": "#245100", "tertiary-fixed-dim": "#6fe000", primary: "#f1ffef", "surface-variant": "#31353a", "secondary-fixed": "#aeecff", "surface-container": "#1c2024", "on-primary-fixed": "#00210c", "on-background": "#e0e2e9", "inverse-on-surface": "#2d3136", "surface-container-highest": "#31353a", tertiary: "#f4ffe5", "on-primary": "#003919", surface: "#101418", "surface-bright": "#36393e", "tertiary-fixed": "#82ff14", "on-error-container": "#ffdad6", secondary: "#aeecff", "surface-container-high": "#272a2f", "on-secondary": "#003641", "secondary-fixed-dim": "#00d9ff", "primary-container": "#00ff88", "surface-container-lowest": "#0b0f13", background: "#101418", "surface-tint": "#00e479", "surface-dim": "#101418", "primary-fixed-dim": "#00e479"}, borderRadius: {DEFAULT: "0.125rem", lg: "0.25rem", xl: "0.5rem", full: "0.75rem"}, spacing: {gutter: "32px", "margin-mobile": "24px", unit: "4px", "margin-desktop": "80px", "container-max": "1440px", "section-gap": "120px"}, fontFamily: {"headline-lg": ["Sora"], "body-lg": ["Inter"], "body-md": ["Inter"], "headline-md": ["Geist"], "spec-code": ["JetBrains Mono"], "headline-lg-mobile": ["Sora"], "display-lg": ["Sora"], "label-caps": ["JetBrains Mono"], "label-mono": ["JetBrains Mono"]}, fontSize: {"headline-lg": ["48px", {lineHeight: "1.2", letterSpacing: "-0.02em", fontWeight: "700"}], "body-lg": ["18px", {lineHeight: "1.6", fontWeight: "400"}], "body-md": ["16px", {lineHeight: "1.6", fontWeight: "400"}], "headline-md": ["32px", {lineHeight: "40px", fontWeight: "600"}], "spec-code": ["14px", {lineHeight: "20px", letterSpacing: "0.05em", fontWeight: "500"}], "headline-lg-mobile": ["32px", {lineHeight: "1.2", fontWeight: "700"}], "display-lg": ["84px", {lineHeight: "1.1", letterSpacing: "-0.04em", fontWeight: "800"}], "label-caps": ["12px", {lineHeight: "16px", letterSpacing: "0.1em", fontWeight: "700"}], "label-mono": ["12px", {lineHeight: "1.2", letterSpacing: "0.1em", fontWeight: "500"}]}}}};</script>
+</head>
+<body class="bg-background text-on-surface selection:bg-primary-container selection:text-on-primary-container">
+<div class="fixed inset-0 pointer-events-none z-0">
+<div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/grid-me.png')] opacity-10"></div>
+<div class="scanline absolute inset-0 opacity-20"></div>
+</div>
+<nav class="fixed top-0 w-full z-50 flex justify-between items-center px-gutter py-4 bg-surface/60 backdrop-blur-xl border-b border-white/10 shadow-[0_0_15px_rgba(0,242,255,0.1)]">
+<div class="flex flex-col"><div class="font-headline-md text-headline-md font-bold tracking-tighter text-primary-container flex items-center gap-2"><span class="w-2.5 h-2.5 bg-gradient-to-t from-emerald-600 via-white to-amber-500 rounded-full animate-pulse"></span>BHARAT DEFENSE NEXUS</div><span class="font-label-caps text-[9px] text-on-surface-variant tracking-wider">MINISTRY OF DEFENCE // TRI-SERVICE TACTICAL ARSENAL</span></div>
+<div class="hidden md:flex gap-8 items-center">
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors" href="#">STRATEGY</a>
+<a class="font-label-caps text-label-caps text-primary-container border-b-2 border-primary-container pb-1" href="#">DATABASE</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors" href="#">LOGISTICS</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors" href="#">INTELLIGENCE</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-primary-container hover:bg-white/5 p-2 transition-all"><span class="material-symbols-outlined">settings_input_antenna</span></button>
+<button class="text-primary-container hover:bg-white/5 p-2 transition-all"><span class="material-symbols-outlined">notifications_active</span></button>
+</div>
+</nav>
+<aside class="fixed left-0 top-0 h-full z-40 flex flex-col bg-surface-container-low/40 backdrop-blur-2xl border-r border-white/10 w-20 hover:w-64 transition-all duration-500 group">
+<div class="mt-24 px-6 mb-12">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary-fixed-dim text-3xl">radar</span>
+<div class="opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+<div class="font-headline-md text-headline-md text-primary-fixed scale-75 origin-left">TRI-SERVICE HUD</div>
+<div class="font-label-caps text-label-caps text-on-surface-variant text-[10px]">BDN_ATMANIRBHAR_v4.2</div>
+</div>
+</div>
+</div>
+<div class="flex-1 flex flex-col">
+<div class="flex items-center gap-4 bg-primary-container/20 text-primary-container border-l-4 border-primary-container p-4">
+<span class="material-symbols-outlined">radar</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity">RADAR</span>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant p-4 hover:bg-primary/10 hover:text-primary cursor-pointer transition-colors">
+<span class="material-symbols-outlined">satellite_alt</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity">SATELLITE</span>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant p-4 hover:bg-primary/10 hover:text-primary cursor-pointer transition-colors">
+<span class="material-symbols-outlined">directions_boat</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity">FLEET</span>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant p-4 hover:bg-primary/10 hover:text-primary cursor-pointer transition-colors">
+<span class="material-symbols-outlined">target</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity">TARGETING</span>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant p-4 hover:bg-primary/10 hover:text-primary cursor-pointer transition-colors">
+<span class="material-symbols-outlined">database</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity">ARCHIVE</span>
+</div>
+</div>
+<div class="p-4 border-t border-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+<div class="relative w-48 h-48 mx-auto mb-6 bg-black/40 rounded-full border border-primary/20 overflow-hidden">
+<div class="radar-pulse absolute inset-0 border-r border-primary/40 origin-center"></div>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="w-3/4 h-3/4 border border-primary/10 rounded-full"></div>
+<div class="absolute w-1/2 h-1/2 border border-primary/10 rounded-full"></div>
+</div>
+<div class="absolute top-1/4 left-1/3 w-1 h-1 bg-primary shadow-[0_0_5px_cyan] rounded-full animate-pulse"></div>
+<div class="absolute bottom-1/3 right-1/4 w-1 h-1 bg-primary shadow-[0_0_5px_cyan] rounded-full animate-pulse delay-700"></div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between font-label-caps text-[10px]">
+<span class="text-on-surface-variant">CORE TEMP</span>
+<span class="text-primary-container">34°C</span>
+</div>
+<div class="w-full h-1 bg-white/5 overflow-hidden">
+<div class="w-4/5 h-full bg-primary-container"></div>
+</div>
+</div>
+</div>
+</aside>
+<main class="ml-20 pt-24 pb-20 px-margin-desktop min-h-screen">
+<header class="mb-10 flex flex-col gap-6"><div class="flex flex-col md:flex-row md:items-end justify-between gap-6"><div class="max-w-3xl flex-1"><div class="flex items-center gap-3 mb-2"><span class="px-2 py-0.5 bg-primary-container/10 border border-primary-container/30 text-primary-container font-label-caps text-[10px] tracking-widest flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>DEFENCE R&amp;D // MAKE IN INDIA</span><span class="font-spec-code text-[11px] text-primary/60">MISSION CODE: ATMANIRBHAR_DEFENCE_2025</span></div><h1 class="font-headline-lg text-3xl md:text-headline-lg text-primary-container tracking-tight leading-tight mb-2">INDIAN ARMED FORCES ARSENAL // ATMANIRBHAR BHARAT</h1><p class="font-body-md text-sm text-on-surface-variant max-w-2xl">Comprehensive tactical repository of indigenous combat aircraft, armored mechanized divisions, nuclear stealth submarines, and advanced supersonic missile deterrent systems deployed across the Tri-Services.</p></div><div class="flex flex-wrap gap-3 font-spec-code text-xs"><div class="glass-panel px-4 py-2 border border-primary/20"><span class="block text-primary/50 text-[10px] font-label-caps">TRI-SERVICE INDIGENIZATION</span><span class="text-primary-container font-bold text-sm">78.4% RATE</span></div><div class="glass-panel px-4 py-2 border border-primary/20"><span class="block text-primary/50 text-[10px] font-label-caps">STRATEGIC ASSETS</span><span class="text-secondary font-bold text-sm">184+ SYSTEMS</span></div><div class="glass-panel px-4 py-2 border border-primary/20"><span class="block text-primary/50 text-[10px] font-label-caps">READINESS</span><span class="text-primary-fixed font-bold text-sm">COMBAT OPTIMAL</span></div></div></div><div class="flex flex-col md:flex-row gap-4 justify-between items-center"><div class="flex items-center bg-surface-container-high/40 border-b border-primary/50 px-4 py-3 gap-4 backdrop-blur-md w-full md:w-2/3"><span class="material-symbols-outlined text-primary">search</span><input class="bg-transparent border-none focus:ring-0 text-primary-container font-spec-code w-full placeholder:text-primary/30 text-sm" placeholder="QUERY BHARAT ARSENAL BY ASSET, DESIGNATION, RADAR OR PAYLOAD..." type="text"/><button class="bg-primary-container/10 border border-primary/30 px-3 py-1 font-label-caps text-primary text-[10px] hover:bg-primary-container hover:text-black transition-all flex items-center gap-1"><span class="material-symbols-outlined text-sm">tune</span>FILTERS</button></div><div class="flex gap-4 w-full md:w-auto justify-end"><div class="flex flex-col gap-1"><label class="font-label-caps text-[10px] text-on-surface-variant">COMMAND SECTOR</label><select class="bg-surface-container-high border border-white/10 text-on-surface text-xs font-spec-code py-2 px-3 focus:border-primary-container outline-none pr-8"><option>ALL INTEGRATED THEATRES</option><option>NORTHERN COMMAND (LEH/UDHAMPUR)</option><option>WESTERN THEATRE (CHANDIMANDIR)</option><option>EASTERN AIR/ARMY (SHILLONG/KOLKATA)</option><option>SOUTHERN NAVAL COMMAND (KOCHI)</option><option>STRATEGIC FORCES COMMAND (NEW DELHI)</option></select></div></div></div><div class="flex gap-2 overflow-x-auto pb-2 border-b border-white/10"><button class="bg-primary-container text-black font-label-caps text-[11px] px-4 py-1.5 font-bold transition-all">ALL TRI-SERVICES</button><button class="glass-panel text-on-surface-variant hover:text-primary hover:border-primary-container font-label-caps text-[11px] px-4 py-1.5 transition-all whitespace-nowrap">INDIAN ARMY (ARMOR &amp; ARTILLERY)</button><button class="glass-panel text-on-surface-variant hover:text-primary hover:border-primary-container font-label-caps text-[11px] px-4 py-1.5 transition-all whitespace-nowrap">INDIAN NAVY (MARITIME &amp; SUB-SURFACE)</button><button class="glass-panel text-on-surface-variant hover:text-primary hover:border-primary-container font-label-caps text-[11px] px-4 py-1.5 transition-all whitespace-nowrap">INDIAN AIR FORCE (AEROSPACE)</button><button class="glass-panel text-on-surface-variant hover:text-primary hover:border-primary-container font-label-caps text-[11px] px-4 py-1.5 transition-all whitespace-nowrap">STRATEGIC MISSILES &amp; BOMBS</button><button class="glass-panel text-on-surface-variant hover:text-primary hover:border-primary-container font-label-caps text-[11px] px-4 py-1.5 transition-all whitespace-nowrap">INFANTRY WEAPONS &amp; SMALL ARMS</button></div></header>
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"><!-- 1. HAL TEJAS MK1A -->
+<div class="glass-panel group relative flex flex-col p-6 transition-all duration-300 hover:border-primary-container">
+<div class="targeting-bracket bracket-tl bracket-tr bracket-bl bracket-br absolute inset-0 pointer-events-none opacity-40 group-hover:opacity-100 transition-opacity"></div>
+<div class="h-48 mb-6 overflow-hidden relative">
+<img alt="HAL Tejas Mk1A LCA" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" src="https://lh3.googleusercontent.com/aida/ALJJyrD1kch8AJRxAou3OHt7QTbM5y_4hool7e8k5hvcRNW8Si3hX51-aahn7TnU3ljczGk6ck6TfmPcYWyEsT2u5lHdWwT7uChB4W-XJQ6j8MydXexVo3hOMdq6Ve4mG_vHa36Je4959llwpYj6IgILW-Fd-Mj1huREJ_TF74E1sDlhW4P2yIfNHBgTyQHH640EcxMshWcVi9kkeOGqpNT_7QRsYnpozMwiH8Ne2YqDuHhu0w"/>
+<div class="absolute top-2 right-2 bg-black/60 px-2 py-1 border border-primary/20 flex items-center gap-2">
+<span class="w-4 h-3 bg-gradient-to-t from-emerald-600 via-white to-amber-500 border-[0.5px] border-white/20"></span>
+<span class="font-label-caps text-[8px] text-white">IND</span>
+</div>
+<div class="absolute bottom-2 left-2 bg-black/70 px-2 py-0.5 border border-primary/30 text-[9px] font-spec-code text-primary-container">IAF // SQUADRON 45 FLYING DAGGERS</div>
+</div>
+<div class="flex-1 flex flex-col">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="font-headline-md text-xl text-primary leading-none">HAL TEJAS MK1A</h3>
+<p class="font-label-caps text-[10px] text-primary/60 mt-1">4.5TH GEN LIGHT COMBAT AIRCRAFT</p>
+</div>
+<span class="font-spec-code text-[10px] bg-primary-container/20 text-primary-container border border-primary-container/40 px-2">STATUS: ACTIVE / OPERATIONAL</span>
+</div>
+<div class="grid grid-cols-2 gap-3 my-4 font-spec-code text-[11px] text-on-surface-variant border-y border-white/5 py-3">
+<div><span class="block opacity-40 mb-0.5">MAX SPEED</span><span class="text-primary-container">MACH 1.6</span></div>
+<div><span class="block opacity-40 mb-0.5">COMBAT CEILING</span><span class="text-primary-container">50,000 FT</span></div>
+<div><span class="block opacity-40 mb-0.5">AVIONICS</span><span class="text-primary-container">UTTAM AESA RADAR</span></div>
+<div><span class="block opacity-40 mb-0.5">WEAPONS / BVR</span><span class="text-primary-container">ASTRA MK-1 / ASRAAM</span></div>
+<div><span class="block opacity-40 mb-0.5">ORIGIN</span><span class="text-secondary">HAL / ADA (INDIA)</span></div>
+<div><span class="block opacity-40 mb-0.5">EW SUITE</span><span class="text-primary-fixed">INDIGENOUS DARE EW</span></div>
+</div>
+<button class="mt-auto w-full border border-primary/30 py-3 font-label-caps text-primary hover:bg-primary-container hover:text-black transition-all group-hover:border-primary-container flex items-center justify-center gap-2"><span class="material-symbols-outlined text-sm">visibility</span>VIEW INTEL DATA</button>
+</div>
+</div>
+<!-- 2. HAL AMCA -->
+<div class="glass-panel group relative flex flex-col p-6 transition-all duration-300 hover:border-primary-container">
+<div class="targeting-bracket bracket-tl bracket-tr bracket-bl bracket-br absolute inset-0 pointer-events-none opacity-40 group-hover:opacity-100 transition-opacity"></div>
+<div class="h-48 mb-6 overflow-hidden relative">
+<img alt="HAL AMCA 5th Gen Stealth Multirole Fighter" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" src="https://lh3.googleusercontent.com/aida/ALJJyrCl-SYmdy9udz87LKAT2TSSKNP2ZQcypuZTRvtCI_3HJ7CGjxchjiuwu44YBvzMqcVEGunhTiEf9YeJxxvyuWXal4jjLCr2poHVJ_f8A1jo_k1V_nDw4ZxOLxpCu3R7VXPyc8y4REplmRANnFEBJ4I5Mq02_sbNECGqC7PDuVezpEVOje69WacCXZPfBXY9pHCrUwW0QaXQ2SlUCyZg7k7ojEnoweqwTOqyS014gpZJVQ"/>
+<div class="absolute top-2 right-2 bg-black/60 px-2 py-1 border border-primary/20 flex items-center gap-2">
+<span class="w-4 h-3 bg-gradient-to-t from-emerald-600 via-white to-amber-500 border-[0.5px] border-white/20"></span>
+<span class="font-label-caps text-[8px] text-white">IND</span>
+</div>
+<div class="absolute bottom-2 left-2 bg-black/70 px-2 py-0.5 border border-primary/30 text-[9px] font-spec-code text-primary-container">IAF FUTURE STEALTH FLEET</div>
+</div>
+<div class="flex-1 flex flex-col">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="font-headline-md text-xl text-primary leading-none">HAL AMCA</h3>
+<p class="font-label-caps text-[10px] text-primary/60 mt-1">5TH GEN STEALTH MULTIROLE FIGHTER</p>
+</div>
+<span class="font-spec-code text-[10px] bg-secondary-container/20 text-secondary border border-secondary/40 px-2">STATUS: DEVELOPMENT / PROTOTYPE</span>
+</div>
+<div class="grid grid-cols-2 gap-3 my-4 font-spec-code text-[11px] text-on-surface-variant border-y border-white/5 py-3">
+<div><span class="block opacity-40 mb-0.5">MAX SPEED</span><span class="text-primary-container">MACH 2.15</span></div>
+<div><span class="block opacity-40 mb-0.5">STEALTH LVL</span><span class="text-primary-container">CLASS 5 (SERPENTINE)</span></div>
+<div><span class="block opacity-40 mb-0.5">INTERNAL PAYLOAD</span><span class="text-primary-container">6,500 KG INT/EXT</span></div>
+<div><span class="block opacity-40 mb-0.5">PROPULSION</span><span class="text-primary-container">TWIN 110KN TURBOFAN</span></div>
+<div><span class="block opacity-40 mb-0.5">ORIGIN</span><span class="text-secondary">DRDO / ADA / HAL</span></div>
+<div><span class="block opacity-40 mb-0.5">AVIONICS</span><span class="text-primary-fixed">AESA + IRST 360°</span></div>
+</div>
+<button class="mt-auto w-full border border-primary/30 py-3 font-label-caps text-primary hover:bg-primary-container hover:text-black transition-all group-hover:border-primary-container flex items-center justify-center gap-2"><span class="material-symbols-outlined text-sm">visibility</span>VIEW INTEL DATA</button>
+</div>
+</div>
+<!-- 3. ARJUN MK-1A MBT -->
+<div class="glass-panel group relative flex flex-col p-6 transition-all duration-300 hover:border-primary-container">
+<div class="targeting-bracket bracket-tl bracket-tr bracket-bl bracket-br absolute inset-0 pointer-events-none opacity-40 group-hover:opacity-100 transition-opacity"></div>
+<div class="h-48 mb-6 overflow-hidden relative">
+<img alt="Arjun Mk1A Main Battle Tank Indian Army" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB4mODHGy5GB6vznIcFQ-PkH98v2yBLIy1RhaB9q2pP2E4Ted94mR8k_MpsbDeRQLvhsI-Kw6GhzpxXCj4WZyXa2kM_NaZUvn1MBshOwAnxZxAEXbFGIzb1vzr10y6c0uOxG178rfayoIQxo4ircyaHfKA5OTZvQnpHiwdX__ZIHgIIzy-O5rhY6F9KcW5JZf98Y9DBd9kkKKC7kC4DnOOZT2NbhHILA_Eofrd9jDjx"/>
+<div class="absolute top-2 right-2 bg-black/60 px-2 py-1 border border-primary/20 flex items-center gap-2">
+<span class="w-4 h-3 bg-gradient-to-t from-emerald-600 via-white to-amber-500 border-[0.5px] border-white/20"></span>
+<span class="font-label-caps text-[8px] text-white">IND</span>
+</div>
+<div class="absolute bottom-2 left-2 bg-black/70 px-2 py-0.5 border border-primary/30 text-[9px] font-spec-code text-primary-container">INDIAN ARMY // ARMORED CORPS</div>
+</div>
+<div class="flex-1 flex flex-col">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="font-headline-md text-xl text-primary leading-none">ARJUN MK-1A MBT</h3>
+<p class="font-label-caps text-[10px] text-primary/60 mt-1">HUNTER-KILLER MAIN BATTLE TANK</p>
+</div>
+<span class="font-spec-code text-[10px] bg-primary-container/20 text-primary-container border border-primary-container/40 px-2">STATUS: IN SERVICE</span>
+</div>
+<div class="grid grid-cols-2 gap-3 my-4 font-spec-code text-[11px] text-on-surface-variant border-y border-white/5 py-3">
+<div><span class="block opacity-40 mb-0.5">MAIN ARMAMENT</span><span class="text-primary-container">120MM RIFLED GUN</span></div>
+<div><span class="block opacity-40 mb-0.5">PROTECTION</span><span class="text-primary-container">KANCHAN + ERA ARMOUR</span></div>
+<div><span class="block opacity-40 mb-0.5">COMBAT WEIGHT</span><span class="text-primary-container">68 TONNES</span></div>
+<div><span class="block opacity-40 mb-0.5">DEFENSE SUITE</span><span class="text-primary-container">ALWCS LASER WARNING</span></div>
+<div><span class="block opacity-40 mb-0.5">ORIGIN</span><span class="text-secondary">CVRDE / AVNL (INDIA)</span></div>
+<div><span class="block opacity-40 mb-0.5">FIRE CONTROL</span><span class="text-primary-fixed">AUTO TARGET TRACKER</span></div>
+</div>
+<button class="mt-auto w-full border border-primary/30 py-3 font-label-caps text-primary hover:bg-primary-container hover:text-black transition-all group-hover:border-primary-container flex items-center justify-center gap-2"><span class="material-symbols-outlined text-sm">visibility</span>VIEW INTEL DATA</button>
+</div>
+</div>
+<!-- 4. PINAKA MBRL MK-II -->
+<div class="glass-panel group relative flex flex-col p-6 transition-all duration-300 hover:border-primary-container">
+<div class="targeting-bracket bracket-tl bracket-tr bracket-bl bracket-br absolute inset-0 pointer-events-none opacity-40 group-hover:opacity-100 transition-opacity"></div>
+<div class="h-48 mb-6 overflow-hidden relative">
+<img alt="Pinaka Multi-Barrel Rocket Launcher MBRL" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1SWDPfFFVzS75B12--p5ba5uC9UE5h5EKhbTN4KHWkcQlsLHDE1H8JrqSiJ6csYp5UQAIvjyE3W7BgQZqTDERaEJ3ApDe-t_92mZqkxUqASPMNu5irBlAXuS38EUIW2FVNkDdkYtkf9nJkmV53ovmwQYKnS1kY7On1dHPlShjOU2usN1MsnhP6S1g48yql906bax3nZtmRFQ4MU1K92Ba0kce8QXHLDciYf__q_-p"/>
+<div class="absolute top-2 right-2 bg-black/60 px-2 py-1 border border-primary/20 flex items-center gap-2">
+<span class="w-4 h-3 bg-gradient-to-t from-emerald-600 via-white to-amber-500 border-[0.5px] border-white/20"></span>
+<span class="font-label-caps text-[8px] text-white">IND</span>
+</div>
+<div class="absolute bottom-2 left-2 bg-black/70 px-2 py-0.5 border border-primary/30 text-[9px] font-spec-code text-primary-container">REGIMENT OF ARTILLERY</div>
+</div>
+<div class="flex-1 flex flex-col">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="font-headline-md text-xl text-primary leading-none">PINAKA MBRL MK-II</h3>
+<p class="font-label-caps text-[10px] text-primary/60 mt-1">MULTI-BARREL GUIDED ROCKET ARTILLERY</p>
+</div>
+<span class="font-spec-code text-[10px] bg-primary/10 text-primary border border-primary/20 px-2">STATUS: ACTIVE COMBAT DEPLOYED</span>
+</div>
+<div class="grid grid-cols-2 gap-3 my-4 font-spec-code text-[11px] text-on-surface-variant border-y border-white/5 py-3">
+<div><span class="block opacity-40 mb-0.5">MAX RANGE</span><span class="text-primary-container">75 - 90 KM</span></div>
+<div><span class="block opacity-40 mb-0.5">SALVO RATE</span><span class="text-primary-container">12 ROCKETS IN 44 SEC</span></div>
+<div><span class="block opacity-40 mb-0.5">GUIDANCE</span><span class="text-primary-container">NAVIC / GPS SATELLITE</span></div>
+<div><span class="block opacity-40 mb-0.5">CHASSIS</span><span class="text-primary-container">BEML-TATRA 8x8</span></div>
+<div><span class="block opacity-40 mb-0.5">ORIGIN</span><span class="text-secondary">ARDE / DRDO (INDIA)</span></div>
+<div><span class="block opacity-40 mb-0.5">LETHALITY</span><span class="text-primary-fixed">AREA SATURATION</span></div>
+</div>
+<button class="mt-auto w-full border border-primary/30 py-3 font-label-caps text-primary hover:bg-primary-container hover:text-black transition-all group-hover:border-primary-container flex items-center justify-center gap-2"><span class="material-symbols-outlined text-sm">visibility</span>VIEW INTEL DATA</button>
+</div>
+</div>
+<!-- 5. BRAHMOS EXTENDED RANGE -->
+<div class="glass-panel group relative flex flex-col p-6 transition-all duration-300 hover:border-primary-container">
+<div class="targeting-bracket bracket-tl bracket-tr bracket-bl bracket-br absolute inset-0 pointer-events-none opacity-40 group-hover:opacity-100 transition-opacity"></div>
+<div class="h-48 mb-6 overflow-hidden relative">
+<img alt="BrahMos Supersonic Cruise Missile System" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCEvN9sH-CRTr7AddreUqvTKKbNKuhfwsaS3jigZtTqxKfDwjfVWMlPuFq8mkouL6EnUOWj15Y1DDVDkorhYtoFvYOB3PLyZlot21YOL79YBxMeVKEBcCu-s3Mf976jIv9t36LDvjWQiovPARFYbSEA10tHsk9e3VYuWZzD6UaqWqd6nl-GrA7CV8tz7164AezN9OL75mRUX3Ls7NIlon1ffIKA-5plrN7Zutku96X2"/>
+<div class="absolute top-2 right-2 bg-black/60 px-2 py-1 border border-primary/20 flex items-center gap-2">
+<span class="w-4 h-3 bg-gradient-to-t from-emerald-600 via-white to-amber-500 border-[0.5px] border-white/20"></span>
+<span class="font-label-caps text-[8px] text-white">IND</span>
+</div>
+<div class="absolute bottom-2 left-2 bg-black/70 px-2 py-0.5 border border-primary/30 text-[9px] font-spec-code text-primary-container">TRI-SERVICE STRATEGIC CRUISE MISSILE</div>
+</div>
+<div class="flex-1 flex flex-col">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="font-headline-md text-xl text-primary leading-none">BRAHMOS-ER</h3>
+<p class="font-label-caps text-[10px] text-primary/60 mt-1">SUPERSONIC CRUISE MISSILE SYSTEM</p>
+</div>
+<span class="font-spec-code text-[10px] bg-primary-container/20 text-primary-container border border-primary-container/40 px-2">STATUS: OPERATIONAL / DEPLOYED</span>
+</div>
+<div class="grid grid-cols-2 gap-3 my-4 font-spec-code text-[11px] text-on-surface-variant border-y border-white/5 py-3">
+<div><span class="block opacity-40 mb-0.5">MAX VELOCITY</span><span class="text-primary-container">MACH 3.0</span></div>
+<div><span class="block opacity-40 mb-0.5">STRIKE RANGE</span><span class="text-primary-container">450 - 500 KM</span></div>
+<div><span class="block opacity-40 mb-0.5">LAUNCH VECTOR</span><span class="text-primary-container">LAND / AIR / NAVAL</span></div>
+<div><span class="block opacity-40 mb-0.5">PROPULSION</span><span class="text-primary-container">SOLID + RAMJET</span></div>
+<div><span class="block opacity-40 mb-0.5">ORIGIN</span><span class="text-secondary">BRAHMOS CORP / DRDO</span></div>
+<div><span class="block opacity-40 mb-0.5">ACCURACY</span><span class="text-primary-fixed">PINPOINT CEP &lt; 1M</span></div>
+</div>
+<button class="mt-auto w-full border border-primary/30 py-3 font-label-caps text-primary hover:bg-primary-container hover:text-black transition-all group-hover:border-primary-container flex items-center justify-center gap-2"><span class="material-symbols-outlined text-sm">visibility</span>VIEW INTEL DATA</button>
+</div>
+</div>
+<!-- 6. INS VIKRANT IAC-1 -->
+<div class="glass-panel group relative flex flex-col p-6 transition-all duration-300 hover:border-primary-container">
+<div class="targeting-bracket bracket-tl bracket-tr bracket-bl bracket-br absolute inset-0 pointer-events-none opacity-40 group-hover:opacity-100 transition-opacity"></div>
+<div class="h-48 mb-6 overflow-hidden relative">
+<img alt="INS Vikrant Indigenous Aircraft Carrier" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_9Vyapc9ANz4gl3IGkjuT9B3DU5hji4a_-EuuKlwIQccZrTo2IDXxDZ31iyyTYh9rLX3IexBV8qEOvnTEG7QhYrAsGIAaR-4owkNUO0d4QOQnXE7hrM8Mo9zYGAhUVdQqW3OG9uQ29kz4_3PKxhcAN4EAcnj3dE0bR1PUOOGojVcfJfase6WxNW6r8P-Zr5qYEEABH_Bqfhwvi-jIqiBYdy7A6HD_V3p7fpVvZx9F"/>
+<div class="absolute top-2 right-2 bg-black/60 px-2 py-1 border border-primary/20 flex items-center gap-2">
+<span class="w-4 h-3 bg-gradient-to-t from-emerald-600 via-white to-amber-500 border-[0.5px] border-white/20"></span>
+<span class="font-label-caps text-[8px] text-white">IND</span>
+</div>
+<div class="absolute bottom-2 left-2 bg-black/70 px-2 py-0.5 border border-primary/30 text-[9px] font-spec-code text-primary-container">INDIAN NAVY // CARRIER BATTLE GROUP</div>
+</div>
+<div class="flex-1 flex flex-col">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="font-headline-md text-xl text-primary leading-none">INS VIKRANT IAC-1</h3>
+<p class="font-label-caps text-[10px] text-primary/60 mt-1">INDIGENOUS AIRCRAFT CARRIER</p>
+</div>
+<span class="font-spec-code text-[10px] bg-primary-container/20 text-primary-container border border-primary-container/40 px-2">STATUS: COMMISSIONED FLAGSHIP</span>
+</div>
+<div class="grid grid-cols-2 gap-3 my-4 font-spec-code text-[11px] text-on-surface-variant border-y border-white/5 py-3">
+<div><span class="block opacity-40 mb-0.5">DISPLACEMENT</span><span class="text-primary-container">45,000 TONNES</span></div>
+<div><span class="block opacity-40 mb-0.5">HULL LENGTH</span><span class="text-primary-container">262 METERS</span></div>
+<div><span class="block opacity-40 mb-0.5">FLIGHT DECK</span><span class="text-primary-container">STOBAR SKI-JUMP</span></div>
+<div><span class="block opacity-40 mb-0.5">AIR WING</span><span class="text-primary-container">30 AIRCRAFT (MIG-29K/RAFALE-M)</span></div>
+<div><span class="block opacity-40 mb-0.5">ORIGIN</span><span class="text-secondary">COCHIN SHIPYARD / IN</span></div>
+<div><span class="block opacity-40 mb-0.5">INDIGENOUS RATIO</span><span class="text-primary-fixed">76% DOMESTIC CONTENT</span></div>
+</div>
+<button class="mt-auto w-full border border-primary/30 py-3 font-label-caps text-primary hover:bg-primary-container hover:text-black transition-all group-hover:border-primary-container flex items-center justify-center gap-2"><span class="material-symbols-outlined text-sm">visibility</span>VIEW INTEL DATA</button>
+</div>
+</div>
+<!-- 7. INS ARIHANT SSBN -->
+<div class="glass-panel group relative flex flex-col p-6 transition-all duration-300 hover:border-primary-container">
+<div class="targeting-bracket bracket-tl bracket-tr bracket-bl bracket-br absolute inset-0 pointer-events-none opacity-40 group-hover:opacity-100 transition-opacity"></div>
+<div class="h-48 mb-6 overflow-hidden relative">
+<img alt="INS Arihant Nuclear Submarine" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCynas4I6Aq5dIPp87ZMYJb9YajIIVWoTTDlneE5XZlqkjFx_JXppHAvW9rLSq4W88c1AHdeo4FMXS0IeO5iPZojhSFu5RXRoC1jaxeyPUGf86KkvM6lGMAxIaIxfzEJxPL0nbt90f9QMMzNXi8LlSYRV5TbZ0x3tq5n4pr5HhsgZ1odG7gC74ZYt502V3pBGMf-6Ye_WI6LsIthCS30xHdwSIumGl0c0mxqSnPIKmx"/>
+<div class="absolute top-2 right-2 bg-black/60 px-2 py-1 border border-primary/20 flex items-center gap-2">
+<span class="w-4 h-3 bg-gradient-to-t from-emerald-600 via-white to-amber-500 border-[0.5px] border-white/20"></span>
+<span class="font-label-caps text-[8px] text-white">IND</span>
+</div>
+<div class="absolute bottom-2 left-2 bg-black/70 px-2 py-0.5 border border-primary/30 text-[9px] font-spec-code text-primary-container">STRATEGIC FORCES // NUCLEAR TRIAD</div>
+</div>
+<div class="flex-1 flex flex-col">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="font-headline-md text-xl text-primary leading-none">INS ARIHANT (S2)</h3>
+<p class="font-label-caps text-[10px] text-primary/60 mt-1">NUCLEAR BALLISTIC SUBMARINE (SSBN)</p>
+</div>
+<span class="font-spec-code text-[10px] bg-primary-container/20 text-primary-container border border-primary-container/40 px-2">STATUS: STRATEGIC PATROL</span>
+</div>
+<div class="grid grid-cols-2 gap-3 my-4 font-spec-code text-[11px] text-on-surface-variant border-y border-white/5 py-3">
+<div><span class="block opacity-40 mb-0.5">DISPLACEMENT</span><span class="text-primary-container">6,000 TONNES</span></div>
+<div><span class="block opacity-40 mb-0.5">PROPULSION</span><span class="text-primary-container">83 MW NUCLEAR PWR</span></div>
+<div><span class="block opacity-40 mb-0.5">SLBM ARMAMENT</span><span class="text-primary-container">12x K-15 / 4x K-4 SLBM</span></div>
+<div><span class="block opacity-40 mb-0.5">SECOND STRIKE</span><span class="text-primary-container">SURVIVABLE NUCLEAR TRIAD</span></div>
+<div><span class="block opacity-40 mb-0.5">ORIGIN</span><span class="text-secondary">SBC VISAKHAPATNAM / IN</span></div>
+<div><span class="block opacity-40 mb-0.5">STEALTH</span><span class="text-primary-fixed">AN ECHOIC TILE COATING</span></div>
+</div>
+<button class="mt-auto w-full border border-primary/30 py-3 font-label-caps text-primary hover:bg-primary-container hover:text-black transition-all group-hover:border-primary-container flex items-center justify-center gap-2"><span class="material-symbols-outlined text-sm">visibility</span>VIEW INTEL DATA</button>
+</div>
+</div>
+<!-- 8. K9 VAJRA-T HOWITZER -->
+<div class="glass-panel group relative flex flex-col p-6 transition-all duration-300 hover:border-primary-container">
+<div class="targeting-bracket bracket-tl bracket-tr bracket-bl bracket-br absolute inset-0 pointer-events-none opacity-40 group-hover:opacity-100 transition-opacity"></div>
+<div class="h-48 mb-6 overflow-hidden relative bg-surface-container-high flex flex-col justify-end p-4 border border-white/5">
+<div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+<div class="absolute inset-0 flex items-center justify-center opacity-20 pointer-events-none"><span class="material-symbols-outlined text-6xl text-primary">track_changes</span></div>
+<div class="absolute top-2 right-2 bg-black/60 px-2 py-1 border border-primary/20 flex items-center gap-2 z-10">
+<span class="w-4 h-3 bg-gradient-to-t from-emerald-600 via-white to-amber-500 border-[0.5px] border-white/20"></span>
+<span class="font-label-caps text-[8px] text-white">IND</span>
+</div>
+<div class="relative z-10">
+<span class="font-spec-code text-[10px] text-primary-container">DESERT &amp; HIGH-ALTITUDE ARTILLERY</span>
+<h4 class="font-headline-md text-lg text-white font-bold">K9 VAJRA-T 155MM</h4>
+</div>
+</div>
+<div class="flex-1 flex flex-col">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="font-headline-md text-xl text-primary leading-none">K9 VAJRA-T</h3>
+<p class="font-label-caps text-[10px] text-primary/60 mt-1">TRACKED SELF-PROPELLED HOWITZER</p>
+</div>
+<span class="font-spec-code text-[10px] bg-primary/10 text-primary border border-primary/20 px-2">STATUS: OPERATIONAL</span>
+</div>
+<div class="grid grid-cols-2 gap-3 my-4 font-spec-code text-[11px] text-on-surface-variant border-y border-white/5 py-3">
+<div><span class="block opacity-40 mb-0.5">CALIBRE</span><span class="text-primary-container">155MM / 52 CALIBRE</span></div>
+<div><span class="block opacity-40 mb-0.5">FIRING RANGE</span><span class="text-primary-container">40 - 52 KM (RAP)</span></div>
+<div><span class="block opacity-40 mb-0.5">FIRE CONTROL</span><span class="text-primary-container">DIGITAL AUTO AFCS</span></div>
+<div><span class="block opacity-40 mb-0.5">CHASSIS</span><span class="text-primary-container">ARMORED STEEL TRACKED</span></div>
+<div><span class="block opacity-40 mb-0.5">ORIGIN</span><span class="text-secondary">L&amp;T HAZIRA (INDIA)</span></div>
+<div><span class="block opacity-40 mb-0.5">DEPLOYMENT</span><span class="text-primary-fixed">LADAKH &amp; THAR SECTORS</span></div>
+</div>
+<button class="mt-auto w-full border border-primary/30 py-3 font-label-caps text-primary hover:bg-primary-container hover:text-black transition-all group-hover:border-primary-container flex items-center justify-center gap-2"><span class="material-symbols-outlined text-sm">visibility</span>VIEW INTEL DATA</button>
+</div>
+</div>
+<!-- 9. AGNI-V MIRV ICBM -->
+<div class="glass-panel group relative flex flex-col p-6 transition-all duration-300 hover:border-primary-container">
+<div class="targeting-bracket bracket-tl bracket-tr bracket-bl bracket-br absolute inset-0 pointer-events-none opacity-40 group-hover:opacity-100 transition-opacity"></div>
+<div class="h-48 mb-6 overflow-hidden relative bg-surface-container-high flex flex-col justify-end p-4 border border-white/5">
+<div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+<div class="absolute inset-0 flex items-center justify-center opacity-20 pointer-events-none"><span class="material-symbols-outlined text-6xl text-primary">rocket</span></div>
+<div class="absolute top-2 right-2 bg-black/60 px-2 py-1 border border-primary/20 flex items-center gap-2 z-10">
+<span class="w-4 h-3 bg-gradient-to-t from-emerald-600 via-white to-amber-500 border-[0.5px] border-white/20"></span>
+<span class="font-label-caps text-[8px] text-white">IND</span>
+</div>
+<div class="relative z-10">
+<span class="font-spec-code text-[10px] text-primary-container">MISSION DIVYASTRA TESTED</span>
+<h4 class="font-headline-md text-lg text-white font-bold">AGNI-V ICBM MIRV</h4>
+</div>
+</div>
+<div class="flex-1 flex flex-col">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="font-headline-md text-xl text-primary leading-none">AGNI-V MIRV</h3>
+<p class="font-label-caps text-[10px] text-primary/60 mt-1">INTERCONTINENTAL BALLISTIC MISSILE</p>
+</div>
+<span class="font-spec-code text-[10px] bg-primary-container/20 text-primary-container border border-primary-container/40 px-2">STATUS: STRATEGIC FORCES</span>
+</div>
+<div class="grid grid-cols-2 gap-3 my-4 font-spec-code text-[11px] text-on-surface-variant border-y border-white/5 py-3">
+<div><span class="block opacity-40 mb-0.5">EFFECTIVE RANGE</span><span class="text-primary-container">5,500 - 8,000 KM</span></div>
+<div><span class="block opacity-40 mb-0.5">WARHEAD TECH</span><span class="text-primary-container">MIRV MULTIPLE RE-ENTRY</span></div>
+<div><span class="block opacity-40 mb-0.5">PROPULSION</span><span class="text-primary-container">3-STAGE COMPOSITE SOLID</span></div>
+<div><span class="block opacity-40 mb-0.5">DEPLOYMENT</span><span class="text-primary-container">CANISTERIZED ROAD/RAIL</span></div>
+<div><span class="block opacity-40 mb-0.5">ORIGIN</span><span class="text-secondary">DRDO (INDIA)</span></div>
+<div><span class="block opacity-40 mb-0.5">COMMAND</span><span class="text-primary-fixed">NUCLEAR COMMAND AUTH</span></div>
+</div>
+<button class="mt-auto w-full border border-primary/30 py-3 font-label-caps text-primary hover:bg-primary-container hover:text-black transition-all group-hover:border-primary-container flex items-center justify-center gap-2"><span class="material-symbols-outlined text-sm">visibility</span>VIEW INTEL DATA</button>
+</div>
+</div>
+<!-- 10. VISAKHAPATNAM CLASS DESTROYER -->
+<div class="glass-panel group relative flex flex-col p-6 transition-all duration-300 hover:border-primary-container">
+<div class="targeting-bracket bracket-tl bracket-tr bracket-bl bracket-br absolute inset-0 pointer-events-none opacity-40 group-hover:opacity-100 transition-opacity"></div>
+<div class="h-48 mb-6 overflow-hidden relative bg-surface-container-high flex flex-col justify-end p-4 border border-white/5">
+<div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+<div class="absolute inset-0 flex items-center justify-center opacity-20 pointer-events-none"><span class="material-symbols-outlined text-6xl text-primary">sailing</span></div>
+<div class="absolute top-2 right-2 bg-black/60 px-2 py-1 border border-primary/20 flex items-center gap-2 z-10">
+<span class="w-4 h-3 bg-gradient-to-t from-emerald-600 via-white to-amber-500 border-[0.5px] border-white/20"></span>
+<span class="font-label-caps text-[8px] text-white">IND</span>
+</div>
+<div class="relative z-10">
+<span class="font-spec-code text-[10px] text-primary-container">PROJECT 15B STEALTH DESTROYER</span>
+<h4 class="font-headline-md text-lg text-white font-bold">INS VISAKHAPATNAM</h4>
+</div>
+</div>
+<div class="flex-1 flex flex-col">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="font-headline-md text-xl text-primary leading-none">VISAKHAPATNAM CLASS</h3>
+<p class="font-label-caps text-[10px] text-primary/60 mt-1">PROJECT 15B STEALTH DESTROYER</p>
+</div>
+<span class="font-spec-code text-[10px] bg-primary/10 text-primary border border-primary/20 px-2">STATUS: COMMISSIONED</span>
+</div>
+<div class="grid grid-cols-2 gap-3 my-4 font-spec-code text-[11px] text-on-surface-variant border-y border-white/5 py-3">
+<div><span class="block opacity-40 mb-0.5">DISPLACEMENT</span><span class="text-primary-container">7,400 TONNES</span></div>
+<div><span class="block opacity-40 mb-0.5">RADAR SYSTEM</span><span class="text-primary-container">IAI EL/M-2248 MF-STAR</span></div>
+<div><span class="block opacity-40 mb-0.5">SAM BATTERY</span><span class="text-primary-container">32x BARAK-8 MRSAM</span></div>
+<div><span class="block opacity-40 mb-0.5">CRUISE MISSILES</span><span class="text-primary-container">16x BRAHMOS VLS</span></div>
+<div><span class="block opacity-40 mb-0.5">ORIGIN</span><span class="text-secondary">MAZAGON DOCK (MDL)</span></div>
+<div><span class="block opacity-40 mb-0.5">ASW WEAPONRY</span><span class="text-primary-fixed">RBU-6000 &amp; VARUNASTRA</span></div>
+</div>
+<button class="mt-auto w-full border border-primary/30 py-3 font-label-caps text-primary hover:bg-primary-container hover:text-black transition-all group-hover:border-primary-container flex items-center justify-center gap-2"><span class="material-symbols-outlined text-sm">visibility</span>VIEW INTEL DATA</button>
+</div>
+</div>
+<!-- 11. AKASH-NG & AIR DEFENSE -->
+<div class="glass-panel group relative flex flex-col p-6 transition-all duration-300 hover:border-primary-container">
+<div class="targeting-bracket bracket-tl bracket-tr bracket-bl bracket-br absolute inset-0 pointer-events-none opacity-40 group-hover:opacity-100 transition-opacity"></div>
+<div class="h-48 mb-6 overflow-hidden relative bg-surface-container-high flex flex-col justify-end p-4 border border-white/5">
+<div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+<div class="absolute inset-0 flex items-center justify-center opacity-20 pointer-events-none"><span class="material-symbols-outlined text-6xl text-primary">shield</span></div>
+<div class="absolute top-2 right-2 bg-black/60 px-2 py-1 border border-primary/20 flex items-center gap-2 z-10">
+<span class="w-4 h-3 bg-gradient-to-t from-emerald-600 via-white to-amber-500 border-[0.5px] border-white/20"></span>
+<span class="font-label-caps text-[8px] text-white">IND</span>
+</div>
+<div class="relative z-10">
+<span class="font-spec-code text-[10px] text-primary-container">NEXT-GEN AIR DEFENSE SHIELD</span>
+<h4 class="font-headline-md text-lg text-white font-bold">AKASH-NG SAM</h4>
+</div>
+</div>
+<div class="flex-1 flex flex-col">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="font-headline-md text-xl text-primary leading-none">AKASH-NG / SUDARSHAN</h3>
+<p class="font-label-caps text-[10px] text-primary/60 mt-1">NEW GENERATION SURFACE-TO-AIR MISSILE</p>
+</div>
+<span class="font-spec-code text-[10px] bg-primary/10 text-primary border border-primary/20 px-2">STATUS: ACTIVE DEFENSE SHIELD</span>
+</div>
+<div class="grid grid-cols-2 gap-3 my-4 font-spec-code text-[11px] text-on-surface-variant border-y border-white/5 py-3">
+<div><span class="block opacity-40 mb-0.5">INTERCEPTION RANGE</span><span class="text-primary-container">70 - 80 KM</span></div>
+<div><span class="block opacity-40 mb-0.5">SEEKER TYPE</span><span class="text-primary-container">ACTIVE RF SEEKER</span></div>
+<div><span class="block opacity-40 mb-0.5">TARGET PROFILES</span><span class="text-primary-container">CRUISE MISSILES &amp; JETS</span></div>
+<div><span class="block opacity-40 mb-0.5">RADAR INTEGRATION</span><span class="text-primary-container">RAJENDRA / ARUDHRA 3D</span></div>
+<div><span class="block opacity-40 mb-0.5">ORIGIN</span><span class="text-secondary">BDL / DRDO (INDIA)</span></div>
+<div><span class="block opacity-40 mb-0.5">REACTION TIME</span><span class="text-primary-fixed">&lt; 10 SEC FAST SALVO</span></div>
+</div>
+<button class="mt-auto w-full border border-primary/30 py-3 font-label-caps text-primary hover:bg-primary-container hover:text-black transition-all group-hover:border-primary-container flex items-center justify-center gap-2"><span class="material-symbols-outlined text-sm">visibility</span>VIEW INTEL DATA</button>
+</div>
+</div>
+<!-- 12. INFANTRY ARMS & PRECISION BOMBS -->
+<div class="glass-panel group relative flex flex-col p-6 transition-all duration-300 hover:border-primary-container">
+<div class="targeting-bracket bracket-tl bracket-tr bracket-bl bracket-br absolute inset-0 pointer-events-none opacity-40 group-hover:opacity-100 transition-opacity"></div>
+<div class="h-48 mb-6 overflow-hidden relative bg-surface-container-high flex flex-col justify-end p-4 border border-white/5">
+<div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+<div class="absolute inset-0 flex items-center justify-center opacity-20 pointer-events-none"><span class="material-symbols-outlined text-6xl text-primary">crisis_alert</span></div>
+<div class="absolute top-2 right-2 bg-black/60 px-2 py-1 border border-primary/20 flex items-center gap-2 z-10">
+<span class="w-4 h-3 bg-gradient-to-t from-emerald-600 via-white to-amber-500 border-[0.5px] border-white/20"></span>
+<span class="font-label-caps text-[8px] text-white">IND</span>
+</div>
+<div class="relative z-10">
+<span class="font-spec-code text-[10px] text-primary-container">PRECISION MUNITIONS &amp; INFANTRY</span>
+<h4 class="font-headline-md text-lg text-white font-bold">SAAW &amp; AK-203 / SSS DEFENCE</h4>
+</div>
+</div>
+<div class="flex-1 flex flex-col">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="font-headline-md text-xl text-primary leading-none">SAAW GLIDE BOMBS &amp; SMALL ARMS</h3>
+<p class="font-label-caps text-[10px] text-primary/60 mt-1">AIRFIELD MUNITIONS &amp; BATTLE RIFLES</p>
+</div>
+<span class="font-spec-code text-[10px] bg-primary-container/20 text-primary-container border border-primary-container/40 px-2">STATUS: INDUCTED</span>
+</div>
+<div class="grid grid-cols-2 gap-3 my-4 font-spec-code text-[11px] text-on-surface-variant border-y border-white/5 py-3">
+<div><span class="block opacity-40 mb-0.5">SAAW RANGE</span><span class="text-primary-container">100 KM STANDOFF</span></div>
+<div><span class="block opacity-40 mb-0.5">BOMB GUIDANCE</span><span class="text-primary-container">NAVIC HIGH PRECISION</span></div>
+<div><span class="block opacity-40 mb-0.5">RIFLE CALIBRE</span><span class="text-primary-container">7.62x39MM &amp; 7.62x51MM</span></div>
+<div><span class="block opacity-40 mb-0.5">ROUNDS/MIN</span><span class="text-primary-container">600 RPM CYCLIC</span></div>
+<div><span class="block opacity-40 mb-0.5">ORIGIN</span><span class="text-secondary">RCI DRDO / AMETHI OFB</span></div>
+<div><span class="block opacity-40 mb-0.5">MISSION TARGET</span><span class="text-primary-fixed">RUNWAYS &amp; INFANTRY</span></div>
+</div>
+<button class="mt-auto w-full border border-primary/30 py-3 font-label-caps text-primary hover:bg-primary-container hover:text-black transition-all group-hover:border-primary-container flex items-center justify-center gap-2"><span class="material-symbols-outlined text-sm">visibility</span>VIEW INTEL DATA</button>
+</div>
+</div></section>
+</main>
+<footer class="w-full py-12 px-margin-desktop bg-gradient-to-t from-black to-transparent border-t border-white/5 mt-auto">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-8">
+<div>
+<div class="font-headline-md text-headline-md text-on-surface mb-2 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-primary-container"></span>BHARAT DEFENSE NEXUS</div>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-sm">Strategic Defense Initiative. Advanced Technology Database and Tactical Intelligence Hub.</p>
+</div>
+<div class="flex gap-8">
+<div class="flex flex-col gap-2">
+<span class="font-label-caps text-primary text-[10px]">CORE DIRECTIVES</span>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">SITEMAP</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">API_DOCS</a>
+</div>
+<div class="flex flex-col gap-2">
+<span class="font-label-caps text-primary text-[10px]">PROTOCOLS</span>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">SECURITY_PROTOCOL</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">CONTACT_COMMAND</a>
+</div>
+</div>
+</div>
+<div class="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-white/5 gap-4">
+<p class="font-body-md text-body-md text-secondary text-xs opacity-60">Integrated Tri-Service Tactical Intelligence Hub &amp; Strategic Defense Technology Database // Department of Defence Production, Ministry of Defence, Government of India.</p>
+<div class="flex gap-4">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-primary-container shadow-[0_0_8px_cyan]"></div>
+<span class="font-spec-code text-[10px] text-primary-container">UPSTREAM_STABLE</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-on-secondary-container"></div>
+<span class="font-spec-code text-[10px] text-on-secondary-container">ENCRYPTION_ACTIVE</span>
+</div>
+</div>
+</div>
+</footer>
+<script>
+        // Micro-interactions for HUD items
+        document.querySelectorAll('.glass-panel').forEach(panel => {
+            panel.addEventListener('mouseenter', () => {
+                // Potential for adding audio cues or specific GL effects
+            });
+        });
+    </script>
+</body></html>

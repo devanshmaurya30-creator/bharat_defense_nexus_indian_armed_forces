@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;700&amp;family=Inter:wght@400;500;700&amp;family=Jetbrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&amp;family=JetBrains+Mono:wght@500;700&amp;family=Geist:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .scanline {
+            background: linear-gradient(to bottom, rgba(255,255,255,0) 50%, rgba(0, 242, 255, 0.05) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+        }
+        .glass-panel {
+            background: rgba(16, 20, 21, 0.6);
+            backdrop-filter: blur(20px);
+            border: 0.5px solid rgba(255, 255, 255, 0.1);
+        }
+        .active-glow {
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.15);
+        }
+        @keyframes pulse-radar {
+            0% { transform: scale(0.95); opacity: 0.5; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+            100% { transform: scale(0.95); opacity: 0.5; }
+        }
+        .radar-pulse {
+            animation: pulse-radar 2s infinite ease-in-out;
+        }
+        .targeting-bracket::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 8px; height: 8px;
+            border-top: 1px solid rgba(0, 242, 255, 0.5);
+            border-left: 1px solid rgba(0, 242, 255, 0.5);
+        }
+        .targeting-bracket::after {
+            content: '';
+            position: absolute;
+            bottom: 0; right: 0; width: 8px; height: 8px;
+            border-bottom: 1px solid rgba(0, 242, 255, 0.5);
+            border-right: 1px solid rgba(0, 242, 255, 0.5);
+        }
+    </style>
+<script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {"inverse-surface": "#e0e2e9", "secondary-fixed-dim": "#00d9ff", "primary-fixed": "#60ff99", "on-secondary-container": "#005b6c", "surface-container-lowest": "#0b0f13", surface: "#101418", "outline-variant": "#3b4b3d", "on-secondary-fixed": "#001f26", "inverse-on-surface": "#2d3136", secondary: "#aeecff", "on-surface": "#e0e2e9", "inverse-primary": "#006d37", "tertiary-fixed": "#82ff14", "surface-container": "#1c2024", "surface-container-high": "#272a2f", "surface-bright": "#36393e", "error-container": "#93000a", "on-error": "#690005", tertiary: "#f4ffe5", "on-tertiary-container": "#346f00", "on-primary-container": "#007139", "surface-container-highest": "#31353a", "tertiary-container": "#7dfb00", "secondary-fixed": "#aeecff", "primary-container": "#00ff88", error: "#ffb4ab", "on-primary": "#003919", "on-background": "#e0e2e9", primary: "#f1ffef", "on-tertiary": "#173800", "on-surface-variant": "#b9cbb9", "on-secondary": "#003641", "on-tertiary-fixed-variant": "#245100", "on-secondary-fixed-variant": "#004e5d", background: "#101418", "on-error-container": "#ffdad6", "surface-container-low": "#181c20", "on-tertiary-fixed": "#0b2000", "surface-variant": "#31353a", "tertiary-fixed-dim": "#6fe000", "primary-fixed-dim": "#00e479", "on-primary-fixed": "#00210c", "surface-tint": "#00e479", "surface-dim": "#101418", "secondary-container": "#00d9ff", outline: "#849585", "on-primary-fixed-variant": "#005228"}, borderRadius: {DEFAULT: "0.125rem", lg: "0.25rem", xl: "0.5rem", full: "0.75rem"}, spacing: {gutter: "32px", "margin-desktop": "80px", unit: "4px", "margin-mobile": "24px", "container-max": "1440px", "section-gap": "120px"}, fontFamily: {"display-lg": ["Sora"], "body-lg": ["Inter"], "headline-lg-mobile": ["Sora"], "label-caps": ["JetBrains Mono"], "headline-md": ["Geist"], "spec-code": ["JetBrains Mono"], "headline-lg": ["Sora"], "body-md": ["Inter"], "label-mono": ["JetBrains Mono"]}, fontSize: {"display-lg": ["84px", {lineHeight: "1.1", letterSpacing: "-0.04em", fontWeight: "800"}], "body-lg": ["18px", {lineHeight: "1.6", fontWeight: "400"}], "headline-lg-mobile": ["32px", {lineHeight: "1.2", fontWeight: "700"}], "label-caps": ["12px", {lineHeight: "16px", letterSpacing: "0.1em", fontWeight: "700"}], "headline-md": ["32px", {lineHeight: "40px", fontWeight: "600"}], "spec-code": ["14px", {lineHeight: "20px", letterSpacing: "0.05em", fontWeight: "500"}], "headline-lg": ["48px", {lineHeight: "1.2", letterSpacing: "-0.02em", fontWeight: "700"}], "body-md": ["16px", {lineHeight: "1.6", fontWeight: "400"}], "label-mono": ["12px", {lineHeight: "1.2", letterSpacing: "0.1em", fontWeight: "500"}]}}}};</script>
+</head>
+<body class="bg-background text-on-surface font-body-md overflow-x-hidden selection:bg-primary-container selection:text-on-primary-container">
+<!-- Background Shader -->
+<!-- STITCH_SHADER_START:ANIMATION_12 class="fixed inset-0 w-full h-full opacity-40 z-0" -->
+<div class="fixed inset-0 w-full h-full opacity-40 z-0" style="display:block;">
+<canvas id="shader-canvas-ANIMATION_12" style="display:block;width:100%;height:100%"></canvas>
+<script>
+(function() {
+  const canvas = document.getElementById('shader-canvas-ANIMATION_12');
+
+  // Sync the WebGL drawing-buffer size with the CSS-driven layout size.
+  // This fires on initial layout and whenever the element is resized.
+  function syncSize() {
+    const w = canvas.clientWidth  || 1280;
+    const h = canvas.clientHeight || 720;
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width  = w;
+      canvas.height = h;
+    }
+  }
+  if (typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(syncSize).observe(canvas);
+  }
+  syncSize();
+
+  const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+  if (!gl) return;
+  const vs = `attribute vec2 a_position;
+varying vec2 v_texCoord;
+void main() {
+  v_texCoord = a_position * 0.5 + 0.5;
+  gl_Position = vec4(a_position, 0.0, 1.0);
+}`;
+  const fs = `precision highp float;
+uniform float u_time;
+uniform vec2 u_resolution;
+varying vec2 v_texCoord;
+
+float hash(vec2 p) {
+    return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+}
+
+float noise(vec2 p) {
+    vec2 i = floor(p);
+    vec2 f = fract(p);
+    vec2 u = f * f * (3.0 - 2.0 * f);
+    return mix(mix(hash(i + vec2(0.0, 0.0)), hash(i + vec2(1.0, 0.0)), u.x),
+               mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x), u.y);
+}
+
+void main() {
+    vec2 uv = v_texCoord;
+    vec2 p = (uv - 0.5) * 2.0;
+    p.x *= u_resolution.x / u_resolution.y;
+
+    // Tactical Grid
+    vec2 grid = fract(uv * 40.0 + u_time * 0.02);
+    float line = smoothstep(0.02, 0.0, abs(grid.x)) + smoothstep(0.02, 0.0, abs(grid.y));
+    
+    // Scanning Pulse
+    float pulse = sin(u_time * 0.5 - length(p) * 4.0) * 0.5 + 0.5;
+    float scan = smoothstep(0.1, 0.0, abs(length(p) - fract(u_time * 0.2) * 2.0));
+
+    // Fog/Cloud
+    float n = noise(uv * 3.0 + u_time * 0.1);
+    
+    vec3 baseColor = vec3(0.02, 0.04, 0.05); // Deep Gunmetal
+    vec3 accentColor = vec3(0.0, 0.95, 1.0); // Cyan
+    
+    vec3 finalColor = mix(baseColor, accentColor * 0.1, line * 0.5);
+    finalColor += accentColor * scan * 0.3;
+    finalColor += accentColor * n * 0.05;
+    
+    gl_FragColor = vec4(finalColor, 1.0);
+}`;
+  function cs(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    return s;
+  }
+  const prog = gl.createProgram();
+  gl.attachShader(prog, cs(gl.VERTEX_SHADER, vs));
+  gl.attachShader(prog, cs(gl.FRAGMENT_SHADER, fs));
+  gl.linkProgram(prog);
+  gl.useProgram(prog);
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+  const pos = gl.getAttribLocation(prog, 'a_position');
+  gl.enableVertexAttribArray(pos);
+  gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
+  const uTime = gl.getUniformLocation(prog, 'u_time');
+  const uRes = gl.getUniformLocation(prog, 'u_resolution');
+  const uMouse = gl.getUniformLocation(prog, 'u_mouse');
+
+  // u_mouse is in pixel coordinates matching u_resolution (ShaderToy convention).
+  // Shaders that need normalized coords should use: u_mouse / u_resolution.
+  let mouse = { x: canvas.width / 2, y: canvas.height / 2 };
+  window.addEventListener('mousemove', (event) => {
+    const rect = canvas.getBoundingClientRect();
+    if (rect.width && rect.height) {
+      const nx = (event.clientX - rect.left) / rect.width;
+      const ny = 1.0 - (event.clientY - rect.top) / rect.height;
+      mouse.x = nx * canvas.width;
+      mouse.y = ny * canvas.height;
+    }
+  });
+
+  function render(t) {
+    if (typeof ResizeObserver === 'undefined') syncSize();
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    if (uTime) gl.uniform1f(uTime, t * 0.001);
+    if (uRes) gl.uniform2f(uRes, canvas.width, canvas.height);
+    if (uMouse) gl.uniform2f(uMouse, mouse.x, mouse.y);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    requestAnimationFrame(render);
+  }
+  render(0);
+})();
+</script>
+</div>
+<!-- STITCH_SHADER_END:ANIMATION_12 -->
+<!-- Scanline Overlay -->
+<div class="fixed inset-0 z-10 scanline"></div>
+<!-- Top Navigation -->
+<nav class="fixed top-0 w-full z-50 flex justify-between items-center px-gutter py-4 bg-surface/60 backdrop-blur-xl border-b border-white/10 shadow-[0_0_15px_rgba(0,242,255,0.1)]">
+<div class="flex items-center gap-8">
+<span class="font-headline-md text-headline-md font-bold tracking-tighter text-primary-container">AEGIS COMMAND</span>
+<div class="hidden md:flex gap-6">
+<a class="font-label-caps text-label-caps text-primary-container border-b-2 border-primary-container pb-1" href="#">STRATEGY</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors" href="#">DATABASE</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors" href="#">LOGISTICS</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors" href="#">INTELLIGENCE</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="bg-surface-container-high/40 px-3 py-1 border border-white/10 rounded-full flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary-container radar-pulse"></span>
+<span class="font-spec-code text-spec-code text-primary-container">SYS_ACTIVE_NODE_7</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer transition-all">settings_input_antenna</span>
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer transition-all">notifications_active</span>
+</div>
+</nav>
+<!-- Sidebar Navigation -->
+<aside class="fixed left-0 top-0 h-full z-40 flex flex-col bg-surface-container-low/40 backdrop-blur-2xl border-r border-white/10 w-20 hover:w-64 transition-all duration-500 group overflow-hidden pt-24">
+<div class="flex-1 space-y-2">
+<div class="flex items-center gap-4 bg-primary-container/20 text-primary-container border-l-4 border-primary-container p-4 cursor-pointer">
+<span class="material-symbols-outlined">radar</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity">RADAR</span>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant p-4 hover:bg-primary/10 hover:text-primary cursor-pointer transition-all">
+<span class="material-symbols-outlined">satellite_alt</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">SATELLITE</span>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant p-4 hover:bg-primary/10 hover:text-primary cursor-pointer transition-all">
+<span class="material-symbols-outlined">directions_boat</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity">FLEET</span>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant p-4 hover:bg-primary/10 hover:text-primary cursor-pointer transition-all">
+<span class="material-symbols-outlined">target</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity">TARGETING</span>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant p-4 hover:bg-primary/10 hover:text-primary cursor-pointer transition-all">
+<span class="material-symbols-outlined">database</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity">ARCHIVE</span>
+</div>
+</div>
+<div class="p-4 border-t border-white/10">
+<button class="w-full py-2 bg-primary-container text-on-primary font-label-caps text-label-caps font-bold transition-all hover:bg-primary-fixed-dim">
+<span class="group-hover:hidden">I.S.</span>
+<span class="hidden group-hover:block">INITIATE SCAN</span>
+</button>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="pl-24 pt-24 pr-gutter pb- gutter min-h-screen relative z-20">
+<!-- Hero HUD Section -->
+<section class="grid grid-cols-12 gap-gutter mb- gutter">
+<div class="col-span-12 lg:col-span-8 relative h-[500px] glass-panel p- gutter overflow-hidden group">
+<div class="absolute inset-0 opacity-20">
+<img alt="Satellite Earth Visualization" class="w-full h-full object-cover" data-alt="A cinematic, high-definition satellite view of Earth at night with glowing blue urban networks interconnected by golden strands of data light. The scene is viewed from an aerospace command center perspective, with faint holographic UI overlays and tactical grid lines flickering in the foreground. Deep cosmic blacks and vibrant military cyan lighting dominate the atmosphere, conveying a sense of global connectivity and advanced surveillance." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHwKZx-zJ8dX4G1LiU3dcDxUhECrlg6O7xqs26p4d4jbjovX1dm4zpsApjvoI7cN0S_opEEA1KRSxBtJDHxYJ-yyu8JU73eNasqKXrnbrc3gl3Xe6hDvXNqMFjBfd_G9E1nPThHBKDThWclTbNCSMaQFhInPHxmgjYc3lJNZkewQZdbgDZ9KnzAumnquxRCqRHJoMR0DWE5RC9vgYBiDUlcXdPzcIsuSckyoluMuagjVDT8UrPo5JlpWHTtUsdyGO44DQXsbhY55m-"/>
+</div>
+<div class="relative z-10 h-full flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<div class="targeting-bracket p-4 relative">
+<span class="font-label-caps text-label-caps text-primary-container block mb-1">CURRENT SECTOR</span>
+<h1 class="font-headline-lg text-headline-lg uppercase">NEXUS_PRIME</h1>
+</div>
+<div class="text-right">
+<span class="font-spec-code text-spec-code text-secondary block">LAT: 38.8951° N</span>
+<span class="font-spec-code text-spec-code text-secondary block">LONG: 77.0364° W</span>
+</div>
+</div>
+<!-- Center Hologram -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 pointer-events-none">
+<!-- STITCH_THREEJS_START:ANIMATION_13 class="w-full h-full" -->
+<div class="w-full h-full" style="display:block;">
+<script src="https://ajax.googleapis.com/ajax/libs/threejs/r125/three.min.js"></script>
+<div id="threejs-container-ANIMATION_13" style="width:100%;height:100%"></div>
+<script>
+(function() {
+  const container = document.getElementById('threejs-container-ANIMATION_13');
+  const devicePixelRatio = window.devicePixelRatio || 1;
+  (function() {
+  const container = document.getElementById('threejs-container-NEXUS_ORB') || document.getElementById('threejs-container-ANIMATION_13');
+  const width = container.clientWidth || window.innerWidth;
+  const height = container.clientHeight || window.innerHeight;
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+  renderer.setSize(width, height);
+  renderer.setPixelRatio(window.devicePixelRatio);
+  container.appendChild(renderer.domElement);
+
+  // Lighting
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+  scene.add(ambientLight);
+  const pointLight = new THREE.PointLight(0x00f2ff, 2, 50);
+  pointLight.position.set(5, 5, 5);
+  scene.add(pointLight);
+
+  // Core Sphere (Hologram)
+  const geometry = new THREE.IcosahedronGeometry(2, 1);
+  const material = new THREE.MeshPhongMaterial({ 
+    color: 0x00f2ff, 
+    wireframe: true, 
+    transparent: true, 
+    opacity: 0.3 
+  });
+  const sphere = new THREE.Mesh(geometry, material);
+  scene.add(sphere);
+
+  // Floating Rings
+  const ringGeom = new THREE.TorusGeometry(2.5, 0.02, 16, 100);
+  const ringMat = new THREE.MeshBasicMaterial({ color: 0x00f2ff, transparent: true, opacity: 0.5 });
+  const ring1 = new THREE.Mesh(ringGeom, ringMat);
+  const ring2 = new THREE.Mesh(ringGeom, ringMat);
+  ring2.rotation.x = Math.PI / 2;
+  scene.add(ring1);
+  scene.add(ring2);
+
+  // Particles
+  const partGeom = new THREE.BufferGeometry();
+  const posArray = new Float32Array(1000 * 3);
+  for(let i = 0; i < 3000; i++) posArray[i] = (Math.random() - 0.5) * 15;
+  partGeom.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+  const partMat = new THREE.PointsMaterial({ size: 0.03, color: 0x00f2ff });
+  const particles = new THREE.Points(partGeom, partMat);
+  scene.add(particles);
+
+  camera.position.z = 10;
+
+  function animate() {
+    requestAnimationFrame(animate);
+    sphere.rotation.y += 0.005;
+    ring1.rotation.z += 0.01;
+    ring2.rotation.y += 0.01;
+    particles.rotation.y += 0.001;
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  window.addEventListener('resize', () => {
+    const w = container.clientWidth || window.innerWidth;
+    const h = container.clientHeight || window.innerHeight;
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+  });
+})();
+})();
+</script>
+</div>
+<!-- STITCH_THREEJS_END:ANIMATION_13 -->
+</div>
+<div class="grid grid-cols-4 gap-4">
+<div class="bg-surface-container-highest/60 border border-white/10 p-3">
+<span class="font-label-caps text-[10px] text-on-surface-variant block mb-1">UP-LINK</span>
+<div class="h-1 w-full bg-white/10 overflow-hidden">
+<div class="h-full bg-primary-container w-3/4"></div>
+</div>
+<span class="font-spec-code text-[12px] text-primary-container mt-1">98.4 GB/S</span>
+</div>
+<div class="bg-surface-container-highest/60 border border-white/10 p-3">
+<span class="font-label-caps text-[10px] text-on-surface-variant block mb-1">SIGNAL</span>
+<div class="flex gap-1 h-3 items-end">
+<div class="w-1 h-full bg-primary-container"></div>
+<div class="w-1 h-3/4 bg-primary-container"></div>
+<div class="w-1 h-1/2 bg-primary-container"></div>
+<div class="w-1 h-1/4 bg-white/20"></div>
+</div>
+<span class="font-spec-code text-[12px] text-primary-container mt-1">OPTIMAL</span>
+</div>
+<div class="bg-surface-container-highest/60 border border-white/10 p-3 col-span-2">
+<span class="font-label-caps text-[10px] text-on-surface-variant block mb-1">ENCRYPTION PROTOCOL</span>
+<span class="font-spec-code text-[12px] text-secondary tracking-widest">AES-256-GCM-QUANTUM</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Global Readiness Dashboard -->
+<div class="col-span-12 lg:col-span-4 glass-panel p- gutter flex flex-col gap-6 relative overflow-hidden">
+<div class="flex justify-between items-center border-b border-white/10 pb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container">public</span>
+<h2 class="font-headline-md text-headline-md text-xl">GLOBAL READINESS</h2>
+</div>
+<span class="font-spec-code text-spec-code text-primary-container px-2 py-1 bg-primary-container/10 border border-primary-container/30">LEVEL_1</span>
+</div>
+<div class="space-y-4">
+<div class="flex flex-col gap-2">
+<div class="flex justify-between font-label-caps text-label-caps">
+<span>NORTH_ATLANTIC</span>
+<span class="text-secondary">92%</span>
+</div>
+<div class="h-1 w-full bg-white/5">
+<div class="h-full bg-primary-fixed-dim" style="width: 92%"></div>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex justify-between font-label-caps text-label-caps">
+<span>PACIFIC_RIM</span>
+<span class="text-secondary">74%</span>
+</div>
+<div class="h-1 w-full bg-white/5">
+<div class="h-full bg-primary-fixed-dim" style="width: 74%"></div>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex justify-between font-label-caps text-label-caps">
+<span>EURO_ZONE</span>
+<span class="text-secondary">88%</span>
+</div>
+<div class="h-1 w-full bg-white/5">
+<div class="h-full bg-primary-fixed-dim" style="width: 88%"></div>
+</div>
+</div>
+</div>
+<div class="mt-auto pt-6 border-t border-white/10">
+<div class="bg-surface-container-highest border border-primary-container/20 p-4 relative overflow-hidden">
+<div class="absolute top-0 right-0 p-2">
+<span class="material-symbols-outlined text-xs text-primary-container/50 animate-pulse">emergency</span>
+</div>
+<p class="font-spec-code text-spec-code text-primary-container mb-2">LAST_INTEL_UPDATE:</p>
+<p class="font-body-md text-sm text-on-surface-variant italic">"Anomalous spectral readings detected in Sector 7-G. Orbital reassignment requested."</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Multi-pane Data Center -->
+<section class="grid grid-cols-12 gap-gutter">
+<!-- System Integrity Monitoring -->
+<div class="col-span-12 lg:col-span-3 space-y-gutter">
+<div class="glass-panel p-4 border-l-2 border-primary-container">
+<h3 class="font-label-caps text-label-caps text-primary-container mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">shield</span>
+                        SYSTEM INTEGRITY
+                    </h3>
+<div class="flex justify-center py-4">
+<div class="relative w-32 h-32 flex items-center justify-center">
+<svg class="w-full h-full -rotate-90">
+<circle cx="64" cy="64" fill="none" r="58" stroke="rgba(255,255,255,0.05)" stroke-width="8"></circle>
+<circle cx="64" cy="64" fill="none" r="58" stroke="#00f2ff" stroke-dasharray="364" stroke-dashoffset="36" stroke-width="8"></circle>
+</svg>
+<span class="absolute font-headline-md text-headline-md text-2xl">99.8</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-2 mt-4">
+<div class="text-center p-2 bg-white/5">
+<span class="block font-spec-code text-[10px] text-on-surface-variant">CORE_TEMP</span>
+<span class="font-spec-code text-secondary text-sm">42°C</span>
+</div>
+<div class="text-center p-2 bg-white/5">
+<span class="block font-spec-code text-[10px] text-on-surface-variant">LOAD_AVG</span>
+<span class="font-spec-code text-secondary text-sm">0.12</span>
+</div>
+</div>
+</div>
+<div class="glass-panel p-4 overflow-hidden h-48 relative">
+<h3 class="font-label-caps text-label-caps text-primary-container mb-2">LIVE_TICKER</h3>
+<div class="font-spec-code text-[10px] space-y-1 text-on-surface-variant overflow-hidden" id="log-container">
+<div class="flex gap-2"><span>[14:22:01]</span> <span class="text-secondary">ENCRYPT_HANDSHAKE: OK</span></div>
+<div class="flex gap-2"><span>[14:22:04]</span> <span>DATA_STREAM_001_SYNC</span></div>
+<div class="flex gap-2"><span>[14:22:15]</span> <span class="text-primary-container">NODE_7_RESPONSE: 14ms</span></div>
+<div class="flex gap-2"><span>[14:22:18]</span> <span>SENTINEL_SCAN_INIT</span></div>
+<div class="flex gap-2"><span>[14:22:25]</span> <span>REDUNDANCY_CHECK_PASS</span></div>
+<div class="flex gap-2"><span>[14:22:30]</span> <span class="text-error">ACCESS_DENIED: 192.168.1.1</span></div>
+</div>
+</div>
+</div>
+<!-- Asset Grid -->
+<div class="col-span-12 lg:col-span-9 glass-panel p- gutter relative overflow-hidden">
+<div class="flex justify-between items-center mb-6">
+<h2 class="font-headline-md text-headline-md text-xl flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container">list_alt</span>
+                        ACTIVE_ASSETS
+                    </h2>
+<div class="flex gap-2">
+<button class="px-4 py-1 border border-white/10 font-label-caps text-xs hover:bg-white/5">EXPORT_CSV</button>
+<button class="px-4 py-1 border border-primary-container text-primary-container font-label-caps text-xs hover:bg-primary-container/10">REFRESH</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-secondary-container/20 text-on-secondary-container font-label-caps text-[12px] border-b border-white/10">
+<th class="p-3">ASSET_ID</th>
+<th class="p-3">CLASSIFICATION</th>
+<th class="p-3">DEPLOYMENT</th>
+<th class="p-3">STATUS</th>
+<th class="p-3 text-right">ACTION</th>
+</tr>
+</thead>
+<tbody class="font-spec-code text-[13px] text-on-surface-variant">
+<tr class="border-b border-white/5 hover:bg-white/5 transition-colors group">
+<td class="p-3 text-primary-container font-bold">X-RAY_9</td>
+<td class="p-3">ORBITAL_PLATFORM</td>
+<td class="p-3">LOW_EARTH_7</td>
+<td class="p-3 flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+                                    STABLE
+                                </td>
+<td class="p-3 text-right">
+<button class="text-xs text-primary-container border border-primary-container/30 px-2 py-0.5 opacity-0 group-hover:opacity-100 transition-opacity">COMM_LINK</button>
+</td>
+</tr>
+<tr class="border-b border-white/5 hover:bg-white/5 transition-colors group">
+<td class="p-3 text-primary-container font-bold">STRIKER_4</td>
+<td class="p-3">TACTICAL_DRONE</td>
+<td class="p-3">SECTOR_BETA</td>
+<td class="p-3 flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                                    REFUELING
+                                </td>
+<td class="p-3 text-right">
+<button class="text-xs text-primary-container border border-primary-container/30 px-2 py-0.5 opacity-0 group-hover:opacity-100 transition-opacity">COMM_LINK</button>
+</td>
+</tr>
+<tr class="border-b border-white/5 hover:bg-white/5 transition-colors group">
+<td class="p-3 text-primary-container font-bold">TITAN_V</td>
+<td class="p-3">MOBILE_BASE</td>
+<td class="p-3">ARCTIC_RIM</td>
+<td class="p-3 flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-error animate-pulse"></span>
+                                    ALERT
+                                </td>
+<td class="p-3 text-right">
+<button class="text-xs text-primary-container border border-primary-container/30 px-2 py-0.5 opacity-0 group-hover:opacity-100 transition-opacity">COMM_LINK</button>
+</td>
+</tr>
+<tr class="border-b border-white/5 hover:bg-white/5 transition-colors group">
+<td class="p-3 text-primary-container font-bold">GHOST_3</td>
+<td class="p-3">RECON_SURF</td>
+<td class="p-3">MID_ATLANTIC</td>
+<td class="p-3 flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+                                    STABLE
+                                </td>
+<td class="p-3 text-right">
+<button class="text-xs text-primary-container border border-primary-container/30 px-2 py-0.5 opacity-0 group-hover:opacity-100 transition-opacity">COMM_LINK</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="relative h-32 glass-panel p-2 overflow-hidden">
+<img alt="Thermal Imaging" class="w-full h-full object-cover opacity-60 mix-blend-screen" data-alt="A detailed thermal imaging perspective showing heat signatures of several vehicles moving through a dense urban environment at night. The image uses a military high-contrast palette of neon greens, hot oranges, and deep blues. A tactical HUD interface with coordinate labels and velocity vectors is digitally overlaid on the thermal feed, giving the impression of an advanced targeting system." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6761a-NFomXTT66WYvcLCE7iDVF064mcvRbNKpBF3SdXa1W1kNs8tHcIcko0gqJJcoaBfPFXpRqH1Y1P3YSCdlQm-iIQ0tbl7_0qcuvQwlJzxC0RSA8TRINrfXi4uXVd_EyY9RyMWbCbmy-5jMhSmH_nHf8R5vGXoDtY1bYrFAXXIFsGA4nU1cRUPKiXbDoyqqA5xtCCupdGvunULu3Cf7c_UJ4zYp_gu-sSpFmrilqvBuKPmUDz1rMAh7hHEWremW3e0dHrVujTk"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background to-transparent flex items-end p-2">
+<span class="font-spec-code text-[10px] text-primary-container">THERMAL_FEED_A</span>
+</div>
+</div>
+<div class="relative h-32 glass-panel p-2 overflow-hidden">
+<img alt="Circuitry Detail" class="w-full h-full object-cover opacity-60 mix-blend-screen" data-alt="Macro photography of a sophisticated quantum processing unit with glowing cyan circuits and intricate golden traces. The lighting is dark and moody, emphasizing the luminescence of the micro-scale architecture. Sharp digital annotations and technical telemetry data are projected onto the physical chip, creating a seamless blend of hardware and holographic UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDD2v-rb5K-frZoGP1hd9sZR7nftj6bL6uPXNKZ8SuoYkTLHoIdB9RfHSmjA9lhSzRzMhYyjYjWA_j3gsZVlKL03m-apYqIL_IwqPA-r9_a1keidGuQpDuBWoGg00IIEqiNuBFLP7dRIcs1_aDGA2BjIX5yg_pnBNQsyV6aP24C4yHbagZUwRSYG-P29RNFi_xIfjdKfDYSfNzk6YH6-X_b0hMwrFBCcLsyJXI8BV53NlHMtIN2JSteTGdVNstIEXBLA_DYm6B3MmL-"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background to-transparent flex items-end p-2">
+<span class="font-spec-code text-[10px] text-primary-container">HARDWARE_MONITOR</span>
+</div>
+</div>
+<div class="relative h-32 glass-panel p-2 overflow-hidden flex flex-col justify-center items-center gap-2 border-dashed border-white/20">
+<span class="material-symbols-outlined text-4xl text-white/10">add_circle</span>
+<span class="font-label-caps text-[10px] text-white/20">ADD_VIEWPORT</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer Command Center -->
+<footer class="w-full py-12 px-margin-desktop bg-gradient-to-t from-black to-transparent relative z-30 border-t border-white/5 mt-12">
+<div class="flex flex-col md:flex-row justify-between items-start gap-8">
+<div class="space-y-4">
+<span class="font-headline-md text-headline-md text-on-surface">AEGIS_COMMAND</span>
+<p class="font-spec-code text-spec-code text-on-surface-variant max-w-sm">
+                    OPERATIONAL PROTOCOL 9.2.4. ENSURING GLOBAL DEFENSIVE INTEGRITY THROUGH QUANTUM-LINKED ANALYTICS.
+                </p>
+<p class="font-body-md text-body-md text-secondary text-xs">
+                    © 2024 DEFENSE INTELLIGENCE NETWORK. ALL RIGHTS RESERVED. CLASSIFIED MATERIAL.
+                </p>
+</div>
+<div class="grid grid-cols-2 gap-x-12 gap-y-2">
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors" href="#">SITEMAP</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors" href="#">API_DOCS</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors" href="#">SECURITY_PROTOCOL</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors" href="#">CONTACT_COMMAND</a>
+</div>
+</div>
+</footer>
+<script>
+        // Micro-interactions for the live ticker
+        const logContainer = document.getElementById('log-container');
+        const phrases = [
+            "PKI_EXCHANGE_SUCCESS",
+            "VECTOR_DRIFT: 0.002mm",
+            "BUFFER_FLUSH_COMPLETE",
+            "UPLINK_STRENGTH: MAX",
+            "FIREWALL_HEARTBEAT: OK",
+            "ENCRYPT_LAYER_7_ACTIVE"
+        ];
+
+        setInterval(() => {
+            const time = new Date().toLocaleTimeString('en-GB', { hour12: false });
+            const phrase = phrases[Math.floor(Math.random() * phrases.length)];
+            const logEntry = document.createElement('div');
+            logEntry.className = 'flex gap-2 animate-pulse';
+            logEntry.innerHTML = `<span>[${time}]</span> <span class="text-primary-container">${phrase}</span>`;
+            
+            logContainer.prepend(logEntry);
+            if (logContainer.children.length > 8) {
+                logContainer.removeChild(logContainer.lastChild);
+            }
+        }, 3000);
+
+        // Hover scale interaction for grid items
+        document.querySelectorAll('.glass-panel').forEach(panel => {
+            panel.addEventListener('mouseenter', () => {
+                panel.classList.add('active-glow');
+            });
+            panel.addEventListener('mouseleave', () => {
+                panel.classList.remove('active-glow');
+            });
+        });
+    </script>
+</body></html>

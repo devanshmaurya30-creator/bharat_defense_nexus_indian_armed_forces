@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+    }
+  </style>
+</head>
+<body>
+<!-- STITCH_THREEJS_START:ANIMATION_3 class="fixed inset-0 w-full h-full bg-transparent" -->
+<div class="fixed inset-0 w-full h-full bg-transparent" style="display:block;">
+<script src="https://ajax.googleapis.com/ajax/libs/threejs/r125/three.min.js"></script>
+<div id="threejs-container-ANIMATION_3" style="width:100%;height:100%"></div>
+<script>
+(function() {
+  const container = document.getElementById('threejs-container-ANIMATION_3');
+  const devicePixelRatio = window.devicePixelRatio || 1;
+  const width = container.clientWidth || window.innerWidth;
+const height = container.clientHeight || window.innerHeight;
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+renderer.setSize(width, height);
+renderer.setPixelRatio(window.devicePixelRatio);
+container.appendChild(renderer.domElement);
+
+// Lighting
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(ambientLight);
+const pointLight = new THREE.PointLight(0x00f2ff, 2, 100);
+pointLight.position.set(5, 5, 5);
+scene.add(pointLight);
+
+// Drone Model (Simplified Geometry)
+const droneGroup = new THREE.Group();
+
+// Main Body
+const bodyGeom = new THREE.BoxGeometry(2, 0.5, 3);
+const bodyMat = new THREE.MeshPhongMaterial({ color: 0x333a3f, shininess: 100 });
+const body = new THREE.Mesh(bodyGeom, bodyMat);
+droneGroup.add(body);
+
+// Wings/Arms
+const armGeom = new THREE.BoxGeometry(4, 0.2, 0.5);
+const arm1 = new THREE.Mesh(armGeom, bodyMat);
+arm1.position.y = 0.1;
+droneGroup.add(arm1);
+
+// Rotors
+const rotorGeom = new THREE.CylinderGeometry(0.8, 0.8, 0.05, 16);
+const rotorMat = new THREE.MeshPhongMaterial({ color: 0x00f2ff, transparent: true, opacity: 0.6 });
+
+const createRotor = (x, z) => {
+    const rotor = new THREE.Mesh(rotorGeom, rotorMat);
+    rotor.position.set(x, 0.3, z);
+    droneGroup.add(rotor);
+    return rotor;
+};
+
+const rotors = [
+    createRotor(2, 0.5),
+    createRotor(-2, 0.5),
+    createRotor(0, 2),
+    createRotor(0, -2)
+];
+
+scene.add(droneGroup);
+camera.position.z = 8;
+camera.position.y = 2;
+camera.lookAt(0, 0, 0);
+
+// Animation
+function animate() {
+    requestAnimationFrame(animate);
+    
+    droneGroup.rotation.y += 0.005;
+    droneGroup.position.y = Math.sin(Date.now() * 0.002) * 0.2;
+    
+    rotors.forEach(r => r.rotation.y += 0.5);
+    
+    renderer.render(scene, camera);
+}
+
+animate();
+
+window.addEventListener('resize', () => {
+    const w = container.clientWidth || window.innerWidth;
+    const h = container.clientHeight || window.innerHeight;
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+});
+})();
+</script>
+</div>
+<!-- STITCH_THREEJS_END:ANIMATION_3 -->
+</body>
+</html>

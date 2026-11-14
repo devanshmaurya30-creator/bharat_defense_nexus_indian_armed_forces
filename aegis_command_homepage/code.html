@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AEGIS COMMAND | Military Technology Encyclopedia</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;700&amp;family=Inter:wght@400;500;700&amp;family=Jetbrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100vh); }
+        }
+        @keyframes pulse-cyan {
+            0%, 100% { opacity: 0.5; box-shadow: 0 0 5px rgba(0, 242, 255, 0.2); }
+            50% { opacity: 1; box-shadow: 0 0 20px rgba(0, 242, 255, 0.6); }
+        }
+        @keyframes ticker {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        .scanline-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(to right, transparent, rgba(0, 242, 255, 0.5), transparent);
+            animation: scanline 4s linear infinite;
+            z-index: 60;
+            pointer-events: none;
+        }
+        .grid-background {
+            background-image: radial-gradient(rgba(0, 242, 255, 0.05) 1px, transparent 1px);
+            background-size: 32px 32px;
+        }
+        .holographic-border {
+            border: 0.5px solid rgba(0, 242, 255, 0.2);
+            position: relative;
+        }
+        .holographic-border::before {
+            content: '';
+            position: absolute;
+            top: -1px; left: -1px; width: 10px; height: 10px;
+            border-top: 2px solid #00f2ff; border-left: 2px solid #00f2ff;
+        }
+        .holographic-border::after {
+            content: '';
+            position: absolute;
+            bottom: -1px; right: -1px; width: 10px; height: 10px;
+            border-bottom: 2px solid #00f2ff; border-right: 2px solid #00f2ff;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {"on-tertiary-container": "#346f00", "inverse-primary": "#006d37", "on-tertiary": "#173800", "on-secondary-fixed-variant": "#004e5d", error: "#ffb4ab", "on-surface-variant": "#b9cbb9", "on-secondary-fixed": "#001f26", "secondary-container": "#00d9ff", "inverse-surface": "#e0e2e9", "tertiary-container": "#7dfb00", "error-container": "#93000a", "primary-fixed": "#60ff99", "surface-container-low": "#181c20", "on-primary-container": "#007139", "on-tertiary-fixed": "#0b2000", "on-error": "#690005", "outline-variant": "#3b4b3d", "on-primary-fixed-variant": "#005228", "on-secondary-container": "#005b6c", "on-surface": "#e0e2e9", outline: "#849585", "on-tertiary-fixed-variant": "#245100", "tertiary-fixed-dim": "#6fe000", primary: "#f1ffef", "surface-variant": "#31353a", "secondary-fixed": "#aeecff", "surface-container": "#1c2024", "on-primary-fixed": "#00210c", "on-background": "#e0e2e9", "inverse-on-surface": "#2d3136", "surface-container-highest": "#31353a", tertiary: "#f4ffe5", "on-primary": "#003919", surface: "#101418", "surface-bright": "#36393e", "tertiary-fixed": "#82ff14", "on-error-container": "#ffdad6", secondary: "#aeecff", "surface-container-high": "#272a2f", "on-secondary": "#003641", "secondary-fixed-dim": "#00d9ff", "primary-container": "#00ff88", "surface-container-lowest": "#0b0f13", background: "#101418", "surface-tint": "#00e479", "surface-dim": "#101418", "primary-fixed-dim": "#00e479"}, borderRadius: {DEFAULT: "0.125rem", lg: "0.25rem", xl: "0.5rem", full: "0.75rem"}, spacing: {gutter: "32px", "margin-mobile": "24px", unit: "4px", "margin-desktop": "80px", "container-max": "1440px", "section-gap": "120px"}, fontFamily: {"headline-lg": ["Sora"], "body-lg": ["Inter"], "body-md": ["Inter"], "headline-md": ["Geist"], "spec-code": ["JetBrains Mono"], "headline-lg-mobile": ["Sora"], "display-lg": ["Sora"], "label-caps": ["JetBrains Mono"], "label-mono": ["JetBrains Mono"]}, fontSize: {"headline-lg": ["48px", {lineHeight: "1.2", letterSpacing: "-0.02em", fontWeight: "700"}], "body-lg": ["18px", {lineHeight: "1.6", fontWeight: "400"}], "body-md": ["16px", {lineHeight: "1.6", fontWeight: "400"}], "headline-md": ["32px", {lineHeight: "40px", fontWeight: "600"}], "spec-code": ["14px", {lineHeight: "20px", letterSpacing: "0.05em", fontWeight: "500"}], "headline-lg-mobile": ["32px", {lineHeight: "1.2", fontWeight: "700"}], "display-lg": ["84px", {lineHeight: "1.1", letterSpacing: "-0.04em", fontWeight: "800"}], "label-caps": ["12px", {lineHeight: "16px", letterSpacing: "0.1em", fontWeight: "700"}], "label-mono": ["12px", {lineHeight: "1.2", letterSpacing: "0.1em", fontWeight: "500"}]}}}};</script>
+</head>
+<body class="bg-surface text-on-surface font-body-md selection:bg-primary-container selection:text-on-primary-container overflow-x-hidden">
+<!-- Scanline Global Overlay -->
+<div class="scanline-overlay"></div>
+<!-- Navigation Shell -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-gutter py-4 bg-surface/60 backdrop-blur-xl border-b border-white/10 shadow-[0_0_15px_rgba(0,242,255,0.1)] transition-all duration-300 ease-out">
+<div class="flex items-center gap-8">
+<h1 class="font-headline-md text-headline-md font-bold tracking-tighter text-primary-container">AEGIS COMMAND</h1>
+<nav class="hidden md:flex gap-6">
+<a class="font-headline-md text-headline-md text-primary-container border-b-2 border-primary-container pb-1 transition-all duration-300" href="#">STRATEGY</a>
+<a class="font-headline-md text-headline-md text-on-surface-variant hover:text-primary transition-colors hover:bg-white/5 px-2" href="#">DATABASE</a>
+<a class="font-headline-md text-headline-md text-on-surface-variant hover:text-primary transition-colors hover:bg-white/5 px-2" href="#">LOGISTICS</a>
+<a class="font-headline-md text-headline-md text-on-surface-variant hover:text-primary transition-colors hover:bg-white/5 px-2" href="#">INTELLIGENCE</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-on-surface-variant hover:text-primary-container transition-all">
+<span class="material-symbols-outlined" data-icon="settings_input_antenna">settings_input_antenna</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-primary-container transition-all relative">
+<span class="material-symbols-outlined" data-icon="notifications_active">notifications_active</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-primary-container rounded-full animate-pulse"></span>
+</button>
+</div>
+</header>
+<!-- Side Tactical HUD Navigation -->
+<aside class="fixed left-0 top-0 h-full z-40 flex flex-col bg-surface-container-low/40 backdrop-blur-2xl border-r border-white/10 w-20 hover:w-64 transition-all duration-500 group overflow-hidden">
+<div class="flex flex-col pt-24 px-4 gap-8">
+<div class="flex items-center gap-4 py-4 border-b border-white/5">
+<div class="min-w-[48px] flex justify-center">
+<span class="material-symbols-outlined text-primary-fixed" data-icon="radar">radar</span>
+</div>
+<div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+<p class="font-headline-md text-headline-md text-primary-fixed leading-none">TACTICAL HUD</p>
+<p class="font-label-caps text-label-caps text-primary-fixed-dim">SYS_READY_V2.4</p>
+</div>
+</div>
+<nav class="flex flex-col gap-2">
+<div class="flex items-center gap-4 bg-primary-container/20 text-primary-container border-l-4 border-primary-container p-4">
+<span class="material-symbols-outlined min-w-[24px]" data-icon="radar">radar</span>
+<span class="opacity-0 group-hover:opacity-100 font-label-caps text-label-caps tracking-widest">RADAR</span>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant p-4 hover:bg-primary/10 hover:text-primary transition-colors">
+<span class="material-symbols-outlined min-w-[24px]" data-icon="satellite_alt">satellite_alt</span>
+<span class="opacity-0 group-hover:opacity-100 font-label-caps text-label-caps tracking-widest">SATELLITE</span>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant p-4 hover:bg-primary/10 hover:text-primary transition-colors">
+<span class="material-symbols-outlined min-w-[24px]" data-icon="directions_boat">directions_boat</span>
+<span class="opacity-0 group-hover:opacity-100 font-label-caps text-label-caps tracking-widest">FLEET</span>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant p-4 hover:bg-primary/10 hover:text-primary transition-colors">
+<span class="material-symbols-outlined min-w-[24px]" data-icon="target">target</span>
+<span class="opacity-0 group-hover:opacity-100 font-label-caps text-label-caps tracking-widest">TARGETING</span>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant p-4 hover:bg-primary/10 hover:text-primary transition-colors">
+<span class="material-symbols-outlined min-w-[24px]" data-icon="database">database</span>
+<span class="opacity-0 group-hover:opacity-100 font-label-caps text-label-caps tracking-widest">ARCHIVE</span>
+</div>
+</nav>
+<button class="mt-8 mx-2 hidden group-hover:block bg-primary-container text-on-primary-container font-label-caps text-label-caps py-3 rounded-sm hover:brightness-110 transition-all border border-cyan-400/50 shadow-[0_0_15px_rgba(0,242,255,0.3)]">
+                INITIATE SCAN
+            </button>
+</div>
+<div class="mt-auto mb-8 px-4 flex flex-col gap-2">
+<div class="flex items-center gap-4 text-on-surface-variant p-4 hover:text-primary transition-colors">
+<span class="material-symbols-outlined min-w-[24px]" data-icon="settings">settings</span>
+<span class="opacity-0 group-hover:opacity-100 font-label-caps text-label-caps tracking-widest">SETTINGS</span>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant p-4 hover:text-error transition-colors">
+<span class="material-symbols-outlined min-w-[24px]" data-icon="logout">logout</span>
+<span class="opacity-0 group-hover:opacity-100 font-label-caps text-label-caps tracking-widest">LOGOUT</span>
+</div>
+</div>
+</aside>
+<main class="ml-20 min-h-screen">
+<!-- Fullscreen Hero -->
+<section class="relative h-screen flex items-center justify-center overflow-hidden grid-background">
+<!-- Ambient Shader Background -->
+<!-- STITCH_SHADER_START:ANIMATION_2 class="absolute inset-0 w-full h-full opacity-60" -->
+<div class="absolute inset-0 w-full h-full opacity-60" style="display:block;">
+<canvas id="shader-canvas-ANIMATION_2" style="display:block;width:100%;height:100%"></canvas>
+<script>
+(function() {
+  const canvas = document.getElementById('shader-canvas-ANIMATION_2');
+
+  // Sync the WebGL drawing-buffer size with the CSS-driven layout size.
+  // This fires on initial layout and whenever the element is resized.
+  function syncSize() {
+    const w = canvas.clientWidth  || 1280;
+    const h = canvas.clientHeight || 720;
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width  = w;
+      canvas.height = h;
+    }
+  }
+  if (typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(syncSize).observe(canvas);
+  }
+  syncSize();
+
+  const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+  if (!gl) return;
+  const vs = `attribute vec2 a_position;
+varying vec2 v_texCoord;
+void main() {
+  v_texCoord = a_position * 0.5 + 0.5;
+  gl_Position = vec4(a_position, 0.0, 1.0);
+}`;
+  const fs = `precision highp float;
+uniform float u_time;
+uniform vec2 u_resolution;
+varying vec2 v_texCoord;
+
+float hash(vec2 p) {
+    return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+}
+
+float noise(vec2 p) {
+    vec2 i = floor(p);
+    vec2 f = fract(p);
+    vec2 u = f * f * (3.0 - 2.0 * f);
+    return mix(mix(hash(i + vec2(0.0, 0.0)), hash(i + vec2(1.0, 0.0)), u.x),
+               mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x), u.y);
+}
+
+void main() {
+    vec2 uv = v_texCoord;
+    vec2 center = uv - 0.5;
+    center.x *= u_resolution.x / u_resolution.y;
+    
+    // Grid Lines
+    float grid = 0.0;
+    vec2 g = fract(uv * 20.0);
+    grid = smoothstep(0.02, 0.0, abs(g.x)) + smoothstep(0.02, 0.0, abs(g.y));
+    grid *= 0.1;
+    
+    // Radar Scanning Circle
+    float dist = length(center);
+    float angle = atan(center.y, center.x);
+    float scan = fract(angle / 6.28318 + u_time * 0.2);
+    float circle = smoothstep(0.4, 0.395, dist) * smoothstep(0.39, 0.4, dist);
+    circle += smoothstep(0.3, 0.295, dist) * smoothstep(0.29, 0.3, dist);
+    circle += smoothstep(0.2, 0.195, dist) * smoothstep(0.19, 0.2, dist);
+    
+    float sweep = smoothstep(1.0, 0.0, scan) * smoothstep(0.4, 0.0, dist);
+    
+    // Atmospheric Glow
+    float n = noise(uv * 3.0 + u_time * 0.1);
+    vec3 color = vec3(0.0, 0.95, 1.0); // Cyan Blue
+    vec3 bg = vec3(0.04, 0.05, 0.06); // Dark Gunmetal
+    
+    vec3 finalColor = mix(bg, color * 0.5, n * 0.15);
+    finalColor += color * sweep * 0.3;
+    finalColor += color * circle * 0.5;
+    finalColor += color * grid * 0.2;
+    
+    // Vignette
+    float vig = smoothstep(1.0, 0.2, length(center * 1.5));
+    finalColor *= vig;
+
+    gl_FragColor = vec4(finalColor, 1.0);
+}`;
+  function cs(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    return s;
+  }
+  const prog = gl.createProgram();
+  gl.attachShader(prog, cs(gl.VERTEX_SHADER, vs));
+  gl.attachShader(prog, cs(gl.FRAGMENT_SHADER, fs));
+  gl.linkProgram(prog);
+  gl.useProgram(prog);
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+  const pos = gl.getAttribLocation(prog, 'a_position');
+  gl.enableVertexAttribArray(pos);
+  gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
+  const uTime = gl.getUniformLocation(prog, 'u_time');
+  const uRes = gl.getUniformLocation(prog, 'u_resolution');
+  const uMouse = gl.getUniformLocation(prog, 'u_mouse');
+
+  // u_mouse is in pixel coordinates matching u_resolution (ShaderToy convention).
+  // Shaders that need normalized coords should use: u_mouse / u_resolution.
+  let mouse = { x: canvas.width / 2, y: canvas.height / 2 };
+  window.addEventListener('mousemove', (event) => {
+    const rect = canvas.getBoundingClientRect();
+    if (rect.width && rect.height) {
+      const nx = (event.clientX - rect.left) / rect.width;
+      const ny = 1.0 - (event.clientY - rect.top) / rect.height;
+      mouse.x = nx * canvas.width;
+      mouse.y = ny * canvas.height;
+    }
+  });
+
+  function render(t) {
+    if (typeof ResizeObserver === 'undefined') syncSize();
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    if (uTime) gl.uniform1f(uTime, t * 0.001);
+    if (uRes) gl.uniform2f(uRes, canvas.width, canvas.height);
+    if (uMouse) gl.uniform2f(uMouse, mouse.x, mouse.y);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    requestAnimationFrame(render);
+  }
+  render(0);
+})();
+</script>
+</div>
+<!-- STITCH_SHADER_END:ANIMATION_2 -->
+<div class="relative z-10 w-full max-w-7xl px-margin-desktop flex flex-col md:flex-row items-center gap-12">
+<!-- Left Content -->
+<div class="flex-1 text-center md:text-left space-y-8 animate-fade-in">
+<div class="space-y-4">
+<span class="inline-block px-3 py-1 bg-primary-container/10 border border-primary-container/30 text-primary-container font-label-caps text-label-caps">ENCRYPTED CONNECTION ESTABLISHED</span>
+<h2 class="font-display-lg text-display-lg text-primary tracking-tighter leading-none">
+                            AEGIS <span class="text-primary-container">COMMAND</span>
+</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl">
+                            The Global Intelligence &amp; Defense Systems Encyclopedia. Real-time tactical data monitoring, cataloging 45,000+ defense assets across all operational theaters.
+                        </p>
+</div>
+<div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+<button class="group flex items-center justify-center gap-3 px-8 py-4 bg-primary-container text-on-primary-container font-label-caps text-label-caps tracking-widest rounded-sm border border-cyan-300/50 shadow-[0_0_20px_rgba(0,242,255,0.4)] hover:scale-105 transition-all">
+                            INITIATE SYSTEM ACCESS
+                            <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform" data-icon="login">login</span>
+</button>
+<button class="flex items-center justify-center gap-3 px-8 py-4 bg-surface/40 backdrop-blur-md text-primary-container border border-primary-container/30 font-label-caps text-label-caps tracking-widest rounded-sm hover:bg-primary-container/10 transition-all">
+                            EXPLORE DATABASE
+                            <span class="material-symbols-outlined text-[18px]" data-icon="account_tree">account_tree</span>
+</button>
+</div>
+</div>
+<!-- Right 3D Model Centerpiece -->
+<div class="flex-1 relative w-full h-[500px] flex items-center justify-center">
+<div class="holographic-border w-full h-full max-w-md max-h-md flex items-center justify-center bg-surface-container/20 backdrop-blur-sm">
+<div class="absolute inset-4 border border-primary-container/10 border-dashed animate-pulse"></div>
+<!-- STITCH_THREEJS_START:ANIMATION_3 class="w-full h-full" -->
+<div class="w-full h-full" style="display:block;">
+<script src="https://ajax.googleapis.com/ajax/libs/threejs/r125/three.min.js"></script>
+<div id="threejs-container-ANIMATION_3" style="width:100%;height:100%"></div>
+<script>
+(function() {
+  const container = document.getElementById('threejs-container-ANIMATION_3');
+  const devicePixelRatio = window.devicePixelRatio || 1;
+  const width = container.clientWidth || window.innerWidth;
+const height = container.clientHeight || window.innerHeight;
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+renderer.setSize(width, height);
+renderer.setPixelRatio(window.devicePixelRatio);
+container.appendChild(renderer.domElement);
+
+// Lighting
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(ambientLight);
+const pointLight = new THREE.PointLight(0x00f2ff, 2, 100);
+pointLight.position.set(5, 5, 5);
+scene.add(pointLight);
+
+// Drone Model (Simplified Geometry)
+const droneGroup = new THREE.Group();
+
+// Main Body
+const bodyGeom = new THREE.BoxGeometry(2, 0.5, 3);
+const bodyMat = new THREE.MeshPhongMaterial({ color: 0x333a3f, shininess: 100 });
+const body = new THREE.Mesh(bodyGeom, bodyMat);
+droneGroup.add(body);
+
+// Wings/Arms
+const armGeom = new THREE.BoxGeometry(4, 0.2, 0.5);
+const arm1 = new THREE.Mesh(armGeom, bodyMat);
+arm1.position.y = 0.1;
+droneGroup.add(arm1);
+
+// Rotors
+const rotorGeom = new THREE.CylinderGeometry(0.8, 0.8, 0.05, 16);
+const rotorMat = new THREE.MeshPhongMaterial({ color: 0x00f2ff, transparent: true, opacity: 0.6 });
+
+const createRotor = (x, z) => {
+    const rotor = new THREE.Mesh(rotorGeom, rotorMat);
+    rotor.position.set(x, 0.3, z);
+    droneGroup.add(rotor);
+    return rotor;
+};
+
+const rotors = [
+    createRotor(2, 0.5),
+    createRotor(-2, 0.5),
+    createRotor(0, 2),
+    createRotor(0, -2)
+];
+
+scene.add(droneGroup);
+camera.position.z = 8;
+camera.position.y = 2;
+camera.lookAt(0, 0, 0);
+
+// Animation
+function animate() {
+    requestAnimationFrame(animate);
+    
+    droneGroup.rotation.y += 0.005;
+    droneGroup.position.y = Math.sin(Date.now() * 0.002) * 0.2;
+    
+    rotors.forEach(r => r.rotation.y += 0.5);
+    
+    renderer.render(scene, camera);
+}
+
+animate();
+
+window.addEventListener('resize', () => {
+    const w = container.clientWidth || window.innerWidth;
+    const h = container.clientHeight || window.innerHeight;
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+});
+})();
+</script>
+</div>
+<!-- STITCH_THREEJS_END:ANIMATION_3 -->
+<!-- HUD Decorative Elements -->
+<div class="absolute top-4 left-4 font-spec-code text-spec-code text-primary-container/60">DRONE_ID: RX-900</div>
+<div class="absolute bottom-4 right-4 font-spec-code text-spec-code text-primary-container/60">SCAN_STATUS: LIVE</div>
+<div class="absolute -left-12 top-1/2 -rotate-90 font-label-caps text-[10px] text-white/20 tracking-[0.5em]">SYSTEMS_DIAGNOSTIC</div>
+</div>
+</div>
+</div>
+<!-- News & Intelligence Ticker -->
+<div class="absolute bottom-0 w-full h-12 bg-surface-container-lowest/80 backdrop-blur-xl border-t border-white/10 flex items-center overflow-hidden z-20">
+<div class="flex items-center gap-4 px-6 bg-error/10 border-r border-error/30 h-full">
+<span class="material-symbols-outlined text-error animate-pulse" data-icon="warning">warning</span>
+<span class="font-label-caps text-label-caps text-error whitespace-nowrap">LIVE INTEL FEED</span>
+</div>
+<div class="flex whitespace-nowrap animate-[ticker_30s_linear_infinite] px-8 gap-12 font-spec-code text-spec-code text-on-surface-variant">
+<span>[FLASH] UNIDENTIFIED DRONE SWARM DETECTED IN SECTOR 7G</span>
+<span>[UPDATE] AEGIS CORE SHIELDING UPGRADED TO V2.4.9</span>
+<span>[INTEL] NEW STEALTH SIGNATURE CATALOGED: 'RAVEN-X'</span>
+<span>[LOGS] CARRIER STRIKE GROUP 5 REACHES POSITION OMEGA</span>
+<span>[FLASH] CYBER DEFENSE PROTOCOL ALPHA-6 ENGAGED</span>
+</div>
+</div>
+</section>
+<!-- Stats Dashboard Section -->
+<section class="py-24 bg-surface-container-lowest relative overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary-container/20 to-transparent"></div>
+<div class="max-w-7xl mx-auto px-margin-desktop">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+<div class="flex flex-col items-center text-center space-y-2 p-8 border border-white/5 bg-surface/40 hover:border-primary-container/30 transition-all group">
+<span class="material-symbols-outlined text-primary-container text-4xl mb-4 group-hover:scale-110 transition-transform" data-icon="deployed_code">deployed_code</span>
+<h3 class="font-display-lg text-headline-lg text-primary-container tabular-nums">45k+</h3>
+<p class="font-label-caps text-label-caps tracking-widest text-on-surface-variant">ASSETS CATALOGED</p>
+</div>
+<div class="flex flex-col items-center text-center space-y-2 p-8 border border-white/5 bg-surface/40 hover:border-primary-container/30 transition-all group">
+<span class="material-symbols-outlined text-primary-container text-4xl mb-4 group-hover:scale-110 transition-transform" data-icon="hub">hub</span>
+<h3 class="font-display-lg text-headline-lg text-primary-container tabular-nums">128</h3>
+<p class="font-label-caps text-label-caps tracking-widest text-on-surface-variant">GLOBAL HUBS</p>
+</div>
+<div class="flex flex-col items-center text-center space-y-2 p-8 border border-white/5 bg-surface/40 hover:border-primary-container/30 transition-all group">
+<span class="material-symbols-outlined text-primary-container text-4xl mb-4 group-hover:scale-110 transition-transform" data-icon="security">security</span>
+<h3 class="font-display-lg text-headline-lg text-primary-container tabular-nums">ALPHA</h3>
+<p class="font-label-caps text-label-caps tracking-widest text-on-surface-variant">SECURITY LEVEL</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Featured Technologies Section -->
+<section class="py-24 px-margin-desktop max-w-7xl mx-auto space-y-12">
+<div class="flex justify-between items-end border-b border-white/10 pb-6">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-primary">FEATURED <span class="text-primary-container">SYSTEMS</span></h2>
+<p class="text-on-surface-variant mt-2">Active intelligence profiles on cutting-edge military hardware.</p>
+</div>
+<button class="flex items-center gap-2 font-label-caps text-label-caps text-primary-container hover:underline group">
+                    VIEW FULL ARCHIVE
+                    <span class="material-symbols-outlined text-sm transition-transform group-hover:translate-x-1" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Card 1 -->
+<div class="group relative bg-surface-container-high/40 backdrop-blur-xl border border-white/5 hover:border-primary-container/40 transition-all duration-500 overflow-hidden">
+<div class="aspect-[16/10] overflow-hidden relative">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-80" data-alt="A highly detailed close-up of a futuristic stealth fighter jet on a dark, rainy tarmac at night. The aircraft features sharp, angular geometry with a matte carbon fiber finish and glowing cyan light strips along the fuselage. Subtle atmospheric fog and cold blue lighting create a cinematic military intelligence feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjtrzoPGId9DdAsdevqoy_9U-B7mOIliR_ZFav3lhV-YX2F6fd5yiAvhyAGpTgpU1UUwzo6G9emsjblMmUrNcBqrXpeMEq1UvZh0AxssFRkLi5o4Sw5Fh44NX9aYZ91lT8v0UEZ-YZyedC-kPLmSRXwWKqlpWLxSsmkAvhZowv-HxVPrKIBSAYqfU2fvPRsruxH_9k2kNlwou4f65O0dxixacpJ4kGz3cWBsCWF9GflpjlPIYeQPZdYOwuo0rzDH2MeEGWR_jq7cIT"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-high to-transparent"></div>
+<div class="absolute top-4 right-4 flex gap-2">
+<span class="px-2 py-1 bg-surface-container-lowest/80 backdrop-blur border border-white/10 font-spec-code text-[10px] text-primary-container">CLASSIFIED</span>
+</div>
+</div>
+<div class="p-6 space-y-4">
+<h3 class="font-headline-md text-headline-md text-primary tracking-tight">Next-Gen Stealth Fighters</h3>
+<p class="text-on-surface-variant text-sm line-clamp-2">Hyper-maneuverable air superiority platforms featuring 6th-gen adaptive camouflage and neural link piloting systems.</p>
+<div class="grid grid-cols-3 gap-2 border-t border-white/5 pt-4">
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant">SPEED</p>
+<p class="font-spec-code text-primary-container">MACH 3.2</p>
+</div>
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant">RANGE</p>
+<p class="font-spec-code text-primary-container">4,500KM</p>
+</div>
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant">LEVEL</p>
+<p class="font-spec-code text-primary-container">OMEGA</p>
+</div>
+</div>
+</div>
+<div class="absolute bottom-0 left-0 w-0 h-1 bg-primary-container group-hover:w-full transition-all duration-500"></div>
+</div>
+<!-- Card 2 -->
+<div class="group relative bg-surface-container-high/40 backdrop-blur-xl border border-white/5 hover:border-primary-container/40 transition-all duration-500 overflow-hidden">
+<div class="aspect-[16/10] overflow-hidden relative">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-80" data-alt="A massive swarm of small, illuminated quadcopter drones flying in a complex geometric formation over a futuristic coastal city at dusk. The drones emit a soft cyan glow against the deep navy sky. The scene is shot with a wide-angle lens, emphasizing the scale and synchronized motion of the autonomous fleet." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCiLVivYcbHMf4vu0XtKIxcExMmA8vGqwli3S77m1Z3chJUngDiPSrbT9IZnSJZAkOHXYHxUyW75VV66QkaDPVUN26h36CbJIQ4wmB43dxImMvg79KXxWApKTMxIuwc6IK8lcOMBFy7jmN38lXTZssYI-F-nNf1pdPUfeIDjigB7k2SUvT2TvOw6VQk_jeNEZ_mGRARx4k85tm43OKB22aePoQEncZ1QNJ-eVYsnKbjMONqtkrahFZlwCxNEL2SMM33SAKTZuUiI4zj"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-high to-transparent"></div>
+<div class="absolute top-4 right-4">
+<span class="px-2 py-1 bg-surface-container-lowest/80 backdrop-blur border border-white/10 font-spec-code text-[10px] text-primary-container">AUTONOMOUS</span>
+</div>
+</div>
+<div class="p-6 space-y-4">
+<h3 class="font-headline-md text-headline-md text-primary tracking-tight">Autonomous Drone Fleets</h3>
+<p class="text-on-surface-variant text-sm line-clamp-2">AI-driven swarm intelligence systems capable of coordinated multi-domain strikes and perimeter surveillance.</p>
+<div class="grid grid-cols-3 gap-2 border-t border-white/5 pt-4">
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant">UNITS</p>
+<p class="font-spec-code text-primary-container">12,000+</p>
+</div>
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant">COMMS</p>
+<p class="font-spec-code text-primary-container">QUANTUM</p>
+</div>
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant">LEVEL</p>
+<p class="font-spec-code text-primary-container">SIGMA</p>
+</div>
+</div>
+</div>
+<div class="absolute bottom-0 left-0 w-0 h-1 bg-primary-container group-hover:w-full transition-all duration-500"></div>
+</div>
+<!-- Card 3 -->
+<div class="group relative bg-surface-container-high/40 backdrop-blur-xl border border-white/5 hover:border-primary-container/40 transition-all duration-500 overflow-hidden">
+<div class="aspect-[16/10] overflow-hidden relative">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-80" data-alt="A dark, high-tech server room with vertical pillars of glowing green and blue hardware lights reflecting off a polished black floor. Intricate data cables weave between servers like electronic veins. The atmosphere is quiet, intense, and technologically dense, representing the core of a global cyber warfare array." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAO9FNMaWMGu-jOhDi-RRlbe__kfulPmNJFFXbb9hagBl68OACa5ZuJ7YnDuFjGxfMK418ijf0zqjCHh2QJSJiNzhg8-FF8R_yr03rt0lTQYPu7N2m_PXx4_riqGgTYHCQTdfgRVAOIJi8GFmTNY_jZvzZHoUV84aYpSvwswXAhlLx1Q-0O3fyoiX44pt0fEYwaGsBLq714K90L0soyWG_sDCrTl13zIEGmmJy15vSob5S6W6cSSjhnCSVbkL4yE53bbsYoTOaZBRvx"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-high to-transparent"></div>
+<div class="absolute top-4 right-4">
+<span class="px-2 py-1 bg-surface-container-lowest/80 backdrop-blur border border-white/10 font-spec-code text-[10px] text-primary-container">VIRTUAL</span>
+</div>
+</div>
+<div class="p-6 space-y-4">
+<h3 class="font-headline-md text-headline-md text-primary tracking-tight">Cyber Warfare Arrays</h3>
+<p class="text-on-surface-variant text-sm line-clamp-2">Offensive and defensive digital assets designed for infrastructure protection and high-fidelity encryption.</p>
+<div class="grid grid-cols-3 gap-2 border-t border-white/5 pt-4">
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant">BAND</p>
+<p class="font-spec-code text-primary-container">800TB/S</p>
+</div>
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant">ENCR</p>
+<p class="font-spec-code text-primary-container">AES-X</p>
+</div>
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant">LEVEL</p>
+<p class="font-spec-code text-primary-container">ALPHA</p>
+</div>
+</div>
+</div>
+<div class="absolute bottom-0 left-0 w-0 h-1 bg-primary-container group-hover:w-full transition-all duration-500"></div>
+</div>
+</div>
+</section>
+</main>
+<footer class="w-full py-12 px-margin-desktop bg-gradient-to-t from-black to-transparent border-t border-white/5">
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-12">
+<div class="space-y-4 max-w-sm">
+<h2 class="font-headline-md text-headline-md text-on-surface font-bold tracking-tighter">AEGIS COMMAND</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">
+                    Providing real-time technical intelligence for the next generation of defense strategic planning.
+                </p>
+<p class="font-label-caps text-[10px] text-secondary tracking-widest mt-8">
+                    © 2024 DEFENSE INTELLIGENCE NETWORK. ALL RIGHTS RESERVED. CLASSIFIED MATERIAL.
+                </p>
+</div>
+<div class="grid grid-cols-2 gap-16">
+<div class="space-y-4">
+<p class="font-label-caps text-label-caps text-primary-container mb-6">RESOURCES</p>
+<ul class="space-y-3 font-body-md text-body-md">
+<li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">SITEMAP</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">API_DOCS</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">SECURITY_PROTOCOL</a></li>
+</ul>
+</div>
+<div class="space-y-4">
+<p class="font-label-caps text-label-caps text-primary-container mb-6">COMMAND</p>
+<ul class="space-y-3 font-body-md text-body-md">
+<li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">CONTACT_COMMAND</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">INTEL_SUBMIT</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-colors underline" href="#">ACCESS_LOGIN</a></li>
+</ul>
+</div>
+</div>
+</div>
+</footer>
+<script>
+        // Micro-interactions for HUD elements
+        document.addEventListener('mousemove', (e) => {
+            const moveX = (e.clientX - window.innerWidth / 2) * 0.01;
+            const moveY = (e.clientY - window.innerHeight / 2) * 0.01;
+            
+            const mainContainer = document.querySelector('main');
+            if (mainContainer) {
+                // Subtle parallax for HUD feeling
+                // mainContainer.style.transform = `translate(${moveX}px, ${moveY}px)`;
+            }
+        });
+
+        // Hover sounds or effects could be added here
+    </script>
+</body></html>

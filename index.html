@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AEGIS DEFENSE NEXUS | Tactical Command Hub</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <style>
+    @keyframes scanline {
+      0% { transform: translateY(-100%); }
+      100% { transform: translateY(100vh); }
+    }
+    @keyframes radar-sweep {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    @keyframes pulse-cyan {
+      0%, 100% { opacity: 0.6; box-shadow: 0 0 10px rgba(0, 242, 255, 0.2); }
+      50% { opacity: 1; box-shadow: 0 0 25px rgba(0, 242, 255, 0.5); }
+    }
+    .scanline-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #00f2ff, #00ff88, transparent);
+      animation: scanline 5s linear infinite;
+      z-index: 9999;
+      pointer-events: none;
+    }
+    .cyber-grid {
+      background-image: 
+        linear-gradient(to right, rgba(0, 242, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 242, 255, 0.04) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+    .radar-beam {
+      animation: radar-sweep 6s linear infinite;
+      transform-origin: 50% 50%;
+    }
+    .hud-border {
+      position: relative;
+      border: 1px solid rgba(0, 242, 255, 0.2);
+    }
+    .hud-border::before {
+      content: '';
+      position: absolute;
+      top: -1px; left: -1px; width: 8px; height: 8px;
+      border-top: 2px solid #00f2ff; border-left: 2px solid #00f2ff;
+    }
+    .hud-border::after {
+      content: '';
+      position: absolute;
+      bottom: -1px; right: -1px; width: 8px; height: 8px;
+      border-bottom: 2px solid #00f2ff; border-right: 2px solid #00f2ff;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0b0f13; }
+    ::-webkit-scrollbar-thumb { background: rgba(0, 242, 255, 0.3); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #00f2ff; }
+  </style>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            surface: "#101418",
+            "surface-dim": "#0b0f13",
+            "surface-container": "#181c20",
+            "surface-container-high": "#22262b",
+            "primary-container": "#00ff88",
+            "on-primary-container": "#003919",
+            "neon-cyan": "#00f2ff",
+            "neon-emerald": "#00ff88",
+            "neon-amber": "#ffb703"
+          },
+          fontFamily: {
+            sans: ["Inter", "sans-serif"],
+            display: ["Sora", "sans-serif"],
+            mono: ["JetBrains Mono", "monospace"]
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-[#0b0f13] text-[#e0e2e9] font-sans min-h-screen cyber-grid selection:bg-[#00ff88] selection:text-[#003919]">
+  <div class="scanline-bar"></div>
+
+  <!-- Tactical Top Bar -->
+  <header class="sticky top-0 z-50 backdrop-blur-xl bg-[#101418]/80 border-b border-white/10 px-6 py-3.5 flex flex-wrap items-center justify-between gap-4 shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
+    <div class="flex items-center gap-4">
+      <div class="relative w-9 h-9 rounded-lg bg-[#181c20] border border-[#00f2ff]/40 flex items-center justify-center overflow-hidden shadow-[0_0_15px_rgba(0,242,255,0.2)]">
+        <span class="material-symbols-outlined text-[#00f2ff] text-xl">shield</span>
+        <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-[#00f2ff]/20 to-transparent radar-beam"></div>
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="font-display font-extrabold text-lg tracking-wider text-white">AEGIS DEFENSE NEXUS</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#00ff88]/20 text-[#00ff88] border border-[#00ff88]/30">ONLINE // DEFCON 1</span>
+        </div>
+        <p class="font-mono text-xs text-white/50 tracking-wider">TACTICAL INTEGRATION SUITE // TRI-SERVICE ARSENAL & COMMAND SIMULATION</p>
+      </div>
+    </div>
+
+    <!-- Live Telemetry Stats -->
+    <div class="flex items-center gap-6 font-mono text-xs">
+      <div class="hidden lg:flex items-center gap-2 bg-[#181c20] px-3 py-1.5 rounded border border-white/10">
+        <span class="w-2 h-2 rounded-full bg-[#00ff88] animate-ping"></span>
+        <span class="text-white/40">SYSTEM STATUS:</span>
+        <span class="text-[#00ff88] font-bold">ALL 27 NODES ACTIVE</span>
+      </div>
+      <div class="hidden sm:flex items-center gap-2 bg-[#181c20] px-3 py-1.5 rounded border border-white/10">
+        <span class="material-symbols-outlined text-xs text-[#00f2ff]">schedule</span>
+        <span id="live-clock" class="text-white font-medium">--:--:-- UTC</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="toggle-split-btn" onclick="toggleSplitView()" class="px-3 py-1.5 rounded bg-[#00f2ff]/10 hover:bg-[#00f2ff]/20 text-[#00f2ff] border border-[#00f2ff]/40 text-xs font-mono font-bold transition-all flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-sm">splitscreen</span>
+          <span>HUD VIEWPORT</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Split View Tactical Monitor (Drawer / Frame) -->
+  <div id="viewport-container" class="hidden border-b border-[#00f2ff]/30 bg-[#070a0d] transition-all duration-300">
+    <div class="max-w-[1700px] mx-auto p-4">
+      <div class="flex items-center justify-between pb-3 border-b border-white/10 text-xs font-mono">
+        <div class="flex items-center gap-3">
+          <span class="flex h-2.5 w-2.5 relative">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00f2ff] opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#00f2ff]"></span>
+          </span>
+          <span class="text-white font-bold tracking-wider" id="viewport-title">AEGIS LIVE TACTICAL VIEWPORT</span>
+          <span class="px-2 py-0.5 rounded bg-white/10 text-white/60 text-[10px]" id="viewport-url">SELECT A SYSTEM BELOW</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="reloadViewport()" title="Reload Frame" class="p-1.5 rounded bg-white/5 hover:bg-white/10 text-white/80 hover:text-white transition">
+            <span class="material-symbols-outlined text-sm">refresh</span>
+          </button>
+          <a id="viewport-newtab" href="#" target="_blank" title="Open Fullscreen in New Tab" class="px-2.5 py-1 rounded bg-[#00ff88]/20 hover:bg-[#00ff88]/30 text-[#00ff88] border border-[#00ff88]/40 transition flex items-center gap-1">
+            <span class="material-symbols-outlined text-xs">open_in_new</span>
+            <span>OPEN FULLSCREEN</span>
+          </a>
+          <button onclick="closeViewport()" title="Minimize Monitor" class="p-1.5 rounded bg-white/5 hover:bg-red-500/20 text-white/80 hover:text-red-400 transition">
+            <span class="material-symbols-outlined text-sm">close</span>
+          </button>
+        </div>
+      </div>
+      <div class="relative w-full h-[650px] mt-3 rounded-lg overflow-hidden border border-[#00f2ff]/30 bg-black shadow-[0_0_30px_rgba(0,242,255,0.15)]">
+        <iframe id="live-frame" src="" class="w-full h-full border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Dashboard -->
+  <main class="max-w-[1700px] mx-auto px-6 py-8">
+
+    <!-- Hero / Quick Access Banner -->
+    <div class="mb-8 p-6 rounded-xl bg-gradient-to-r from-[#141a21]/90 via-[#182028]/80 to-[#10161c]/90 border border-white/10 relative overflow-hidden shadow-2xl">
+      <div class="absolute -right-20 -top-20 w-80 h-80 bg-[#00f2ff]/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#00f2ff]/10 border border-[#00f2ff]/30 text-[#00f2ff] font-mono text-xs mb-3">
+            <span class="material-symbols-outlined text-sm">hub</span>
+            CENTRAL MISSION ARCHITECTURE
+          </div>
+          <h2 class="font-display font-extrabold text-2xl sm:text-3xl text-white tracking-tight">
+            Integrated Defense Nexus Operating Environment
+          </h2>
+          <p class="text-white/60 text-sm max-w-3xl mt-2 leading-relaxed">
+            Direct orchestration layer connecting all 20 tactical frontend modules, interactive Three.js 3D kinetic assets, WebGL shader matrices, and tri-service indigenous Indian Armed Forces defense registries.
+          </p>
+        </div>
+
+        <!-- Quick Launch Top 3 -->
+        <div class="flex flex-wrap sm:flex-nowrap gap-3">
+          <a href="/bharat_defense_nexus_indian_armed_forces_arsenal/" target="_blank" class="px-4 py-2.5 rounded-lg bg-[#00ff88]/15 hover:bg-[#00ff88]/25 text-[#00ff88] border border-[#00ff88]/40 font-mono text-xs font-bold transition-all shadow-[0_0_15px_rgba(0,255,136,0.15)] flex items-center gap-2">
+            <span class="material-symbols-outlined text-sm">military_tech</span>
+            <span>BHARAT ARSENAL</span>
+          </a>
+          <a href="/aegis_command_homepage/" target="_blank" class="px-4 py-2.5 rounded-lg bg-[#00f2ff]/15 hover:bg-[#00f2ff]/25 text-[#00f2ff] border border-[#00f2ff]/40 font-mono text-xs font-bold transition-all shadow-[0_0_15px_rgba(0,242,255,0.15)] flex items-center gap-2">
+            <span class="material-symbols-outlined text-sm">radar</span>
+            <span>AEGIS COMMAND</span>
+          </a>
+          <a href="/global_intel_map/" target="_blank" class="px-4 py-2.5 rounded-lg bg-white/10 hover:bg-white/20 text-white border border-white/20 font-mono text-xs font-bold transition-all flex items-center gap-2">
+            <span class="material-symbols-outlined text-sm">public</span>
+            <span>INTEL MAP</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter & Search Toolbar -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-4 border-b border-white/10">
+      <!-- Category Tabs -->
+      <div class="flex flex-wrap items-center gap-2 font-mono text-xs" id="category-tabs">
+        <button onclick="filterCategory('all')" data-cat="all" class="cat-btn px-3.5 py-1.5 rounded-lg font-bold bg-[#00f2ff] text-black border border-[#00f2ff] transition">
+          ALL MODULES (<span id="count-all">27</span>)
+        </button>
+        <button onclick="filterCategory('command')" data-cat="command" class="cat-btn px-3.5 py-1.5 rounded-lg font-medium bg-[#181c20] hover:bg-white/10 text-white/70 hover:text-white border border-white/10 transition">
+          COMMAND CENTRES (8)
+        </button>
+        <button onclick="filterCategory('intel')" data-cat="intel" class="cat-btn px-3.5 py-1.5 rounded-lg font-medium bg-[#181c20] hover:bg-white/10 text-white/70 hover:text-white border border-white/10 transition">
+          INTELLIGENCE & SPECS (5)
+        </button>
+        <button onclick="filterCategory('3d')" data-cat="3d" class="cat-btn px-3.5 py-1.5 rounded-lg font-medium bg-[#181c20] hover:bg-white/10 text-white/70 hover:text-white border border-white/10 transition">
+          3D & SHADERS (6)
+        </button>
+        <button onclick="filterCategory('arsenal')" data-cat="arsenal" class="cat-btn px-3.5 py-1.5 rounded-lg font-medium bg-[#181c20] hover:bg-white/10 text-white/70 hover:text-white border border-white/10 transition">
+          INDIGENOUS ARSENAL (8)
+        </button>
+      </div>
+
+      <!-- Search Input -->
+      <div class="relative w-full md:w-72">
+        <span class="material-symbols-outlined absolute left-3 top-2.5 text-white/40 text-lg">search</span>
+        <input type="text" id="search-input" oninput="handleSearch()" placeholder="Search modules, assets, shaders..." class="w-full pl-9 pr-4 py-1.5 rounded-lg bg-[#181c20] border border-white/10 focus:border-[#00f2ff] focus:outline-none text-white font-mono text-xs placeholder:text-white/40 transition">
+      </div>
+    </div>
+
+    <!-- Cards Grid -->
+    <div id="modules-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <!-- Dynamically Rendered via JS -->
+    </div>
+  </main>
+
+  <!-- Asset Modal for Arsenal Images -->
+  <div id="image-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden items-center justify-center p-4" onclick="closeImageModal()">
+    <div class="max-w-4xl w-full bg-[#101418] border border-[#00f2ff]/40 rounded-xl overflow-hidden shadow-2xl relative" onclick="event.stopPropagation()">
+      <div class="flex items-center justify-between p-4 border-b border-white/10 font-mono text-xs">
+        <span id="modal-title" class="text-[#00f2ff] font-bold text-sm">ASSET BRIEFING</span>
+        <button onclick="closeImageModal()" class="p-1 rounded hover:bg-white/10 text-white/60 hover:text-white">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div class="p-4 bg-black flex items-center justify-center max-h-[70vh] overflow-hidden">
+        <img id="modal-img" src="" alt="Defense Asset" class="max-h-[65vh] object-contain rounded">
+      </div>
+      <div class="p-4 bg-[#181c20] text-xs font-mono flex items-center justify-between text-white/70">
+        <span id="modal-desc">Indian Armed Forces Tri-Service Indigenous Operational Deployment</span>
+        <a id="modal-download" href="" target="_blank" class="px-3 py-1 rounded bg-[#00ff88]/20 text-[#00ff88] hover:bg-[#00ff88]/30 transition">VIEW FULL RESOLUTION</a>
+      </div>
+    </div>
+  </div>
+
+  <footer class="mt-16 border-t border-white/10 bg-[#070a0d] py-6 px-6 font-mono text-xs text-white/40 flex flex-wrap justify-between items-center gap-4">
+    <div>AEGIS DEFENSE NEXUS // SECURE OPERATIONAL GRID // HOST: LOCALHOST:8000</div>
+    <div class="flex items-center gap-4">
+      <span class="text-[#00ff88]">STATUS: OPERATIONAL</span>
+      <span>|</span>
+      <span>ENGINE: PYTHON HTTP SERVER &amp; WEBGL</span>
+    </div>
+  </footer>
+
+  <script>
+    // Master Systems Database
+    const SYSTEMS = [
+      // COMMAND CENTRES
+      {
+        id: "bharat_defense_nexus",
+        title: "Bharat Defense Nexus",
+        subtitle: "Tri-Service Tactical Command Arsenal",
+        category: "command",
+        type: "web",
+        path: "/bharat_defense_nexus_indian_armed_forces_arsenal/",
+        thumb: "bharat_defense_nexus_indian_armed_forces_arsenal/screen.png",
+        tags: ["Tri-Service", "Tactical Map", "Arsenal Registry", "Radar Beam"],
+        desc: "Unified Indian Armed Forces defense nexus featuring strategic tri-service assets, live operational radar, and military equipment specifications."
+      },
+      {
+        id: "aegis_command_homepage",
+        title: "Aegis Command Tactical Portal",
+        subtitle: "Military Technology Encyclopedia",
+        category: "command",
+        type: "web",
+        path: "/aegis_command_homepage/",
+        thumb: "aegis_command_homepage/screen.png",
+        tags: ["Tactical HUD", "Three.js Drone", "Scanlines", "Strategic Command"],
+        desc: "Full-scale command interface featuring 3D drone holographic inspection, expandable tactical HUD side navigation, and interactive telemetry telemetry."
+      },
+      {
+        id: "nexus_prime_mission_control",
+        title: "Nexus Prime Mission Control",
+        subtitle: "Orbital Command & Telemetry Center",
+        category: "command",
+        type: "web",
+        path: "/nexus_prime_mission_control_experience/",
+        thumb: "nexus_prime_mission_control_experience/screen.png",
+        tags: ["Hologram Orb", "Targeting Brackets", "Glass Panels", "Orbital Recon"],
+        desc: "Advanced mission control dashboard featuring a live rotating holographic core sphere, dynamic target locking brackets, and real-time defense metrics."
+      },
+      {
+        id: "jarvis_nexus_kinetic",
+        title: "Jarvis Nexus Kinetic Interface",
+        subtitle: "Next-Gen AI Tactical HUD",
+        category: "command",
+        type: "web",
+        path: "/jarvis_nexus_kinetic_command_interface/",
+        thumb: "jarvis_nexus_kinetic_command_interface/screen.png",
+        tags: ["Jarvis HUD", "Holographic Matrix", "Cybernetic Systems"],
+        desc: "Cybernetic tactical interface with audio-visual command elements, orbital tactical sphere, and low-latency operational controls."
+      },
+      {
+        id: "spectral_hud",
+        title: "Spectral HUD Spatial Intel",
+        subtitle: "Spatial Intelligence & Sensor Matrix",
+        category: "command",
+        type: "web",
+        path: "/spectral_hud_spatial_intelligence_interface/",
+        thumb: "spectral_hud_spatial_intelligence_interface/screen.png",
+        tags: ["Spectral Analysis", "Spatial Radar", "Sensor Arrays"],
+        desc: "Ultra-wide spatial sensor reconnaissance HUD with 80vw holographic projection and real-time electronic warfare analysis."
+      },
+      {
+        id: "aegis_command_center",
+        title: "Aegis Command Center",
+        subtitle: "Executive Defense HQ",
+        category: "command",
+        type: "web",
+        path: "/aegis_command_command_center_homepage/",
+        thumb: "aegis_command_command_center_homepage/screen.png",
+        tags: ["Command HQ", "Telemetry", "Defense Matrix"],
+        desc: "High-density command operations center dashboard with multi-pane situational awareness."
+      },
+      {
+        id: "aegis_ultra_premium_1",
+        title: "Aegis Ultra Premium Experience I",
+        subtitle: "Tactical Stealth Fighter Hangar",
+        category: "command",
+        type: "web",
+        path: "/aegis_command_ultra_premium_experience_1/",
+        thumb: "aegis_command_ultra_premium_experience_1/screen.png",
+        tags: ["3D Hangar", "Stealth Aircraft", "Ambient Shaders"],
+        desc: "High-fidelity interactive aircraft hangar with real-time 3D lighting, stealth airframe visualization, and launch systems."
+      },
+      {
+        id: "aegis_ultra_premium_2",
+        title: "Aegis Ultra Premium Experience II",
+        subtitle: "Next-Gen Tactical Overview",
+        category: "command",
+        type: "web",
+        path: "/aegis_command_ultra_premium_experience_2/",
+        thumb: "aegis_command_ultra_premium_experience_1/screen.png",
+        tags: ["Tactical Suite", "Dark Mode", "Grid Controls"],
+        desc: "Refined variant of the Aegis tactical operations center with customized telemetry stream."
+      },
+
+      // INTELLIGENCE & SPECS
+      {
+        id: "global_intel_map",
+        title: "Global Intelligence Threat Map",
+        subtitle: "Worldwide Tactical Geopolitical Tracker",
+        category: "intel",
+        type: "web",
+        path: "/global_intel_map/",
+        thumb: "global_intel_map/screen.png",
+        tags: ["Interactive Globe", "Geopolitical Intel", "Threat Hotspots"],
+        desc: "Live interactive geopolitical tracking map highlighting strategic air defense zones, naval choke points, and global threat vectors."
+      },
+      {
+        id: "defense_systems_database",
+        title: "Defense Systems Database",
+        subtitle: "Global Military Hardware Catalog",
+        category: "intel",
+        type: "web",
+        path: "/defense_systems_database/",
+        thumb: "defense_systems_database/screen.png",
+        tags: ["Hardware Specs", "Avionics", "Ballistics", "Radar"],
+        desc: "Comprehensive encyclopedic database cataloging military combat aircraft, naval vessels, and missile platforms."
+      },
+      {
+        id: "defense_systems_indian_air",
+        title: "Indian Air Assets Database",
+        subtitle: "IAF Strategic Fleet Specs",
+        category: "intel",
+        type: "web",
+        path: "/defense_systems_database_indian_air_assets/",
+        thumb: "defense_systems_database_indian_air_assets/screen.png",
+        tags: ["IAF Fleet", "Air Superiority", "Multirole Combat"],
+        desc: "Specialized intelligence database for Indian Air Force airframes including HAL Tejas, Su-30MKI, Rafale, and AMCA programs."
+      },
+      {
+        id: "asset_intel_hal_tejas",
+        title: "HAL Tejas Mk1A Asset Intel",
+        subtitle: "Indigenous 4.5 Gen Fighter Specs",
+        category: "intel",
+        type: "web",
+        path: "/asset_intel_hal_tejas_mk1a_technical_specifications/",
+        thumb: "asset_intel_hal_tejas_mk1a_technical_specifications/screen.png",
+        tags: ["HAL Tejas Mk1A", "AESA Radar", "BVR Missiles", "Avionics"],
+        desc: "Detailed technical dossier of the HAL Tejas Mk1A light combat aircraft, weapon hardpoints, radar capabilities, and flight envelope."
+      },
+      {
+        id: "asset_intel_f35",
+        title: "F-35 Lightning II Asset Intel",
+        subtitle: "5th Gen Stealth Multirole Platform",
+        category: "intel",
+        type: "web",
+        path: "/asset_intel_f_35_lightning_ii/",
+        thumb: "asset_intel_f_35_lightning_ii/screen.png",
+        tags: ["F-35 Lightning II", "Stealth", "Sensor Fusion", "VTOL"],
+        desc: "Tactical briefing and technical architecture analysis of the F-35 stealth platform, electro-optical targeting, and stealth coating."
+      },
+
+      // 3D & SHADERS
+      {
+        id: "threejs_nexus_orb",
+        title: "Three.js Nexus Hologram Orb",
+        subtitle: "Real-Time 3D Holographic Core",
+        category: "3d",
+        type: "web",
+        path: "/three.js_1/",
+        thumb: "three.js_1/screen.png",
+        tags: ["Three.js", "WebGL", "Wireframe Sphere", "Particle Field"],
+        desc: "Standalone WebGL 3D holographic sphere rendered with spinning orbital rings, particle cloud, and dynamic lighting."
+      },
+      {
+        id: "threejs_stealth_hangar",
+        title: "Three.js Stealth Fighter Hangar",
+        subtitle: "Interactive 3D Aircraft Bay",
+        category: "3d",
+        type: "web",
+        path: "/three.js_2/",
+        thumb: "three.js_2/screen.png",
+        tags: ["Three.js", "Stealth Jet", "Dynamic Spotlight"],
+        desc: "Interactive 3D stealth fighter model rotating inside an illuminated tactical hangar bay with realtime spotlights."
+      },
+      {
+        id: "threejs_drone_kinetic",
+        title: "Three.js Kinetic Recon Drone",
+        subtitle: "Kinetic Multirotor 3D Geometry",
+        category: "3d",
+        type: "web",
+        path: "/three.js_3/",
+        thumb: "aegis_command_homepage/screen.png",
+        tags: ["Three.js", "Kinetic Drone", "Rotor Physics"],
+        desc: "Standalone 3D kinetic drone model with independent rotating counter-thrust rotors and surveillance sensors."
+      },
+      {
+        id: "shader_matrix_1",
+        title: "Tactical WebGL Shader Matrix 1",
+        subtitle: "Dynamic Waveform Grid Shader",
+        category: "3d",
+        type: "web",
+        path: "/shader_1/",
+        thumb: "shader_1/screen.png",
+        tags: ["GLSL", "Fragment Shader", "Procedural Noise"],
+        desc: "Full-screen procedural WebGL fragment shader generating animated military grid waveforms and hash interference."
+      },
+      {
+        id: "shader_matrix_2",
+        title: "Tactical WebGL Shader Matrix 2",
+        subtitle: "Quantum Cyan Energy Field",
+        category: "3d",
+        type: "web",
+        path: "/shader_2/",
+        thumb: "shader_2/screen.png",
+        tags: ["GLSL", "Energy Field", "Cyan Radiance"],
+        desc: "Procedural pulsating energy distortion shader simulating advanced electromagnetic sensor shields."
+      },
+      {
+        id: "shader_matrix_3",
+        title: "Tactical WebGL Shader Matrix 3",
+        subtitle: "Deep Scanline Cyber Grid",
+        category: "3d",
+        type: "web",
+        path: "/shader_3/",
+        thumb: "shader_1/screen.png",
+        tags: ["GLSL", "Grid Shader", "Scanlines"],
+        desc: "High-performance fragment shader creating deep holographic scanlines and cybernetic matrix backdrop."
+      },
+
+      // INDIGENOUS ARSENAL CAPTURES
+      {
+        id: "hal_amca_stealth",
+        title: "HAL AMCA 5th Gen Stealth Fighter",
+        subtitle: "IAF Advanced Medium Combat Aircraft",
+        category: "arsenal",
+        type: "image",
+        path: "hal_amca_advanced_medium_combat_aircraft_5th_generation_indian_stealth/screen.png",
+        thumb: "hal_amca_advanced_medium_combat_aircraft_5th_generation_indian_stealth/screen.png",
+        tags: ["5th Gen Stealth", "Supercruise", "Internal Bay", "IAF"],
+        desc: "India's indigenous 5th-generation stealth multirole combat aircraft developed by ADA and HAL with serpentine air intakes."
+      },
+      {
+        id: "brahmos_missile_launcher",
+        title: "BrahMos Supersonic Cruise Missile",
+        subtitle: "Autonomous Mobile Launcher System",
+        category: "arsenal",
+        type: "image",
+        path: "brahmos_supersonic_cruise_missile_launcher_vehicle_mobile_autonomous_launcher/screen.png",
+        thumb: "brahmos_supersonic_cruise_missile_launcher_vehicle_mobile_autonomous_launcher/screen.png",
+        tags: ["Mach 3", "Precision Strike", "Mobile Autonomous Launcher"],
+        desc: "World's fastest operational supersonic cruise missile system capable of land, sea, and sub-surface precision strikes."
+      },
+      {
+        id: "arjun_mk1a_mbt",
+        title: "Arjun Mk1A Main Battle Tank",
+        subtitle: "Indian Army Desert Exercise",
+        category: "arsenal",
+        type: "image",
+        path: "arjun_mk1a_main_battle_tank_indian_army_in_desert_firing_exercises_explosive/screen.png",
+        thumb: "arjun_mk1a_main_battle_tank_indian_army_in_desert_firing_exercises_explosive/screen.png",
+        tags: ["Main Battle Tank", "Kanchan Armor", "120mm Gun", "Indian Army"],
+        desc: "State-of-the-art indigenous main battle tank featuring advanced composite armor, computerized fire control, and desert all-terrain mobility."
+      },
+      {
+        id: "ins_vikrant_carrier",
+        title: "INS Vikrant (IAC-1)",
+        subtitle: "Indigenous Aircraft Carrier // Indian Navy",
+        category: "arsenal",
+        type: "image",
+        path: "ins_vikrant_iac_1_indian_navy_indigenous_aircraft_carrier_sailing_in_indian/screen.png",
+        thumb: "ins_vikrant_iac_1_indian_navy_indigenous_aircraft_carrier_sailing_in_indian/screen.png",
+        tags: ["Aircraft Carrier", "STOBAR", "Indian Navy Flagship"],
+        desc: "The pride of the Indian Navy: 45,000-tonne indigenous aircraft carrier operating MiG-29K fighters and naval utility helicopters."
+      },
+      {
+        id: "ins_arihant_sub",
+        title: "INS Arihant (SSBN)",
+        subtitle: "Nuclear Ballistic Missile Submarine",
+        category: "arsenal",
+        type: "image",
+        path: "ins_arihant_nuclear_powered_ballistic_missile_submarine_indian_navy_surfacing/screen.png",
+        thumb: "ins_arihant_nuclear_powered_ballistic_missile_submarine_indian_navy_surfacing/screen.png",
+        tags: ["Nuclear Submarine", "K-15 Sagarika", "Nuclear Triad"],
+        desc: "Lead ship of India's Arihant class nuclear-powered ballistic missile submarines, completing India's strategic nuclear triad."
+      },
+      {
+        id: "pinaka_mbrl",
+        title: "Pinaka Multi-Barrel Rocket Launcher",
+        subtitle: "Indian Army Salvo Firing System",
+        category: "arsenal",
+        type: "image",
+        path: "pinaka_multi_barrel_rocket_launcher_mbrl_system_indian_army_firing_salvo_of/screen.png",
+        thumb: "pinaka_multi_barrel_rocket_launcher_mbrl_system_indian_army_firing_salvo_of/screen.png",
+        tags: ["MBRL", "Salvo Strike", "Autonomous Fire Control"],
+        desc: "Heavy multi-barrel rocket launcher firing a salvo of 12 HE rockets in 44 seconds with precision strike range over 75km."
+      },
+      {
+        id: "hal_tejas_lca",
+        title: "HAL Tejas LCA Multirole Jet",
+        subtitle: "Supersonic Fighter Against Dramatic Sky",
+        category: "arsenal",
+        type: "image",
+        path: "hal_tejas_lca_indian_supersonic_multirole_fighter_jet_flying_against_dramatic/screen.png",
+        thumb: "hal_tejas_lca_indian_supersonic_multirole_fighter_jet_flying_against_dramatic/screen.png",
+        tags: ["LCA Tejas", "Fly-by-Wire", "Delta Wing", "Supersonic"],
+        desc: "Indigenously developed delta wing supersonic multirole light fighter featuring state-of-the-art digital fly-by-wire controls."
+      },
+      {
+        id: "nexus_prime_ultra",
+        title: "Nexus Prime Ultra Tactical Nexus",
+        subtitle: "Ultra-Premium Mission Hub",
+        category: "arsenal",
+        type: "web",
+        path: "/nexus_prime_ultra_premium_tactical_nexus/",
+        thumb: "nexus_prime_ultra_premium_tactical_nexus/screen.png",
+        tags: ["Tactical Nexus", "Ultra-Premium", "Command Display"],
+        desc: "Ultra-high specification command nexus designed for centralized battlefield visualization and asset coordination."
+      }
+    ];
+
+    let currentCategory = 'all';
+    let searchQuery = '';
+
+    // Render Grid
+    function renderGrid() {
+      const container = document.getElementById('modules-grid');
+      container.innerHTML = '';
+
+      const filtered = SYSTEMS.filter(item => {
+        const matchCat = currentCategory === 'all' || item.category === currentCategory;
+        const matchSearch = searchQuery === '' || 
+          item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.subtitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.desc.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
+        return matchCat && matchSearch;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full py-16 text-center text-white/40 font-mono">
+            <span class="material-symbols-outlined text-4xl mb-2 text-white/20">search_off</span>
+            <p>NO MODULES FOUND MATCHING "${searchQuery}"</p>
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach(sys => {
+        const isWeb = sys.type === 'web';
+        const card = document.createElement('div');
+        card.className = "group relative rounded-xl bg-[#14181c] border border-white/10 hover:border-[#00f2ff]/60 transition-all duration-300 overflow-hidden flex flex-col shadow-lg hover:shadow-[0_0_25px_rgba(0,242,255,0.15)]";
+        
+        card.innerHTML = `
+          <!-- Thumbnail with Action Overlays -->
+          <div class="relative h-48 bg-[#0b0f13] overflow-hidden border-b border-white/5 cursor-pointer" onclick="${isWeb ? `loadInViewport('${sys.path}', '${sys.title}')` : `openImageModal('${sys.thumb}', '${sys.title}', '${sys.desc}')`}">
+            <img src="${sys.thumb}" alt="${sys.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80 group-hover:opacity-100">
+            <div class="absolute inset-0 bg-gradient-to-t from-[#14181c] via-transparent to-transparent"></div>
+            
+            <!-- Type Badge -->
+            <div class="absolute top-3 left-3 flex gap-2">
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold ${isWeb ? 'bg-[#00f2ff]/20 text-[#00f2ff] border border-[#00f2ff]/40' : 'bg-[#ffb703]/20 text-[#ffb703] border border-[#ffb703]/40'} backdrop-blur-md">
+                ${isWeb ? 'INTERACTIVE APP' : 'TACTICAL DOSSIER'}
+              </span>
+            </div>
+
+            <!-- Quick Action Hover Pill -->
+            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/40 backdrop-blur-[2px]">
+              <span class="px-3 py-1.5 rounded-lg bg-[#00f2ff] text-black font-mono font-bold text-xs flex items-center gap-1.5 shadow-lg">
+                <span class="material-symbols-outlined text-sm">${isWeb ? 'play_arrow' : 'visibility'}</span>
+                <span>${isWeb ? 'LAUNCH HUD VIEW' : 'VIEW ASSET'}</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- Card Body -->
+          <div class="p-5 flex-1 flex flex-col justify-between">
+            <div>
+              <p class="font-mono text-[11px] text-[#00f2ff] uppercase tracking-wider mb-1">${sys.subtitle}</p>
+              <h3 class="font-display font-bold text-white text-base group-hover:text-[#00ff88] transition-colors">${sys.title}</h3>
+              <p class="text-white/60 text-xs mt-2 line-clamp-2 leading-relaxed">${sys.desc}</p>
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-white/5 flex items-center justify-between gap-2">
+              <div class="flex flex-wrap gap-1.5">
+                ${sys.tags.slice(0, 2).map(tag => `<span class="px-2 py-0.5 rounded text-[9px] font-mono bg-white/5 text-white/60 border border-white/5">${tag}</span>`).join('')}
+              </div>
+
+              ${isWeb ? `
+                <a href="${sys.path}" target="_blank" title="Open in New Tab" class="p-1.5 rounded-md hover:bg-[#00ff88]/20 text-white/50 hover:text-[#00ff88] transition flex items-center">
+                  <span class="material-symbols-outlined text-base">open_in_new</span>
+                </a>
+              ` : `
+                <button onclick="openImageModal('${sys.thumb}', '${sys.title}', '${sys.desc}')" title="Zoom In" class="p-1.5 rounded-md hover:bg-[#ffb703]/20 text-white/50 hover:text-[#ffb703] transition flex items-center">
+                  <span class="material-symbols-outlined text-base">zoom_in</span>
+                </button>
+              `}
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // Category Filter Handler
+    function filterCategory(cat) {
+      currentCategory = cat;
+      document.querySelectorAll('.cat-btn').forEach(btn => {
+        if (btn.getAttribute('data-cat') === cat) {
+          btn.className = "cat-btn px-3.5 py-1.5 rounded-lg font-bold bg-[#00f2ff] text-black border border-[#00f2ff] transition";
+        } else {
+          btn.className = "cat-btn px-3.5 py-1.5 rounded-lg font-medium bg-[#181c20] hover:bg-white/10 text-white/70 hover:text-white border border-white/10 transition";
+        }
+      });
+      renderGrid();
+    }
+
+    // Search Handler
+    function handleSearch() {
+      searchQuery = document.getElementById('search-input').value;
+      renderGrid();
+    }
+
+    // Viewport Controller
+    function loadInViewport(url, title) {
+      const vp = document.getElementById('viewport-container');
+      const frame = document.getElementById('live-frame');
+      const titleEl = document.getElementById('viewport-title');
+      const urlEl = document.getElementById('viewport-url');
+      const newtabEl = document.getElementById('viewport-newtab');
+
+      vp.classList.remove('hidden');
+      frame.src = url;
+      titleEl.innerText = title.toUpperCase();
+      urlEl.innerText = url;
+      newtabEl.href = url;
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function toggleSplitView() {
+      const vp = document.getElementById('viewport-container');
+      if (vp.classList.contains('hidden')) {
+        // Load default app
+        loadInViewport('/bharat_defense_nexus_indian_armed_forces_arsenal/', 'Bharat Defense Nexus');
+      } else {
+        closeViewport();
+      }
+    }
+
+    function closeViewport() {
+      const vp = document.getElementById('viewport-container');
+      const frame = document.getElementById('live-frame');
+      frame.src = '';
+      vp.classList.add('hidden');
+    }
+
+    function reloadViewport() {
+      const frame = document.getElementById('live-frame');
+      if (frame.src) {
+        frame.src = frame.src;
+      }
+    }
+
+    // Modal Controller
+    function openImageModal(imgSrc, title, desc) {
+      const modal = document.getElementById('image-modal');
+      const img = document.getElementById('modal-img');
+      const t = document.getElementById('modal-title');
+      const d = document.getElementById('modal-desc');
+      const dl = document.getElementById('modal-download');
+
+      img.src = imgSrc;
+      t.innerText = title.toUpperCase();
+      d.innerText = desc;
+      dl.href = imgSrc;
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeImageModal() {
+      const modal = document.getElementById('image-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    // Live UTC Clock
+    function updateClock() {
+      const now = new Date();
+      const utcString = now.toUTCString().split(' ')[4] + ' UTC';
+      const istString = now.toLocaleTimeString('en-US', { timeZone: 'Asia/Kolkata', hour12: false }) + ' IST';
+      document.getElementById('live-clock').innerText = `${utcString} | ${istString}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Hotkeys
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeImageModal();
+        closeViewport();
+      }
+      if (e.key === '/' && document.activeElement !== document.getElementById('search-input')) {
+        e.preventDefault();
+        document.getElementById('search-input').focus();
+      }
+    });
+
+    // Initial render
+    renderGrid();
+  </script>
+</body>
+</html>

@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AEGIS COMMAND | ASSET_INTEL: F-35 LIGHTNING II</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;700&amp;family=Inter:wght@400;500;700&amp;family=Jetbrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;family=Inter:wght@100..900&amp;family=JetBrains+Mono:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .scanline {
+            background: linear-gradient(to bottom, transparent 50%, rgba(0, 242, 255, 0.05) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+        }
+        .holographic-glow {
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.15), inset 0 0 1px rgba(0, 242, 255, 0.5);
+        }
+        .targeting-bracket::before, .targeting-bracket::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-color: rgba(0, 242, 255, 0.6);
+            border-style: solid;
+        }
+        .bracket-tl::before { top: 0; left: 0; border-width: 1px 0 0 1px; }
+        .bracket-tr::after { top: 0; right: 0; border-width: 1px 1px 0 0; }
+        .bracket-bl::before { bottom: 0; left: 0; border-width: 0 0 1px 1px; }
+        .bracket-br::after { bottom: 0; right: 0; border-width: 0 1px 1px 0; }
+        
+        @keyframes pulse-radar {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(2.5); opacity: 0; }
+        }
+        .radar-ring {
+            animation: pulse-radar 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+        
+        .glass-panel {
+            background: rgba(25, 28, 30, 0.6);
+            backdrop-filter: blur(20px);
+            border: 0.5px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+<script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {"on-tertiary-container": "#346f00", "inverse-primary": "#006d37", "on-tertiary": "#173800", "on-secondary-fixed-variant": "#004e5d", error: "#ffb4ab", "on-surface-variant": "#b9cbb9", "on-secondary-fixed": "#001f26", "secondary-container": "#00d9ff", "inverse-surface": "#e0e2e9", "tertiary-container": "#7dfb00", "error-container": "#93000a", "primary-fixed": "#60ff99", "surface-container-low": "#181c20", "on-primary-container": "#007139", "on-tertiary-fixed": "#0b2000", "on-error": "#690005", "outline-variant": "#3b4b3d", "on-primary-fixed-variant": "#005228", "on-secondary-container": "#005b6c", "on-surface": "#e0e2e9", outline: "#849585", "on-tertiary-fixed-variant": "#245100", "tertiary-fixed-dim": "#6fe000", primary: "#f1ffef", "surface-variant": "#31353a", "secondary-fixed": "#aeecff", "surface-container": "#1c2024", "on-primary-fixed": "#00210c", "on-background": "#e0e2e9", "inverse-on-surface": "#2d3136", "surface-container-highest": "#31353a", tertiary: "#f4ffe5", "on-primary": "#003919", surface: "#101418", "surface-bright": "#36393e", "tertiary-fixed": "#82ff14", "on-error-container": "#ffdad6", secondary: "#aeecff", "surface-container-high": "#272a2f", "on-secondary": "#003641", "secondary-fixed-dim": "#00d9ff", "primary-container": "#00ff88", "surface-container-lowest": "#0b0f13", background: "#101418", "surface-tint": "#00e479", "surface-dim": "#101418", "primary-fixed-dim": "#00e479"}, borderRadius: {DEFAULT: "0.125rem", lg: "0.25rem", xl: "0.5rem", full: "0.75rem"}, spacing: {gutter: "32px", "margin-mobile": "24px", unit: "4px", "margin-desktop": "80px", "container-max": "1440px", "section-gap": "120px"}, fontFamily: {"headline-lg": ["Sora"], "body-lg": ["Inter"], "body-md": ["Inter"], "headline-md": ["Geist"], "spec-code": ["JetBrains Mono"], "headline-lg-mobile": ["Sora"], "display-lg": ["Sora"], "label-caps": ["JetBrains Mono"], "label-mono": ["JetBrains Mono"]}, fontSize: {"headline-lg": ["48px", {lineHeight: "1.2", letterSpacing: "-0.02em", fontWeight: "700"}], "body-lg": ["18px", {lineHeight: "1.6", fontWeight: "400"}], "body-md": ["16px", {lineHeight: "1.6", fontWeight: "400"}], "headline-md": ["32px", {lineHeight: "40px", fontWeight: "600"}], "spec-code": ["14px", {lineHeight: "20px", letterSpacing: "0.05em", fontWeight: "500"}], "headline-lg-mobile": ["32px", {lineHeight: "1.2", fontWeight: "700"}], "display-lg": ["84px", {lineHeight: "1.1", letterSpacing: "-0.04em", fontWeight: "800"}], "label-caps": ["12px", {lineHeight: "16px", letterSpacing: "0.1em", fontWeight: "700"}], "label-mono": ["12px", {lineHeight: "1.2", letterSpacing: "0.1em", fontWeight: "500"}]}}}};</script>
+</head>
+<body class="bg-background text-on-surface font-body-md overflow-x-hidden">
+<div class="fixed inset-0 scanline z-50"></div>
+<nav class="fixed top-0 w-full z-[60] flex justify-between items-center px-gutter py-4 bg-surface/60 backdrop-blur-xl border-b border-white/10 shadow-[0_0_15px_rgba(0,242,255,0.1)]">
+<div class="font-headline-md text-headline-md font-bold tracking-tighter text-primary-container">AEGIS COMMAND</div>
+<div class="hidden md:flex gap-8 items-center">
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors" href="#">STRATEGY</a>
+<a class="font-label-caps text-label-caps text-primary-container border-b-2 border-primary-container pb-1" href="#">DATABASE</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors" href="#">LOGISTICS</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors" href="#">INTELLIGENCE</a>
+</div>
+<div class="flex gap-4 items-center">
+<span class="material-symbols-outlined text-primary-container cursor-pointer hover:scale-110 transition-transform">settings_input_antenna</span>
+<span class="material-symbols-outlined text-primary-container cursor-pointer hover:scale-110 transition-transform">notifications_active</span>
+</div>
+</nav>
+<aside class="fixed left-0 top-0 h-full z-40 flex flex-col bg-surface-container-low/40 backdrop-blur-2xl border-r border-white/10 w-20 hover:w-64 transition-all duration-500 group overflow-hidden">
+<div class="mt-24 px-6 mb-12">
+<div class="font-headline-md text-headline-md text-primary-fixed whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">TACTICAL HUD</div>
+<div class="font-label-caps text-[10px] text-primary-fixed-dim whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">SYS_READY_V2.4</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-4 text-on-surface-variant p-4 hover:bg-primary/10 hover:text-primary transition-all">
+<span class="material-symbols-outlined min-w-[24px]">radar</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 whitespace-nowrap">RADAR</span>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant p-4 hover:bg-primary/10 hover:text-primary transition-all">
+<span class="material-symbols-outlined min-w-[24px]">satellite_alt</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 whitespace-nowrap">SATELLITE</span>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant p-4 hover:bg-primary/10 hover:text-primary transition-all">
+<span class="material-symbols-outlined min-w-[24px]">directions_boat</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 whitespace-nowrap">FLEET</span>
+</div>
+<div class="flex items-center gap-4 bg-primary-container/20 text-primary-container border-l-4 border-primary-container p-4">
+<span class="material-symbols-outlined min-w-[24px]">target</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 whitespace-nowrap">TARGETING</span>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant p-4 hover:bg-primary/10 hover:text-primary transition-all">
+<span class="material-symbols-outlined min-w-[24px]">database</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 whitespace-nowrap">ARCHIVE</span>
+</div>
+</div>
+<div class="mt-auto p-4 flex flex-col gap-2 border-t border-white/10">
+<div class="flex items-center gap-4 text-on-surface-variant p-2 hover:text-primary">
+<span class="material-symbols-outlined min-w-[24px]">settings</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100">SETTINGS</span>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant p-2 hover:text-primary">
+<span class="material-symbols-outlined min-w-[24px]">logout</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100">LOGOUT</span>
+</div>
+</div>
+</aside>
+<main class="ml-20 pt-20">
+<section class="relative h-[870px] flex items-end overflow-hidden border-b border-white/10">
+<div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-10"></div>
+<img class="absolute inset-0 w-full h-full object-cover" data-alt="A cinematic, high-contrast photograph of an F-35 Lightning II multi-role stealth fighter aircraft soaring through a deep indigo twilight sky. The aircraft's dark composite skin reflects the cold atmospheric light, highlighting its sharp, angular stealth geometry and precise engineering. Glowing orange engine exhaust provides a vivid accent against the muted background. The overall aesthetic is ultra-modern, authoritative, and technologically sophisticated, with a sense of immense power and precision." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBlYFHRasX1BvXAnYt8il0fs5BXSFX0deY2vgQ5cP5adtw5OnE0ynV2FPARpKqYM563umukxyWEcpLaC_3VzqhLOvQxQjYnyAGNmBhxwt5Rt8N0dkcZWXm_F3GR1ndx3obtWmXibDYFkOqstmlQXMyyrUpmap1NondiaLLLicDMMz1HUDLdBv9G_dj_z0TB0pgGhjCFkjHLNzeAEbgKZ4_pYMv6hwjWF9E6wO9YGEhfPz641Dieiv7uYWeO6oI8aD_JLk-xEggXQFOw"/>
+<div class="absolute top-12 right-12 z-20 border border-primary/30 p-2 font-label-caps text-label-caps text-primary/60 tracking-[0.3em]">
+                CLASSIFICATION: UNCLASSIFIED
+            </div>
+<div class="relative z-20 w-full max-w-7xl mx-auto px-margin-desktop pb-24 grid grid-cols-1 lg:grid-cols-2 gap-12 items-end">
+<div>
+<div class="flex items-center gap-4 mb-4">
+<span class="bg-primary-container text-on-primary-container font-label-caps text-[10px] px-2 py-1">5TH GENERATION</span>
+<span class="border border-outline px-2 py-1 font-label-caps text-[10px]">MULTI-ROLE</span>
+</div>
+<h1 class="font-display-lg text-display-lg uppercase leading-none mb-2">F-35 Lightning II</h1>
+<p class="font-spec-code text-primary-container/80 max-w-xl">THE MOST ADVANCED MULTI-ROLE FIGHTER AIRCRAFT IN THE GLOBAL DEFENSE ECOSYSTEM. DESIGNED FOR SUPERIOR STEALTH, SENSOR FUSION, AND NETWORK-CENTRIC OPERATIONS.</p>
+</div>
+<div class="grid grid-cols-3 gap-4">
+<div class="glass-panel p-4 targeting-bracket bracket-tl bracket-br">
+<div class="text-[10px] font-label-caps text-on-surface-variant mb-1">AIRSPEED</div>
+<div class="font-headline-md text-headline-md text-primary-fixed">1.6 MACH</div>
+<div class="h-1 bg-white/10 mt-2"><div class="h-full bg-primary-container w-[85%]"></div></div>
+</div>
+<div class="glass-panel p-4 targeting-bracket bracket-tl bracket-br">
+<div class="text-[10px] font-label-caps text-on-surface-variant mb-1">CEILING</div>
+<div class="font-headline-md text-headline-md text-primary-fixed">50K+ FT</div>
+<div class="h-1 bg-white/10 mt-2"><div class="h-full bg-primary-container w-[70%]"></div></div>
+</div>
+<div class="glass-panel p-4 targeting-bracket bracket-tl bracket-br">
+<div class="text-[10px] font-label-caps text-on-surface-variant mb-1">PAYLOAD</div>
+<div class="font-headline-md text-headline-md text-primary-fixed">18K LBS</div>
+<div class="h-1 bg-white/10 mt-2"><div class="h-full bg-primary-container w-[90%]"></div></div>
+</div>
+</div>
+</div>
+</section>
+<section class="py-20 px-margin-desktop max-w-7xl mx-auto">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+<div class="lg:col-span-8">
+<div class="mb-12">
+<h2 class="font-headline-lg text-headline-lg flex items-center gap-4 mb-8">
+<span class="w-12 h-[2px] bg-primary-container"></span>
+                            TECHNICAL SPECIFICATIONS
+                        </h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-px bg-white/5 border border-white/10 rounded-lg overflow-hidden">
+<div class="p-6 bg-surface-container">
+<span class="font-label-caps text-primary-container text-[11px]">GENERAL</span>
+<div class="mt-4 space-y-4">
+<div class="flex justify-between border-b border-white/5 pb-2">
+<span class="text-on-surface-variant font-body-md">Crew</span>
+<span class="font-spec-code">1 Pilot</span>
+</div>
+<div class="flex justify-between border-b border-white/5 pb-2">
+<span class="text-on-surface-variant font-body-md">Manufacturer</span>
+<span class="font-spec-code">Lockheed Martin</span>
+</div>
+<div class="flex justify-between border-b border-white/5 pb-2">
+<span class="text-on-surface-variant font-body-md">Unit Cost</span>
+<span class="font-spec-code">~$78M (Variant A)</span>
+</div>
+</div>
+</div>
+<div class="p-6 bg-surface-container">
+<span class="font-label-caps text-primary-container text-[11px]">DIMENSIONS</span>
+<div class="mt-4 space-y-4">
+<div class="flex justify-between border-b border-white/5 pb-2">
+<span class="text-on-surface-variant font-body-md">Length</span>
+<span class="font-spec-code">51.4 ft (15.7 m)</span>
+</div>
+<div class="flex justify-between border-b border-white/5 pb-2">
+<span class="text-on-surface-variant font-body-md">Wingspan</span>
+<span class="font-spec-code">35 ft (10.7 m)</span>
+</div>
+<div class="flex justify-between border-b border-white/5 pb-2">
+<span class="text-on-surface-variant font-body-md">Height</span>
+<span class="font-spec-code">14.4 ft (4.39 m)</span>
+</div>
+</div>
+</div>
+<div class="p-6 bg-surface-container">
+<span class="font-label-caps text-primary-container text-[11px]">PROPULSION</span>
+<div class="mt-4 space-y-4">
+<div class="flex justify-between border-b border-white/5 pb-2">
+<span class="text-on-surface-variant font-body-md">Engine</span>
+<span class="font-spec-code">Pratt &amp; Whitney F135-PW-100</span>
+</div>
+<div class="flex justify-between border-b border-white/5 pb-2">
+<span class="text-on-surface-variant font-body-md">Thrust</span>
+<span class="font-spec-code">43,000 lbf w/ Afterburner</span>
+</div>
+</div>
+</div>
+<div class="p-6 bg-surface-container">
+<span class="font-label-caps text-primary-container text-[11px]">VARIANTS</span>
+<div class="mt-4 space-y-4">
+<div class="flex justify-between border-b border-white/5 pb-2">
+<span class="text-on-surface-variant font-body-md">F-35A</span>
+<span class="font-spec-code">CTOL (Conventional)</span>
+</div>
+<div class="flex justify-between border-b border-white/5 pb-2">
+<span class="text-on-surface-variant font-body-md">F-35B</span>
+<span class="font-spec-code">STOVL (Short Take-off)</span>
+</div>
+<div class="flex justify-between border-b border-white/5 pb-2">
+<span class="text-on-surface-variant font-body-md">F-35C</span>
+<span class="font-spec-code">CV (Carrier Variant)</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="mb-12">
+<h2 class="font-headline-lg text-headline-lg flex items-center gap-4 mb-8">
+<span class="w-12 h-[2px] bg-primary-container"></span>
+                            3D VIEWPORT ANALYSIS
+                        </h2>
+<div class="relative h-96 glass-panel rounded-xl overflow-hidden group cursor-crosshair">
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="text-center relative">
+<div class="absolute inset-0 flex items-center justify-center opacity-20 pointer-events-none">
+<div class="w-64 h-64 border border-primary-container/40 rounded-full radar-ring"></div>
+<div class="w-64 h-64 border border-primary-container/20 rounded-full radar-ring" style="animation-delay: 0.5s"></div>
+</div>
+<span class="material-symbols-outlined text-primary-container text-6xl mb-4">view_in_ar</span>
+<div class="font-spec-code text-on-surface">INITIALIZING ASSET RENDER...</div>
+<div class="font-label-caps text-[10px] text-primary-container/60 mt-2">INTERACTIVE 3D MODEL PENDING UPLOAD</div>
+</div>
+</div>
+<div class="absolute bottom-4 left-4 p-4 border-l-2 border-primary-container bg-surface/80">
+<div class="font-label-caps text-xs">MODEL: F35_LIGHTNING_II_V12.OBJ</div>
+<div class="font-label-caps text-[10px] text-on-surface-variant">WIRE FRAME: ENABLED</div>
+</div>
+</div>
+</div>
+</div>
+<div class="lg:col-span-4">
+<div class="sticky top-28 space-y-12">
+<div>
+<h3 class="font-label-caps text-label-caps text-primary-container mb-6 tracking-widest uppercase">Development Timeline</h3>
+<div class="relative pl-8 space-y-8 border-l border-white/10 ml-2">
+<div class="relative">
+<div class="absolute -left-[37px] top-0 w-4 h-4 bg-primary-container rounded-full ring-4 ring-primary-container/20"></div>
+<div class="font-spec-code text-primary-container text-sm">2001</div>
+<div class="font-headline-md text-sm mt-1">X-35 WINNER</div>
+<p class="text-on-surface-variant text-xs mt-1">Lockheed Martin selected for JSF program.</p>
+</div>
+<div class="relative">
+<div class="absolute -left-[37px] top-0 w-4 h-4 bg-white/20 rounded-full"></div>
+<div class="font-spec-code text-on-surface-variant text-sm">2006</div>
+<div class="font-headline-md text-sm mt-1">FIRST FLIGHT</div>
+<p class="text-on-surface-variant text-xs mt-1">F-35A prototype AA-1 completes inaugural flight.</p>
+</div>
+<div class="relative">
+<div class="absolute -left-[37px] top-0 w-4 h-4 bg-white/20 rounded-full"></div>
+<div class="font-spec-code text-on-surface-variant text-sm">2015</div>
+<div class="font-headline-md text-sm mt-1">IOC DECLARED</div>
+<p class="text-on-surface-variant text-xs mt-1">USMC declares Initial Operational Capability for F-35B.</p>
+</div>
+<div class="relative">
+<div class="absolute -left-[37px] top-0 w-4 h-4 bg-white/20 rounded-full"></div>
+<div class="font-spec-code text-on-surface-variant text-sm">2024</div>
+<div class="font-headline-md text-sm mt-1">FULL PRODUCTION</div>
+<p class="text-on-surface-variant text-xs mt-1">Block 4 modernization in active deployment.</p>
+</div>
+</div>
+</div>
+<div>
+<h3 class="font-label-caps text-label-caps text-primary-container mb-6 tracking-widest uppercase">Video Demonstration</h3>
+<div class="relative aspect-video glass-panel rounded-lg overflow-hidden group">
+<img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="A frame from a high-speed engineering demonstration video showing an F-35 fighter jet performing a vertical take-off from a carrier deck. The lighting is harsh and realistic, with shimmering heat distortion from the engine nozzle and salt spray from the ocean. The scene is framed by a tactical HUD overlay showing real-time flight telemetry and targeting telemetry in a vibrant cyan digital font." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnHEz5rZzDdLr4MvNKWwcHrIFPWeOIqvROZkPYYQVrESggwvTY89XMM5Qv2rCf0KGZXXfhgLaVfzjUp5KkvaccWiNCRevkEfHKi6n8Sy27cPdrCnxrfpM_tLbN1E32A5NkD6tJYbUOAUMQuO6SMWndznM1tUAcvIeUKTykHsxLBN6OxVYL31ddqINFPtj3G-5ooUgkRlsTGTxT4KuvwRwDZk10bImClsxO10bDoSVJRTEO21amprNHnictiHd-jvW6OYbWvO6PNc0u"/>
+<div class="absolute inset-0 bg-black/40 flex items-center justify-center">
+<button class="w-16 h-16 border border-primary-container rounded-full flex items-center justify-center bg-primary-container/20 text-primary-container hover:bg-primary-container hover:text-black transition-all">
+<span class="material-symbols-outlined text-4xl">play_arrow</span>
+</button>
+</div>
+<div class="absolute bottom-2 left-2 right-2 flex justify-between items-center p-2 bg-surface/90 font-spec-code text-[10px]">
+<span>FILE: FLT_DEMO_BLOCK4.MP4</span>
+<span>04:22</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="py-20 bg-surface-container-lowest border-t border-white/5 px-margin-desktop">
+<div class="max-w-7xl mx-auto">
+<h2 class="font-headline-lg text-headline-lg flex items-center gap-4 mb-12">
+<span class="w-12 h-[2px] bg-primary-container"></span>
+                    RELATED 5TH GEN ASSETS
+                </h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="glass-panel group overflow-hidden border border-white/5 hover:border-primary-container/50 transition-all duration-500">
+<div class="relative h-48 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" data-alt="A high-altitude aerial photograph of an F-22 Raptor air-superiority fighter performing a banking turn over a mountainous landscape at sunset. The golden hour light casts long shadows on the jet's stealthy, angular surface. The image is crisp and professional, capturing the sheer dominance and grace of this advanced aerospace technology within a high-stakes military context." src="https://lh3.googleusercontent.com/aida-public/AB6AXuByZ26sHyLkMoWoIMOx5ulchUzOYp1Ys4l4dfYTd8hbSMeD3ismpSaeH7VfaiJEosrt53jXAIlYn6dCNjO8s8oYWUpXHlbX4Yh9Ddh4A8eeFH2zw8tUWINiYTyPNAc0uOt5NFyBC3PLyPbz7Ulf43_V_5bBfaaMgsvXFwnIVZkBBkkXU71GGiZsR1hyD8C4MY_pnI-Vo7U3xV4shwbPiD7ujgtyDA9pjpJIoqlpaJE6nAE5OqYgVIm0zQfJoswapj7jU4zK16Co6R94"/>
+<div class="absolute top-2 right-2 bg-black/60 px-2 py-1 font-label-caps text-[10px]">AIR DOMINANCE</div>
+</div>
+<div class="p-6">
+<h4 class="font-headline-md text-xl mb-2">F-22 RAPTOR</h4>
+<p class="text-on-surface-variant text-sm mb-4">Dedicated air superiority fighter featuring extreme maneuverability and twin-engine performance.</p>
+<a class="inline-flex items-center gap-2 font-label-caps text-primary-container hover:gap-4 transition-all" href="#">
+                                ACCESS INTEL <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+</div>
+<div class="glass-panel group overflow-hidden border border-white/5 hover:border-primary-container/50 transition-all duration-500">
+<div class="relative h-48 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" data-alt="A stark, technical shot of a Su-57 Felon stealth fighter taxiing on a snowy runway in Siberia. The aircraft's digital 'splinter' camouflage pattern is prominent against the white landscape. Harsh, overcast lighting emphasizes the industrial, rugged nature of the Russian defense design philosophy. The overall mood is cold, authoritative, and formidable." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkrb7g6dKwoNgB0jHIMV4BuGXHItMs2JFqH0tbhM0wLMMGEnBIFJzAWtn_OFaqr9ivbTZtwZeXFinWA33-lNoRwgoallBVQft21um4mp8i6Pgw0Nlk1fjPH_0ZlIE3bq1mx6dpgKSQRY3-vQQauh4L39l8yZfrwfDcoJgaH9qfUipylPG2VLoEL6mLrTycIiIU2Mwqb6_uxKHgnq654gGbVz6SLSF5CrLzDaY4gop7AFxKYHb1aD55V5GiM-gyoU-dG2fvda9BnG3b"/>
+<div class="absolute top-2 right-2 bg-black/60 px-2 py-1 font-label-caps text-[10px]">OPFOR ASSET</div>
+</div>
+<div class="p-6">
+<h4 class="font-headline-md text-xl mb-2">SU-57 FELON</h4>
+<p class="text-on-surface-variant text-sm mb-4">Russian multi-role 5th generation fighter designed for tactical versatility and high speeds.</p>
+<a class="inline-flex items-center gap-2 font-label-caps text-primary-container hover:gap-4 transition-all" href="#">
+                                ACCESS INTEL <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+</div>
+<div class="glass-panel group overflow-hidden border border-white/5 hover:border-primary-container/50 transition-all duration-500">
+<div class="relative h-48 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" data-alt="A clean, studio-lit industrial photography shot of a Chengdu J-20 'Mighty Dragon' stealth fighter being serviced in a high-tech hangar. Bright clinical lighting highlights the aircraft's long, canard-delta wing configuration and smooth composite fuselage. The environment is sterile and advanced, suggesting a high-priority, massive scale aerospace manufacturing facility." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC92du8MzCRd3j7gLW_owqH-1YCd9CfvKo7mj9rtl3qq-GXfO1AQ81i61dOa8nhk9n7Enl5MtUfegNcqmEfLYBAiJBXbnV6ejfiadMpI9hCwpq57AtZgELS5M-jMxEZr97vg0Hmpa31IJi8UyJCARUVv1ebdjcShHJ8kJdK1dHyV9kBUi7ecTQGG8ES-ajMQ9S9Ajpl-qGNCsilXQ04p7iJnxrjJPXYnWLJ61qs9KNjtIJxdxHw-FS7Nsre8lr4TZWqTAzdvjnyndv3"/>
+<div class="absolute top-2 right-2 bg-black/60 px-2 py-1 font-label-caps text-[10px]">STRATEGIC THREAT</div>
+</div>
+<div class="p-6">
+<h4 class="font-headline-md text-xl mb-2">CHENGDU J-20</h4>
+<p class="text-on-surface-variant text-sm mb-4">China's heavy stealth fighter optimized for range and payload capacity in naval theaters.</p>
+<a class="inline-flex items-center gap-2 font-label-caps text-primary-container hover:gap-4 transition-all" href="#">
+                                ACCESS INTEL <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<footer class="w-full py-12 px-margin-desktop bg-gradient-to-t from-black to-transparent border-t border-white/5 mt-20 ml-20">
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-12">
+<div class="max-w-md">
+<div class="font-headline-md text-headline-md text-on-surface mb-4">AEGIS COMMAND</div>
+<p class="font-body-md text-secondary opacity-80 uppercase tracking-wider text-xs">© 2024 DEFENSE INTELLIGENCE NETWORK. ALL RIGHTS RESERVED. CLASSIFIED MATERIAL.</p>
+</div>
+<div class="grid grid-cols-2 gap-x-12 gap-y-4">
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">SITEMAP</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">API_DOCS</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">SECURITY_PROTOCOL</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">CONTACT_COMMAND</a>
+</div>
+</div>
+<div class="mt-12 flex justify-center opacity-20 select-none">
+<div class="font-display-lg text-[120px] font-extrabold leading-none tracking-tighter text-white">DATABASE</div>
+</div>
+</footer>
+<script>
+        document.addEventListener('mousemove', (e) => {
+            const glow = document.querySelectorAll('.holographic-glow');
+            glow.forEach(el => {
+                const rect = el.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                el.style.setProperty('--mouse-x', `${x}px`);
+                el.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+    </script>
+</body></html>

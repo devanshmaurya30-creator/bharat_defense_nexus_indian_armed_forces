@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+    }
+  </style>
+</head>
+<body>
+<!-- STITCH_THREEJS_START:ANIMATION_10 class="fixed inset-0 w-full h-full bg-transparent" -->
+<div class="fixed inset-0 w-full h-full bg-transparent" style="display:block;">
+<script src="https://ajax.googleapis.com/ajax/libs/threejs/r125/three.min.js"></script>
+<div id="threejs-container-ANIMATION_10" style="width:100%;height:100%"></div>
+<script>
+(function() {
+  const container = document.getElementById('threejs-container-ANIMATION_10');
+  const devicePixelRatio = window.devicePixelRatio || 1;
+  (function() {
+    const container = document.getElementById('threejs-container-ANIMATION_ hangar') || document.getElementById('threejs-container-ANIMATION_10');
+    const width = container.clientWidth || window.innerWidth;
+    const height = container.clientHeight || window.innerHeight;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    container.appendChild(renderer.domElement);
+
+    // Hangar Lighting
+    const ambientLight = new THREE.AmbientLight(0x404040, 1);
+    scene.add(ambientLight);
+    const spotLight = new THREE.SpotLight(0x00f2ff, 5);
+    spotLight.position.set(10, 10, 10);
+    scene.add(spotLight);
+
+    // Stealth Fighter (Abstract Geometry)
+    const fighterGroup = new THREE.Group();
+    
+    const bodyGeom = new THREE.ConeGeometry(1, 4, 4);
+    const bodyMat = new THREE.MeshPhongMaterial({ color: 0x1a1c1e, shininess: 100 });
+    const body = new THREE.Mesh(bodyGeom, bodyMat);
+    body.rotation.x = Math.PI / 2;
+    fighterGroup.add(body);
+
+    const wingGeom = new THREE.BoxGeometry(4, 0.1, 1.5);
+    const wing = new THREE.Mesh(wingGeom, bodyMat);
+    wing.position.z = -0.5;
+    fighterGroup.add(wing);
+
+    scene.add(fighterGroup);
+    camera.position.set(0, 2, 8);
+    camera.lookAt(0, 0, 0);
+
+    // Particles (Dust/Atmosphere)
+    const partGeom = new THREE.BufferGeometry();
+    const partCount = 500;
+    const posArray = new Float32Array(partCount * 3);
+    for(let i = 0; i < partCount * 3; i++) {
+        posArray[i] = (Math.random() - 0.5) * 20;
+    }
+    partGeom.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+    const partMat = new THREE.PointsMaterial({ size: 0.05, color: 0x00f2ff, transparent: true, opacity: 0.5 });
+    const particles = new THREE.Points(partGeom, partMat);
+    scene.add(particles);
+
+    function animate() {
+        requestAnimationFrame(animate);
+        fighterGroup.rotation.y += 0.002;
+        fighterGroup.position.y = Math.sin(Date.now() * 0.001) * 0.1;
+        particles.rotation.y += 0.001;
+        renderer.render(scene, camera);
+    }
+    animate();
+
+    window.addEventListener('resize', () => {
+        const w = container.clientWidth || window.innerWidth;
+        const h = container.clientHeight || window.innerHeight;
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w, h);
+    });
+})();
+})();
+</script>
+</div>
+<!-- STITCH_THREEJS_END:ANIMATION_10 -->
+</body></html>
